@@ -1,6 +1,12 @@
-# JAAD
-
-**Just Another Astro Docs** - Write markdown. Get docs.
+<h1 align="center" class="b">
+  <br>
+  JAAD
+</h1>
+<p align="center" class="b">
+  <b>Just Another Astro Docs</b> - Write markdown. Get docs.
+</p>
+<br>
+<br>
 
 JAAD transforms markdown files into clean, navigable documentation with automatic sidebar generation and table of contents.
 
