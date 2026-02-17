@@ -13,7 +13,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // https://astro.build/config
 export default defineConfig({
   // Put here the site url of your production website, for example: https://www.example.com
-  site: "https://jaad.lucapattocchio.dev",
+  site: "https://jaad.lancher.dev",
   base: "/",
 
   vite: {
