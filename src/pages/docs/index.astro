@@ -1,0 +1,46 @@
+---
+import { getCollection, render } from "astro:content";
+import { parseDocCollectionId, sortDocPages } from "@/utils/docs";
+import DocsLayout from "@/layouts/DocsLayout.astro";
+import DocsMobileNav from "@/components/docs/DocsMobileNav.astro";
+import DocsPageNav from "@/components/docs/DocsPageNav.astro";
+
+// Get first page from sorted docs
+const docsCollection = await getCollection("docsPages");
+const sortedPages = sortDocPages(docsCollection);
+
+const firstPage = sortedPages[0];
+if (!firstPage) {
+  return Astro.redirect("/404");
+}
+
+// Render the first page
+const { Content } = await render(firstPage);
+const parsed = parseDocCollectionId(firstPage.id, true);
+
+// Generate clean slug for current page highlighting
+const parts = firstPage.id.split("/");
+const cleanParts = parts.map((part) => part.replace(/^\d+-/, ""));
+const currentSlug = cleanParts.join("/");
+---
+
+<DocsLayout currentSlug={currentSlug} entry={firstPage}>
+  <main
+    role="main"
+    aria-label="Main content"
+    class="mx-4 my-8 flex-1 px-0 py-0 md:my-16 md:px-8 lg:mb-32 lg:px-16"
+  >
+    <DocsMobileNav currentSlug={currentSlug} entry={firstPage} />
+
+    <article>
+      <div
+        id="content"
+        class="markdown-content w-full leading-relaxed wrap-break-word"
+      >
+        <Content />
+      </div>
+    </article>
+
+    <DocsPageNav id={firstPage.id} />
+  </main>
+</DocsLayout>

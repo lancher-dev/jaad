@@ -1,0 +1,23 @@
+---
+interface Props {
+  icon: string;
+  label: string;
+  description?: string;
+}
+
+const { icon, label, description } = Astro.props;
+---
+
+<div
+  class="bg-background-secondary hover:border-primary/30 flex items-start gap-4 rounded-lg border border-gray-700 p-4 transition-colors"
+>
+  <div
+    class="bg-primary/10 text-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
+  >
+    <i class={`${icon} text-xl`} aria-hidden="true"></i>
+  </div>
+  <div class="flex-1">
+    <div class="text-foreground font-semibold">{label}</div>
+    {description && <div class="mt-1 text-sm text-gray-400">{description}</div>}
+  </div>
+</div>

@@ -1,0 +1,142 @@
+---
+import { getCollection } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+import {
+  parseDocCollectionId,
+  sortDocPages,
+  formatChapterTitle,
+  extractHeadingsFromMarkdown,
+} from "@/utils/docs";
+import ScrollToTop from "@/components/ScrollToTop";
+
+interface Props {
+  currentSlug: string;
+  entry: CollectionEntry<"docsPages">;
+}
+
+const { currentSlug, entry } = Astro.props;
+
+const docsCollection = await getCollection("docsPages");
+const sortedPages = sortDocPages(docsCollection);
+
+const navItems = sortedPages.map((page) => {
+  const parsed = parseDocCollectionId(page.id, true);
+  const cleanSlug = page.id
+    .split("/")
+    .map((part) => part.replace(/^\d+-/, ""))
+    .join("/");
+
+  return {
+    title: parsed.title,
+    chapter: parsed.chapter,
+    href: `/docs/${cleanSlug}`,
+    isActive: currentSlug === cleanSlug,
+  };
+});
+
+const pagesWithoutChapter = navItems.filter((item) => !item.chapter);
+const pagesWithChapter = navItems.filter((item) => item.chapter);
+
+const grouped = pagesWithChapter.reduce(
+  (acc, item) => {
+    const chapter = item.chapter!;
+    if (!acc[chapter]) acc[chapter] = [];
+    acc[chapter].push(item);
+    return acc;
+  },
+  {} as Record<string, typeof navItems>,
+);
+
+// Extract headings from markdown content
+const headings = extractHeadingsFromMarkdown(entry.body || "");
+---
+
+<div class="docs-mobile-nav mb-8 space-y-4 lg:hidden">
+  <!-- Page selector -->
+  <div class="w-full">
+    <label for="page-select" class="sr-only">Select page</label>
+    <select
+      id="page-select"
+      class="border-primary/20 bg-surface text-foreground focus:border-primary w-full rounded-lg border px-4 py-3 transition-colors focus:outline-none"
+    >
+      {
+        pagesWithoutChapter.length > 0 &&
+          pagesWithoutChapter.map((page) => (
+            <option value={page.href} selected={page.isActive}>
+              {page.title}
+            </option>
+          ))
+      }
+      {
+        Object.entries(grouped).map(([chapter, pages]) => (
+          <optgroup label={formatChapterTitle(chapter) || chapter}>
+            {pages.map((page) => (
+              <option value={page.href} selected={page.isActive}>
+                {page.title}
+              </option>
+            ))}
+          </optgroup>
+        ))
+      }
+    </select>
+  </div>
+
+  {
+    headings.length > 0 && (
+      <div id="section-select-wrapper" class="w-full">
+        <label for="section-select" class="sr-only">
+          Jump to section
+        </label>
+        <select
+          id="section-select"
+          class="border-primary/20 bg-surface text-foreground focus:border-primary w-full rounded-lg border px-4 py-3 transition-colors focus:outline-none"
+        >
+          <option value="">Jump to section...</option>
+          {headings.map((heading) => {
+            const isH3 = heading.depth === 3;
+            const prefix = isH3 ? "\u00A0\u00A0\u00A0\u00A0" : "";
+            return (
+              <option value={`#${heading.slug}`}>
+                {prefix}
+                {heading.text}
+              </option>
+            );
+          })}
+        </select>
+      </div>
+    )
+  }
+</div>
+
+<ScrollToTop client:load />
+
+<script is:inline>
+  function initMobileNav() {
+    const pageSelect = document.getElementById("page-select");
+    const sectionSelect = document.getElementById("section-select");
+
+    // Page navigation
+    if (pageSelect) {
+      pageSelect.addEventListener("change", (e) => {
+        const value = e.target.value;
+        if (value) window.location.href = value;
+      });
+    }
+
+    // Section navigation - event listener
+    if (sectionSelect) {
+      sectionSelect.addEventListener("change", (e) => {
+        const value = e.target.value;
+        if (value) {
+          document
+            .querySelector(value)
+            ?.scrollIntoView({ behavior: "smooth", block: "start" });
+          setTimeout(() => (sectionSelect.value = ""), 500);
+        }
+      });
+    }
+  }
+
+  initMobileNav();
+  document.addEventListener("astro:page-load", initMobileNav);
+</script>

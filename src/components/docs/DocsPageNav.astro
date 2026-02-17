@@ -1,0 +1,117 @@
+---
+import { getCollection } from "astro:content";
+import { parseDocCollectionId, sortDocPages } from "@/utils/docs";
+
+interface Props {
+  id: string;
+}
+
+const { id } = Astro.props;
+
+const allPages = await getCollection("docsPages");
+const sortedPages = sortDocPages(allPages);
+
+const navigationItems = sortedPages.map((page) => {
+  const parsed = parseDocCollectionId(page.id, true);
+
+  // Build clean URL without order numbers
+  const parts = page.id.split("/");
+  const cleanParts = parts.map((part) => part.replace(/^\d+-/, ""));
+  const cleanSlug = cleanParts.join("/");
+
+  return {
+    id: page.id,
+    slug: cleanSlug,
+    title: parsed.title,
+    order: parsed.order,
+    orderChapter: parsed.orderChapter,
+    chapter: parsed.chapter,
+  };
+});
+
+const currentIndex = navigationItems.findIndex((item) => item.id === id);
+const previousPage =
+  currentIndex > 0 ? navigationItems[currentIndex - 1] : null;
+const nextPage =
+  currentIndex < navigationItems.length - 1
+    ? navigationItems[currentIndex + 1]
+    : null;
+
+// Generate URLs
+const previousUrl = previousPage ? `/docs/${previousPage.slug}` : null;
+const nextUrl = nextPage ? `/docs/${nextPage.slug}` : null;
+---
+
+{
+  (previousPage || nextPage) && (
+    <nav class="mx-auto max-w-3xl px-4 py-8" aria-label="Page navigation">
+      <div class="flex items-center justify-between gap-4">
+        {previousPage && previousUrl && previousPage.title ? (
+          <a
+            href={previousUrl}
+            class="group border-border-dark bg-background-tertiary text-foreground-bright hover:border-primary hover:bg-border-dark hover:text-primary flex max-w-[calc(45%-1rem)] min-w-0 items-center gap-2 rounded-lg border px-4 py-3 no-underline transition-all duration-300"
+          >
+            <i class="nf nf-md-chevron_left shrink-0 text-sm transition-transform group-hover:-translate-x-1" />
+            <span class="overflow-hidden font-medium text-ellipsis whitespace-nowrap">
+              {previousPage.title}
+            </span>
+          </a>
+        ) : (
+          <div />
+        )}
+
+        {nextPage && nextUrl && nextPage.title ? (
+          <a
+            href={nextUrl}
+            class="group border-border-dark bg-background-tertiary text-foreground-bright hover:border-primary hover:bg-border-dark hover:text-primary flex max-w-[calc(45%-1rem)] min-w-0 items-center gap-2 rounded-lg border px-4 py-3 no-underline transition-all duration-300"
+          >
+            <span class="overflow-hidden font-medium text-ellipsis whitespace-nowrap">
+              {nextPage.title}
+            </span>
+            <i class="nf nf-md-chevron_right shrink-0 text-sm transition-transform group-hover:translate-x-1" />
+          </a>
+        ) : (
+          <div />
+        )}
+      </div>
+    </nav>
+  )
+}
+
+<script is:inline define:vars={{ previousUrl, nextUrl }}>
+  function initPageNav() {
+    // Only add keyboard navigation if there are navigation buttons
+    if (!previousUrl && !nextUrl) return;
+
+    function handleKeyPress(event) {
+      // Only handle arrow keys if no input elements are focused
+      if (
+        document.activeElement?.tagName === "INPUT" ||
+        document.activeElement?.tagName === "TEXTAREA" ||
+        document.activeElement?.contentEditable === "true"
+      ) {
+        return;
+      }
+
+      switch (event.key) {
+        case "ArrowLeft":
+          if (previousUrl) {
+            event.preventDefault();
+            window.location.href = previousUrl;
+          }
+          break;
+        case "ArrowRight":
+          if (nextUrl) {
+            event.preventDefault();
+            window.location.href = nextUrl;
+          }
+          break;
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyPress);
+  }
+
+  initPageNav();
+  document.addEventListener("astro:page-load", initPageNav);
+</script>

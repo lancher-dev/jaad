@@ -1,0 +1,39 @@
+---
+interface Props {
+  variant?: "info" | "success" | "warning" | "error";
+  icon?: string;
+  title?: string;
+}
+
+const { variant = "info", icon, title } = Astro.props;
+
+const variantClasses = {
+  info: "border-primary/30 bg-primary/5 text-primary",
+  success: "border-green-500/30 bg-green-500/5 text-green-400",
+  warning: "border-yellow-500/30 bg-yellow-500/5 text-yellow-400",
+  error: "border-red-500/30 bg-red-500/5 text-red-400",
+};
+
+const defaultIcons = {
+  info: "nf nf-md-lightbulb_on",
+  success: "nf nf-md-check_circle",
+  warning: "nf nf-md-alert",
+  error: "nf nf-md-close_circle",
+};
+
+const iconClass = icon || defaultIcons[variant];
+---
+
+<div class={`rounded-lg border p-4 ${variantClasses[variant]}`}>
+  <div class="flex items-start gap-3">
+    <i class={`${iconClass} text-xl shrink-0`} aria-hidden="true"></i>
+    <div class="flex-1">
+      {title && <p class="font-semibold">{title}</p>}
+      <div
+        class={title ? "mt-1 text-sm text-gray-300" : "text-sm text-gray-300"}
+      >
+        <slot />
+      </div>
+    </div>
+  </div>
+</div>

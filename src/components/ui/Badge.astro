@@ -1,0 +1,36 @@
+---
+interface Props {
+  variant?:
+    | "default"
+    | "primary"
+    | "success"
+    | "warning"
+    | "error"
+    | "archived";
+  size?: "sm" | "md" | "lg";
+  class?: string;
+}
+
+const { variant = "default", size = "md", class: className } = Astro.props;
+
+const variantClasses = {
+  default: "bg-gray-600 text-gray-100",
+  primary: "bg-primary text-background",
+  success: "bg-green-600 text-white",
+  warning: "bg-yellow-600 text-white",
+  error: "bg-red-600 text-white",
+  archived: "bg-[#e74c3c] text-white border border-red-800/50",
+};
+
+const sizeClasses = {
+  sm: "px-2 py-0.5 text-xs",
+  md: "px-3 py-1 text-sm",
+  lg: "px-4 py-1.5 text-base",
+};
+---
+
+<span
+  class={`inline-flex items-center justify-center rounded font-bold uppercase tracking-wider ${variantClasses[variant]} ${sizeClasses[size]} ${className || ""}`}
+>
+  <slot />
+</span>

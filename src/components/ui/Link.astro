@@ -1,0 +1,36 @@
+---
+interface Props {
+  href: string;
+  external?: boolean;
+  variant?: "default" | "primary" | "ghost";
+  class?: string;
+  [key: string]: any;
+}
+
+const {
+  href,
+  external = false,
+  variant = "default",
+  class: className,
+  ...rest
+} = Astro.props;
+
+const variantClasses = {
+  default: "text-primary hover:text-primary-dark",
+  primary: "text-primary underline hover:text-primary-dark",
+  ghost: "text-gray-300 hover:text-primary hover:underline",
+};
+
+const externalProps = external
+  ? { target: "_blank", rel: "noopener noreferrer" }
+  : {};
+---
+
+<a
+  href={href}
+  class={`transition-colors duration-300 ${variantClasses[variant]} ${className || ""}`}
+  {...externalProps}
+  {...rest}
+>
+  <slot />
+</a>

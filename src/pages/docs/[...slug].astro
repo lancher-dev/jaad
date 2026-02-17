@@ -1,0 +1,83 @@
+---
+import { getCollection, getEntry, render } from "astro:content";
+import { parseDocCollectionId, sortDocPages } from "@/utils/docs";
+
+import DocsLayout from "@/layouts/DocsLayout.astro";
+import DocsMobileNav from "@/components/docs/DocsMobileNav.astro";
+import DocsPageNav from "@/components/docs/DocsPageNav.astro";
+
+export async function getStaticPaths() {
+  const docsCollection = await getCollection("docsPages");
+
+  // Sort all pages using the utility function
+  const sortedPages = sortDocPages(docsCollection);
+
+  // Generate paths for each page
+  const paths = sortedPages.map((page) => {
+    const parsed = parseDocCollectionId(page.id, true);
+
+    // Build clean URL without order numbers
+    const parts = page.id.split("/");
+    const cleanParts = parts.map((part) => {
+      // Remove order prefix (e.g., "01-intro" -> "intro")
+      return part.replace(/^\d+-/, "");
+    });
+
+    const cleanSlug = cleanParts.join("/");
+    const isHomePage =
+      parsed.slug.toLowerCase() === "home" && parsed.order === 1;
+
+    return {
+      params: {
+        slug: cleanSlug,
+      },
+      props: {
+        id: page.id,
+        title: parsed.title,
+        slug: parsed.slug,
+        chapter: parsed.chapter,
+        isFirstPage: isHomePage,
+      },
+    };
+  });
+
+  return paths;
+}
+
+const { id, title, isFirstPage } = Astro.props;
+
+const docPage = await getEntry("docsPages", id);
+if (!docPage) {
+  return Astro.redirect("/docs");
+}
+
+const { Content } = await render(docPage);
+
+// Set page title
+const pageTitle =
+  isFirstPage && title.toLowerCase() === "home" ? undefined : title;
+
+// Get current slug for sidebar highlighting
+const currentSlug = Astro.params.slug || "";
+---
+
+<DocsLayout title={pageTitle} currentSlug={currentSlug} entry={docPage}>
+  <main
+    role="main"
+    aria-label="Main content"
+    class="mx-4 my-8 flex-1 px-0 py-0 md:my-16 md:px-8 lg:mb-32 lg:px-16"
+  >
+    <DocsMobileNav currentSlug={currentSlug} entry={docPage} />
+
+    <article>
+      <div
+        id="content"
+        class="markdown-content w-full leading-relaxed wrap-break-word"
+      >
+        <Content />
+      </div>
+    </article>
+
+    <DocsPageNav id={id} />
+  </main>
+</DocsLayout>

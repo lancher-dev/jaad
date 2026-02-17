@@ -1,0 +1,195 @@
+---
+export interface Props {
+  selector?: string;
+}
+
+const { selector = ".markdown-content" } = Astro.props;
+---
+
+<script is:inline define:vars={{ selector }}>
+  // Generate heading slug (must be inline for browser execution)
+  const generateHeadingSlug = (text) => {
+    // Replica github-slugger logic (used by Astro)
+    return text
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, "")
+      .replace(/[\s_]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+  };
+
+  function initMarkdownEnhancements() {
+    /**
+     * Function to add heading links (h2, h3)
+     * @returns {void}
+     */
+    function addHeadingLinks() {
+      const headerElements = document.querySelectorAll(
+        `${selector} h2, ${selector} h3`,
+      );
+
+      headerElements.forEach((header) => {
+        // Generate ID if not present
+        if (!header.id) {
+          const text = header.textContent || "";
+          header.id = generateHeadingSlug(text);
+        }
+
+        // Skip if link already exists
+        if (header.querySelector(".heading-links")) return;
+
+        const text = header.textContent || "";
+
+        // Create link icon
+        const linkIcon = document.createElement("a");
+        linkIcon.className = "heading-links";
+        linkIcon.innerHTML = "<i class='nf nf-md-link_variant'></i>";
+        linkIcon.setAttribute("aria-label", `Link to ${text}`);
+        linkIcon.setAttribute("href", `#${header.id}`);
+        linkIcon.title = "Copy link to clipboard";
+
+        // Add click handler to copy link
+        linkIcon.addEventListener("click", async (e) => {
+          e.preventDefault();
+          const url = `${window.location.origin}${window.location.pathname}#${header.id}`;
+
+          try {
+            await navigator.clipboard.writeText(url);
+          } catch (err) {
+            console.error("Failed to copy link:", err);
+          }
+        });
+
+        header.appendChild(linkIcon);
+      });
+    }
+
+    /**
+     * Function to add copy buttons to code blocks
+     * @returns {void}
+     */
+    function addCopyButtonsToCodeBlocks() {
+      const codeBlocks = document.querySelectorAll(`${selector} pre`);
+
+      codeBlocks.forEach((block) => {
+        // Skip if button already exists
+        if (block.querySelector(".code-copy-button")) return;
+
+        const codeElement = block.querySelector("code");
+        if (!codeElement) return;
+
+        const button = document.createElement("button");
+        button.className = "code-copy-button";
+        button.innerHTML = '<i class="nf nf-md-content_copy"></i>';
+        button.title = "Copy code to clipboard";
+        button.setAttribute("aria-label", "Copy code to clipboard");
+
+        button.addEventListener("click", async () => {
+          try {
+            const text = codeElement.textContent || "";
+            await navigator.clipboard.writeText(text);
+
+            // Visual feedback
+            const originalIcon = button.innerHTML;
+            button.innerHTML = '<i class="nf nf-md-check"></i>';
+            button.style.color = "var(--color-success)";
+
+            setTimeout(() => {
+              button.innerHTML = originalIcon;
+              button.style.color = "";
+            }, 2000);
+          } catch (err) {
+            console.error("Failed to copy code:", err);
+          }
+        });
+
+        block.appendChild(button);
+      });
+    }
+
+    /**
+     * Function to add lightbox functionality to images
+     * @returns {void}
+     */
+    function addImageLightbox() {
+      const images = document.querySelectorAll(`${selector} img`);
+
+      images.forEach((img) => {
+        // Skip if already has lightbox
+        if (img.classList.contains("lightbox-enabled")) return;
+
+        img.classList.add("lightbox-enabled");
+        img.style.cursor = "pointer";
+        img.title = img.alt || "Click to enlarge";
+
+        img.addEventListener("click", () => {
+          openImageLightbox(img.src, img.alt);
+        });
+      });
+    }
+
+    /**
+     * Function to open image lightbox
+     * @param {string} src - Image source URL
+     * @param {string} alt - Image alt text
+     * @returns {void}
+     */
+    function openImageLightbox(src, alt) {
+      // Create lightbox if doesn't exist
+      let lightbox = document.getElementById("image-lightbox");
+
+      if (!lightbox) {
+        lightbox = document.createElement("div");
+        lightbox.id = "image-lightbox";
+        lightbox.className = "image-lightbox hidden";
+        lightbox.innerHTML = `
+          <div class="image-lightbox-backdrop"></div>
+          <div class="image-lightbox-content">
+            <button class="image-lightbox-close" aria-label="Close">
+              <i class="nf nf-md-close"></i>
+            </button>
+            <img class="image-lightbox-img" src="" alt="" />
+          </div>
+        `;
+        document.body.appendChild(lightbox);
+
+        // Add event listeners
+        const backdrop = lightbox.querySelector(".image-lightbox-backdrop");
+        const closeBtn = lightbox.querySelector(".image-lightbox-close");
+
+        const closeLightbox = () => {
+          lightbox.classList.add("hidden");
+          document.body.style.overflow = "";
+        };
+
+        backdrop.addEventListener("click", closeLightbox);
+        closeBtn.addEventListener("click", closeLightbox);
+
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape" && !lightbox.classList.contains("hidden")) {
+            closeLightbox();
+          }
+        });
+      }
+
+      // Set image and show lightbox
+      const lightboxImg = lightbox.querySelector(".image-lightbox-img");
+      lightboxImg.src = src;
+      lightboxImg.alt = alt || "";
+
+      lightbox.classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+    }
+
+    // Run all enhancements
+    addHeadingLinks();
+    addCopyButtonsToCodeBlocks();
+    addImageLightbox();
+  }
+
+  // Initialize on page load
+  initMarkdownEnhancements();
+
+  // Re-initialize on view transitions
+  document.addEventListener("astro:page-load", initMarkdownEnhancements);
+</script>

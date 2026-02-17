@@ -1,0 +1,91 @@
+@import "https://www.nerdfonts.com/assets/css/webfont.css";
+
+@import "tailwindcss";
+
+@theme {
+  /* Background colors - Soft paper-like tones */
+  --color-background: #faf8f5;
+  --color-background-secondary: #f5f3f0;
+  --color-background-tertiary: #eeeae5;
+  --color-surface: #ffffff;
+  --color-surface-hover: #f0ede8;
+
+  /* Primary colors - Soft ink black */
+  --color-primary: #2d2d2d;
+  --color-primary-dark: #1a1a1a;
+  --color-primary-light: #4a4a4a;
+
+  /* Foreground colors - Writing-focused */
+  --color-foreground: #3a3a3a;
+  --color-foreground-secondary: #6a6a6a;
+  --color-foreground-muted: #8a8a8a;
+  --color-foreground-bright: #1a1a1a;
+
+  /* Border colors - Subtle separators */
+  --color-border: #d8d4cf;
+  --color-border-light: #e5e1dc;
+  --color-border-dark: #c8c4bf;
+
+  /* Utility colors - Muted tones */
+  --color-error: #c45959;
+  --color-warning: #d4a259;
+  --color-info: #5988c4;
+  --color-success: #5a9c7e;
+}
+
+@layer base {
+  html {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family:
+      "Inter",
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      sans-serif;
+    font-size: 16px;
+    scroll-behavior: smooth;
+  }
+
+  h1,
+  h2,
+  h3 {
+    color: var(--color-foreground-bright);
+    font-family: "Merriweather", Georgia, serif;
+  }
+
+  h2 {
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
+  h3 {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    font-weight: normal;
+  }
+
+  a {
+    @apply text-primary hover:text-primary-dark underline decoration-1 underline-offset-2 transition duration-200 ease-in-out;
+  }
+
+  i {
+    @apply text-primary italic;
+  }
+}
+
+nav,
+header,
+section,
+footer {
+  @apply mx-auto mt-0 max-w-200;
+}
+
+section {
+  @apply mb-12;
+}
+
+i.nf {
+  @apply text-foreground-bright;
+}

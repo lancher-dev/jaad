@@ -1,0 +1,114 @@
+---
+interface Props {
+  id: string;
+  title?: string;
+  size?: "sm" | "md" | "lg" | "xl";
+  closeOnBackdrop?: boolean;
+}
+
+const { id, title, size = "md", closeOnBackdrop = true } = Astro.props;
+
+const sizeClasses = {
+  sm: "max-w-sm",
+  md: "max-w-md",
+  lg: "max-w-lg",
+  xl: "max-w-xl",
+};
+---
+
+<div
+  id={id}
+  class="fixed inset-0 z-100 hidden items-center justify-center"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby={title ? `${id}-title` : undefined}
+  data-modal
+>
+  <div
+    class="absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity duration-300"
+    data-modal-backdrop
+    data-close-on-backdrop={closeOnBackdrop}
+  >
+  </div>
+
+  <div
+    class={`relative ${sizeClasses[size]} w-full rounded-lg border border-primary/20 bg-background-tertiary p-6 shadow-2xl transition-all duration-300 mx-4`}
+    data-modal-content
+  >
+    {
+      title && (
+        <div class="mb-4 flex items-center justify-between border-b border-gray-700 pb-4">
+          <h2
+            id={`${id}-title`}
+            class="text-primary my-auto text-xl leading-tight font-bold"
+          >
+            {title}
+          </h2>
+          <button
+            data-modal-close
+            class="hover:bg-primary/10 hover:text-primary mb-0 cursor-pointer rounded-lg p-2 text-gray-400 transition-colors"
+            aria-label="Close modal"
+          >
+            <i class="nf nf-md-close align-middle text-xl" />
+          </button>
+        </div>
+      )
+    }
+
+    <div class="modal-body">
+      <slot />
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  document.addEventListener("DOMContentLoaded", () => {
+    const modals = document.querySelectorAll("[data-modal]");
+
+    modals.forEach((modal) => {
+      const backdrop = modal.querySelector("[data-modal-backdrop]");
+      const closeButtons = modal.querySelectorAll("[data-modal-close]");
+      const closeOnBackdrop =
+        backdrop?.getAttribute("data-close-on-backdrop") === "true";
+
+      const closeModal = () => {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+        document.body.style.overflow = "";
+      };
+
+      const openModal = () => {
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+        document.body.style.overflow = "hidden";
+      };
+
+      // Close on backdrop click
+      if (closeOnBackdrop && backdrop) {
+        backdrop.addEventListener("click", (e) => {
+          if (e.target === backdrop) {
+            closeModal();
+          }
+        });
+      }
+
+      // Close on close button click
+      closeButtons.forEach((btn) => {
+        btn.addEventListener("click", closeModal);
+      });
+
+      // Close on Escape key
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && !modal.classList.contains("hidden")) {
+          closeModal();
+        }
+      });
+
+      // Expose functions globally for this modal
+      const capitalizedId =
+        modal.id.charAt(0).toUpperCase() + modal.id.slice(1);
+      window[`open${capitalizedId}`] = openModal;
+      window[`close${capitalizedId}`] = closeModal;
+    });
+  });
+</script>

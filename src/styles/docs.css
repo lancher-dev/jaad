@@ -1,0 +1,90 @@
+.docs-container {
+  position: relative;
+  width: 100%;
+  min-height: calc(100vh - 6.5rem);
+  display: flex;
+  justify-content: center;
+}
+
+.docs-main {
+  width: 100%;
+  max-width: 56rem;
+  position: relative;
+}
+
+/* Position sidebars next to centered content */
+@media (min-width: 1024px) {
+  .docs-sidebar-left {
+    left: calc(50% - 28rem - 16rem - 2rem);
+  }
+
+  .docs-sidebar-right {
+    right: calc(50% - 28rem - 16rem - 2rem);
+  }
+
+  @media (max-width: 1536px) {
+    .docs-sidebar-left {
+      left: 1rem;
+    }
+
+    .docs-sidebar-right {
+      right: 1rem;
+    }
+  }
+}
+
+/* Smooth scrolling for anchor links */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 8rem;
+}
+
+/* Ensure headings have proper IDs for TOC */
+.markdown-content h2[id] {
+  scroll-margin-top: 8rem;
+}
+
+/* Sidebar scrollbars */
+.docs-sidebar-left::-webkit-scrollbar,
+.docs-sidebar-right::-webkit-scrollbar {
+  width: 6px;
+}
+
+.docs-sidebar-left::-webkit-scrollbar-track,
+.docs-sidebar-right::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.docs-sidebar-left::-webkit-scrollbar-thumb,
+.docs-sidebar-right::-webkit-scrollbar-thumb {
+  background: rgb(from var(--color-primary) r g b / 0.2);
+  border-radius: 3px;
+}
+
+.docs-sidebar-left::-webkit-scrollbar-thumb:hover,
+.docs-sidebar-right::-webkit-scrollbar-thumb:hover {
+  background: rgb(from var(--color-primary) r g b / 0.4);
+}
+
+/* Mobile navigation select styling */
+.docs-mobile-nav select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%232d2d2d' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+}
+
+.docs-mobile-nav optgroup {
+  font-weight: 600;
+  color: var(--color-primary);
+  background: var(--color-surface);
+}
+
+.docs-mobile-nav option {
+  font-weight: 400;
+  color: var(--color-foreground);
+  background: var(--color-surface);
+  padding: 0.5rem;
+}

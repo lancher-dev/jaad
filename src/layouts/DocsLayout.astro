@@ -1,0 +1,84 @@
+---
+import Footer from "@/components/Footer.astro";
+import Header from "@/components/Header.astro";
+import MarkdownEnhancements from "@/components/MarkdownEnhancements.astro";
+import DocsSidebarLeft from "@/components/docs/DocsSidebarLeft.astro";
+import TableOfContents from "@/components/docs/TableOfContents";
+import { extractHeadingsFromMarkdown } from "@/utils/docs";
+import type { CollectionEntry } from "astro:content";
+
+import "@/styles/global.css";
+import "@/styles/docs.css";
+import "remark-github-blockquote-alert/alert.css";
+import "@/styles/markdown.css";
+
+interface Props {
+  title?: string;
+  currentSlug?: string;
+  entry?: CollectionEntry<"docsPages">;
+}
+
+const { title, currentSlug = "", entry } = Astro.props;
+
+// Set dynamic page title
+const pageTitle = `${title ? `${title} | ` : ""}JAAD - Docs`;
+
+// Extract headings from markdown content
+const headings = entry ? extractHeadingsFromMarkdown(entry.body || "") : [];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta
+      name="description"
+      content="JAAD - Just Another Astro Docs. A clean, minimalist documentation framework."
+    />
+    <title>{pageTitle}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:url" content="#" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="JAAD - Just Another Astro Docs" />
+    <meta property="og:description" content="JAAD - Just Another Astro Docs" />
+    <meta property="og:image" content="/og-image.svg" />
+
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="twitter:domain" content="#" />
+    <meta property="twitter:url" content="#" />
+    <meta name="twitter:title" content="JAAD - Just Another Astro Docs" />
+    <meta name="twitter:description" content="JAAD - Just Another Astro Docs" />
+    <meta name="twitter:image" content="/og-image.svg" />
+
+    <meta name="generator" content={Astro.generator} />
+  </head>
+  <body
+    class="bg-background text-foreground flex min-h-screen flex-col text-[14px] leading-[1.6]"
+  >
+    <Header />
+
+    <div class="docs-container relative">
+      <DocsSidebarLeft currentSlug={currentSlug} />
+
+      <div class="docs-main lg:mr-64 lg:ml-64">
+        <slot />
+      </div>
+
+      <TableOfContents headings={headings} client:load />
+    </div>
+
+    <MarkdownEnhancements />
+    <Footer />
+  </body>
+</html>

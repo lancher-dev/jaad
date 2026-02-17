@@ -1,0 +1,103 @@
+---
+import { getCollection } from "astro:content";
+import {
+  parseDocCollectionId,
+  sortDocPages,
+  formatChapterTitle,
+} from "@/utils/docs";
+
+interface Props {
+  currentSlug: string;
+}
+
+const { currentSlug } = Astro.props;
+
+const docsCollection = await getCollection("docsPages");
+const sortedPages = sortDocPages(docsCollection);
+
+const navItems = sortedPages.map((page) => {
+  const parsed = parseDocCollectionId(page.id, true);
+  const cleanSlug = page.id
+    .split("/")
+    .map((part) => part.replace(/^\d+-/, ""))
+    .join("/");
+
+  return {
+    title: parsed.title,
+    chapter: parsed.chapter,
+    href: `/docs/${cleanSlug}`,
+    isActive: currentSlug === cleanSlug,
+  };
+});
+
+const pagesWithoutChapter = navItems.filter((item) => !item.chapter);
+const pagesWithChapter = navItems.filter((item) => item.chapter);
+
+const grouped = pagesWithChapter.reduce(
+  (acc, item) => {
+    const chapter = item.chapter!;
+    if (!acc[chapter]) acc[chapter] = [];
+    acc[chapter].push(item);
+    return acc;
+  },
+  {} as Record<string, typeof navItems>,
+);
+---
+
+<aside
+  class="docs-sidebar-left fixed top-0 left-0 hidden h-screen w-64 overflow-y-auto px-6 py-8 pt-24 lg:block"
+>
+  <nav aria-label="Documentation navigation">
+    {
+      pagesWithoutChapter.length > 0 && (
+        <div class="mb-6">
+          <ul class="space-y-1">
+            {pagesWithoutChapter.map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  class:list={[
+                    "block rounded px-3 py-2 text-sm no-underline transition-colors",
+                    item.isActive
+                      ? "bg-primary/10 text-primary font-semibold"
+                      : "text-foreground hover:bg-primary/10 hover:text-primary",
+                  ]}
+                  aria-current={item.isActive ? "page" : undefined}
+                >
+                  {item.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )
+    }
+    {
+      Object.entries(grouped).map(([chapter, pages]) => (
+        <div class="mb-6">
+          <h3 class="text-primary/60 mb-2 px-3 text-xs font-semibold tracking-wider uppercase">
+            {formatChapterTitle(chapter)}
+          </h3>
+          <ul class="space-y-1">
+            {pages.map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  class:list={[
+                    "block rounded px-3 py-2 text-sm no-underline transition-colors",
+                    item.isActive
+                      ? "bg-primary/10 text-primary font-semibold"
+                      : "text-foreground hover:bg-primary/10 hover:text-primary",
+                  ]}
+                  aria-current={item.isActive ? "page" : undefined}
+                >
+                  {item.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+  </nav>
+</aside>
