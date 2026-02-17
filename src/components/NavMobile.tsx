@@ -51,6 +51,16 @@ export default function NavMobile() {
                 Docs
               </a>
             </li>
+            <li>
+              <a
+                href="https://github.com/lancher-dev/jaad"
+                className="text-foreground-secondary hover:text-foreground-bright block transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Repository
+              </a>
+            </li>
           </ul>
         </nav>
       </div>
