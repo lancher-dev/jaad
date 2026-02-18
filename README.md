@@ -40,4 +40,4 @@ Folders create chapters. Numbers control order. Everything else is automatic.
 
 ## License
 
-MIT
+jaad is released under the [MIT License](/LICENSE).
