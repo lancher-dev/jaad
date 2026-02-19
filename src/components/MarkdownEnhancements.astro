@@ -185,6 +185,36 @@ const { selector = ".markdown-content" } = Astro.props;
     addHeadingLinks();
     addCopyButtonsToCodeBlocks();
     addImageLightbox();
+    initCodeTabs();
+  }
+
+  /**
+   * Initialise tabbed code blocks (.code-tabs)
+   */
+  function initCodeTabs() {
+    document.querySelectorAll(".code-tabs").forEach((tabGroup) => {
+      // Skip if already initialised
+      if (tabGroup.dataset.tabsInit) return;
+      tabGroup.dataset.tabsInit = "1";
+
+      tabGroup.querySelectorAll(".code-tab-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const idx = btn.dataset.tabIndex;
+
+          tabGroup
+            .querySelectorAll(".code-tab-btn")
+            .forEach((b) => b.classList.remove("active"));
+          tabGroup
+            .querySelectorAll(".code-tab-panel")
+            .forEach((p) => p.classList.remove("active"));
+
+          btn.classList.add("active");
+          tabGroup
+            .querySelector(`.code-tab-panel[data-tab-index="${idx}"]`)
+            ?.classList.add("active");
+        });
+      });
+    });
   }
 
   // Initialize on page load

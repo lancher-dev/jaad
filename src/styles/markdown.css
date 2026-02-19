@@ -432,3 +432,187 @@
   opacity: 0.9;
   transform: scale(1.02);
 }
+
+/* ─── Code Tabs ─────────────────────────────────────────────────────────────── */
+
+.markdown-content .code-tabs {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #c8c4bf;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.markdown-content .code-tab-buttons {
+  display: flex;
+  gap: 0;
+  background-color: #e0dcd7;
+  border-bottom: 1px solid #c8c4bf;
+  padding: 0.25rem 0.5rem 0;
+  overflow-x: auto;
+}
+
+.markdown-content .code-tab-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: 0.375rem 0.375rem 0 0;
+  padding: 0.375rem 0.875rem;
+  font-size: calc(var(--ok-font-size) * 0.72);
+  font-family: var(--ok-font-mono);
+  font-weight: 500;
+  color: var(--color-foreground);
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
+  white-space: nowrap;
+  position: relative;
+  bottom: -1px;
+}
+
+.markdown-content .code-tab-btn:hover:not(.active) {
+  background-color: #d0cbc6;
+  color: var(--color-foreground-bright);
+}
+
+.markdown-content .code-tab-btn.active {
+  background-color: #eeeae5;
+  border-color: #c8c4bf;
+  border-bottom-color: #eeeae5;
+  color: var(--color-primary);
+}
+
+.markdown-content .code-tab-panel {
+  display: none;
+}
+
+.markdown-content .code-tab-panel.active {
+  display: block;
+}
+
+.markdown-content .code-tabs pre {
+  margin: 0;
+  border: none;
+  border-radius: 0;
+}
+
+/* ─── Details / Summary ──────────────────────────────────────────────────────── */
+
+.markdown-content details {
+  background-color: var(--color-background-tertiary);
+  border: 1px solid #c8c4bf;
+  border-radius: 0.5rem;
+  padding: 0 1.25rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.markdown-content details[open] {
+  padding-bottom: 0.75rem;
+}
+
+.markdown-content summary {
+  font-weight: 600;
+  color: var(--color-foreground-bright);
+  cursor: pointer;
+  padding: 0.75rem 0;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: calc(var(--ok-font-size) * 0.89);
+  user-select: none;
+}
+
+.markdown-content summary::-webkit-details-marker {
+  display: none;
+}
+
+.markdown-content summary::before {
+  content: "▶";
+  font-size: 0.6em;
+  color: var(--color-primary);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.markdown-content details[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+.markdown-content details > *:not(summary) {
+  margin-top: 0;
+}
+
+/* ─── GitHub Blockquote Alerts ───────────────────────────────────────────────── */
+
+.markdown-content .markdown-alert {
+  border-left-width: 4px;
+  padding: 0.875rem 1.25rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-top-right-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+}
+
+.markdown-content .markdown-alert-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: calc(var(--ok-font-size) * 0.83);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.5rem;
+}
+
+.markdown-content .markdown-alert-title svg {
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+}
+
+.markdown-content .markdown-alert p:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-content .markdown-alert-note {
+  border-left-color: #0969da;
+  background-color: #dff0fd;
+}
+.markdown-content .markdown-alert-note .markdown-alert-title {
+  color: #0969da;
+}
+
+.markdown-content .markdown-alert-tip {
+  border-left-color: #1a7f37;
+  background-color: #dafbe1;
+}
+.markdown-content .markdown-alert-tip .markdown-alert-title {
+  color: #1a7f37;
+}
+
+.markdown-content .markdown-alert-important {
+  border-left-color: #8250df;
+  background-color: #fbefff;
+}
+.markdown-content .markdown-alert-important .markdown-alert-title {
+  color: #8250df;
+}
+
+.markdown-content .markdown-alert-warning {
+  border-left-color: #9a6700;
+  background-color: #fff8c5;
+}
+.markdown-content .markdown-alert-warning .markdown-alert-title {
+  color: #9a6700;
+}
+
+.markdown-content .markdown-alert-caution {
+  border-left-color: #cf222e;
+  background-color: #ffebe9;
+}
+.markdown-content .markdown-alert-caution .markdown-alert-title {
+  color: #cf222e;
+}
