@@ -4,17 +4,41 @@ JAAD transforms markdown files into organized documentation. Place markdown file
 
 ## Installation
 
-Clone or download this repository, then install dependencies:
+Clone the repository and install dependencies:
 
-```bash
+:::code-tabs
+
+```bash npm
+npm install
+```
+
+```bash pnpm
 pnpm install
 ```
 
-Start the development server to preview your documentation:
+```bash yarn
+yarn install
+```
 
-```bash
+:::
+
+Then start the development server:
+
+:::code-tabs
+
+```bash npm
+npm run dev
+```
+
+```bash pnpm
 pnpm dev
 ```
+
+```bash yarn
+yarn dev
+```
+
+:::
 
 The server runs at `http://localhost:4321` and automatically reloads when you edit markdown files.
 
@@ -24,7 +48,7 @@ Create a markdown file in the docs directory with a numbered prefix. The number 
 
 Write your content using standard markdown syntax. The first level-one heading becomes the page title. Level-two and level-three headings automatically appear in the table of contents on the right side of the page.
 
-## Building
+## Building & Deployment
 
 Generate the static site for production:
 
@@ -32,10 +56,10 @@ Generate the static site for production:
 pnpm build
 ```
 
-Preview the production build locally:
+Preview the build locally before deploying:
 
 ```bash
 pnpm preview
 ```
 
-The generated files in the `dist/` directory can be deployed to any static hosting service.
+JAAD produces a fully static site. For deployment guides (Netlify, Vercel, GitHub Pages, and more) refer to the [official Astro deployment documentation](https://docs.astro.build/en/guides/deploy/).
