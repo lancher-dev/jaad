@@ -5,13 +5,25 @@ interface Props {
   headings: DocsHeadings[];
 }
 
+function isIgnored(el: Element | null): boolean {
+  if (!el) return true;
+  return !!el.closest("[data-toc-ignore], pre, code");
+}
+
 export default function TableOfContents({ headings }: Props) {
   const [activeId, setActiveId] = useState<string>("");
+  const [visibleHeadings, setVisibleHeadings] = useState<DocsHeadings[] | null>(
+    null,
+  );
 
   useEffect(() => {
-    const headingElements = document.querySelectorAll(
-      "#content h2, #content h3",
+    setVisibleHeadings(
+      headings.filter((h) => !isIgnored(document.getElementById(h.slug))),
     );
+
+    const headingElements = Array.from(
+      document.querySelectorAll("#content h2, #content h3"),
+    ).filter((el) => !isIgnored(el));
     if (!headingElements.length) return;
 
     const observer = new IntersectionObserver(
@@ -30,9 +42,9 @@ export default function TableOfContents({ headings }: Props) {
     return () => {
       headingElements.forEach((heading) => observer.unobserve(heading));
     };
-  }, []);
+  }, [headings]);
 
-  if (headings.length === 0) return null;
+  if (!visibleHeadings || visibleHeadings.length === 0) return null;
 
   return (
     <aside
@@ -44,7 +56,7 @@ export default function TableOfContents({ headings }: Props) {
           On This Page
         </h2>
         <ul className="space-y-2">
-          {headings.map((heading) => {
+          {visibleHeadings.map((heading) => {
             const isH3 = heading.depth === 3;
             const isActive = activeId === heading.slug;
 
