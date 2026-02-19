@@ -2,11 +2,12 @@
 import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 import {
-  parseDocCollectionId,
   sortDocPages,
   formatChapterTitle,
   extractHeadingsFromMarkdown,
+  buildDocNavItems,
 } from "@/utils/docs";
+import type { DocsNavItem } from "@/@types/docs";
 import ScrollToTop from "@/components/ScrollToTop";
 
 interface Props {
@@ -19,32 +20,20 @@ const { currentSlug, entry } = Astro.props;
 const docsCollection = await getCollection("docsPages");
 const sortedPages = sortDocPages(docsCollection);
 
-const navItems = sortedPages.map((page) => {
-  const parsed = parseDocCollectionId(page.id, true);
-  const cleanSlug = page.id
-    .split("/")
-    .map((part) => part.replace(/^\d+-/, ""))
-    .join("/");
-
-  return {
-    title: parsed.title,
-    chapter: parsed.chapter,
-    href: `/docs/${cleanSlug}`,
-    isActive: currentSlug === cleanSlug,
-  };
-});
+const navItems = buildDocNavItems(sortedPages, currentSlug);
 
 const pagesWithoutChapter = navItems.filter((item) => !item.chapter);
-const pagesWithChapter = navItems.filter((item) => item.chapter);
+const pagesWithChapter = navItems.filter(
+  (item): item is DocsNavItem & { chapter: string } => !!item.chapter,
+);
 
 const grouped = pagesWithChapter.reduce(
   (acc, item) => {
-    const chapter = item.chapter!;
-    if (!acc[chapter]) acc[chapter] = [];
-    acc[chapter].push(item);
+    if (!acc[item.chapter]) acc[item.chapter] = [];
+    acc[item.chapter].push(item);
     return acc;
   },
-  {} as Record<string, typeof navItems>,
+  {} as Record<string, DocsNavItem[]>,
 );
 
 // Extract headings from markdown content

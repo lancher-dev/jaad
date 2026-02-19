@@ -1,6 +1,6 @@
 ---
 import { getCollection, getEntry, render } from "astro:content";
-import { parseDocCollectionId, sortDocPages } from "@/utils/docs";
+import { parseDocCollectionId, sortDocPages, getCleanSlug } from "@/utils/docs";
 
 import DocsLayout from "@/layouts/DocsLayout.astro";
 import DocsMobileNav from "@/components/docs/DocsMobileNav.astro";
@@ -14,16 +14,8 @@ export async function getStaticPaths() {
 
   // Generate paths for each page
   const paths = sortedPages.map((page) => {
-    const parsed = parseDocCollectionId(page.id, true);
-
-    // Build clean URL without order numbers
-    const parts = page.id.split("/");
-    const cleanParts = parts.map((part) => {
-      // Remove order prefix (e.g., "01-intro" -> "intro")
-      return part.replace(/^\d+-/, "");
-    });
-
-    const cleanSlug = cleanParts.join("/");
+    const parsed = parseDocCollectionId(page.id);
+    const cleanSlug = getCleanSlug(page.id);
     const isHomePage =
       parsed.slug.toLowerCase() === "home" && parsed.order === 1;
 

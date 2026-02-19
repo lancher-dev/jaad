@@ -1,6 +1,6 @@
 ---
 import { getCollection } from "astro:content";
-import { parseDocCollectionId, sortDocPages } from "@/utils/docs";
+import { parseDocCollectionId, sortDocPages, getCleanSlug } from "@/utils/docs";
 
 interface Props {
   id: string;
@@ -12,16 +12,11 @@ const allPages = await getCollection("docsPages");
 const sortedPages = sortDocPages(allPages);
 
 const navigationItems = sortedPages.map((page) => {
-  const parsed = parseDocCollectionId(page.id, true);
-
-  // Build clean URL without order numbers
-  const parts = page.id.split("/");
-  const cleanParts = parts.map((part) => part.replace(/^\d+-/, ""));
-  const cleanSlug = cleanParts.join("/");
+  const parsed = parseDocCollectionId(page.id);
 
   return {
     id: page.id,
-    slug: cleanSlug,
+    slug: getCleanSlug(page.id),
     title: parsed.title,
     order: parsed.order,
     orderChapter: parsed.orderChapter,

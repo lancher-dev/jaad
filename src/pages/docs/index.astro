@@ -1,6 +1,6 @@
 ---
 import { getCollection, render } from "astro:content";
-import { parseDocCollectionId, sortDocPages } from "@/utils/docs";
+import { parseDocCollectionId, sortDocPages, getCleanSlug } from "@/utils/docs";
 import DocsLayout from "@/layouts/DocsLayout.astro";
 import DocsMobileNav from "@/components/docs/DocsMobileNav.astro";
 import DocsPageNav from "@/components/docs/DocsPageNav.astro";
@@ -19,9 +19,7 @@ const { Content } = await render(firstPage);
 const parsed = parseDocCollectionId(firstPage.id, true);
 
 // Generate clean slug for current page highlighting
-const parts = firstPage.id.split("/");
-const cleanParts = parts.map((part) => part.replace(/^\d+-/, ""));
-const currentSlug = cleanParts.join("/");
+const currentSlug = getCleanSlug(firstPage.id);
 ---
 
 <DocsLayout currentSlug={currentSlug} entry={firstPage}>

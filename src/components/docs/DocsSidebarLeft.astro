@@ -1,10 +1,11 @@
 ---
 import { getCollection } from "astro:content";
 import {
-  parseDocCollectionId,
   sortDocPages,
   formatChapterTitle,
+  buildDocNavItems,
 } from "@/utils/docs";
+import type { DocsNavItem } from "@/@types/docs";
 
 interface Props {
   currentSlug: string;
@@ -15,35 +16,19 @@ const { currentSlug } = Astro.props;
 const docsCollection = await getCollection("docsPages");
 const sortedPages = sortDocPages(docsCollection);
 
-const navItems = sortedPages.map((page) => {
-  const parsed = parseDocCollectionId(page.id, true);
-  const cleanSlug = page.id
-    .split("/")
-    .map((part) => part.replace(/^\d+-/, ""))
-    .join("/");
-
-  return {
-    title: parsed.title,
-    chapter: parsed.chapter,
-    /** Primary sidebar order: dir prefix for chapter items, file prefix for root items */
-    primaryOrder: parsed.orderChapter ?? parsed.order,
-    fileOrder: parsed.order,
-    href: `/docs/${cleanSlug}`,
-    isActive: currentSlug === cleanSlug,
-  };
-});
+const navItems = buildDocNavItems(sortedPages, currentSlug);
 
 // Build interleaved sections: standalone root items + chapter groups, each with a sort order
 type StandaloneSection = {
   type: "standalone";
   order: number;
-  item: (typeof navItems)[number];
+  item: DocsNavItem;
 };
 type ChapterSection = {
   type: "chapter";
   order: number;
   chapter: string;
-  items: (typeof navItems)[number][];
+  items: DocsNavItem[];
 };
 type Section = StandaloneSection | ChapterSection;
 

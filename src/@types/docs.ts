@@ -7,16 +7,15 @@ export interface ParsedDocsCollectionId {
 }
 
 export interface DocsNavItem {
-  slug: string;
   title: string;
-  url: string;
-  active: boolean;
-  chapter?: string;
-  orderChapter?: number;
+  chapter: string | undefined;
+  primaryOrder: number;
+  href: string;
+  isActive: boolean;
 }
 
 export interface DocsHeadings {
-  depth: number;
+  depth: 2 | 3;
   slug: string;
   text: string;
 }
