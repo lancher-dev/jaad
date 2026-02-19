@@ -1,0 +1,110 @@
+---
+import type { DocsHeadings } from "@/@types/docs";
+
+interface Props {
+  headings: DocsHeadings[];
+}
+
+const { headings } = Astro.props;
+---
+
+{
+  headings.length > 0 && (
+    <aside
+      id="toc-sidebar"
+      data-toc-pending
+      class="docs-sidebar-right fixed top-0 right-0 hidden h-screen w-64 overflow-y-auto px-6 py-8 pt-24 lg:block"
+    >
+      <nav aria-label="Table of contents">
+        <h2 class="text-primary/60 mb-4 text-xs font-semibold tracking-wider uppercase">
+          On This Page
+        </h2>
+        <ul class="space-y-2">
+          {headings.map((heading) => (
+            <li>
+              <a
+                href={`#${heading.slug}`}
+                data-toc-link
+                class={`text-foreground/60 hover:text-primary block border-l-2 border-transparent py-1 text-xs no-underline transition-colors ${heading.depth === 3 ? "pl-6" : "pl-3"}`}
+              >
+                {heading.text}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </aside>
+  )
+}
+
+<script>
+  function initToc(): void {
+    const sidebar = document.getElementById("toc-sidebar");
+    if (!sidebar) return;
+
+    const allLinks = Array.from(
+      sidebar.querySelectorAll<HTMLAnchorElement>("[data-toc-link]"),
+    );
+
+    // Hide any links whose target heading is inside a [data-toc-ignore] container.
+    // This is a runtime check because data-toc-ignore can be set dynamically.
+    const visibleLinks = allLinks.filter((link) => {
+      const id = link.getAttribute("href")?.slice(1);
+      if (!id) return false;
+      const heading = document.getElementById(id);
+      return !heading?.closest("[data-toc-ignore]");
+    });
+
+    if (visibleLinks.length === 0) {
+      sidebar.style.display = "none";
+      return;
+    }
+
+    // Hide links that were filtered out
+    allLinks
+      .filter((l) => !visibleLinks.includes(l))
+      .forEach((l) => (l.closest("li")!.hidden = true));
+
+    // Reveal sidebar — this is done last to prevent FOUC
+    sidebar.removeAttribute("data-toc-pending");
+
+    // Active-link tracking via IntersectionObserver
+    const headingEls = visibleLinks
+      .map((link) => {
+        const id = link.getAttribute("href")?.slice(1);
+        return id ? document.getElementById(id) : null;
+      })
+      .filter(Boolean) as HTMLElement[];
+
+    if (!headingEls.length) return;
+
+    const setActive = (id: string): void => {
+      visibleLinks.forEach((link) => {
+        const isActive = link.getAttribute("href") === `#${id}`;
+        link.classList.toggle("border-primary", isActive);
+        link.classList.toggle("border-transparent", !isActive);
+      });
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActive(entry.target.id);
+        });
+      },
+      { rootMargin: "-100px 0px -66%", threshold: 0 },
+    );
+
+    headingEls.forEach((el) => observer.observe(el));
+
+    // Cleanup on navigation
+    document.addEventListener(
+      "astro:before-preparation",
+      () => headingEls.forEach((el) => observer.unobserve(el)),
+      { once: true },
+    );
+  }
+
+  initToc();
+  document.addEventListener("astro:page-load", initToc);
+</script>

@@ -3,9 +3,10 @@ import Footer from "@/components/Footer.astro";
 import Header from "@/components/Header.astro";
 import MarkdownEnhancements from "@/components/docs/MarkdownEnhancements.astro";
 import DocsSidebarLeft from "@/components/docs/DocsSidebarLeft.astro";
-import TableOfContents from "@/components/docs/TableOfContents";
+import TableOfContents from "@/components/docs/TableOfContents.astro";
 import { extractHeadingsFromMarkdown } from "@/utils/docs";
 import type { CollectionEntry } from "astro:content";
+import { Font } from "astro:assets";
 
 import "@/styles/global.css";
 import "@/styles/docs.css";
@@ -39,12 +40,8 @@ const headings = entry ? extractHeadingsFromMarkdown(entry.body || "") : [];
     <title>{pageTitle}</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="shortcut icon" href="/favicon.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&family=Inter:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
+    <Font cssVariable="--font-inter" preload />
+    <Font cssVariable="--font-merriweather" preload />
 
     <!-- Open Graph Meta Tags -->
     <meta property="og:url" content="#" />
@@ -75,7 +72,7 @@ const headings = entry ? extractHeadingsFromMarkdown(entry.body || "") : [];
         <slot />
       </div>
 
-      <TableOfContents headings={headings} client:load />
+      <TableOfContents headings={headings} />
     </div>
 
     <MarkdownEnhancements />

@@ -1,6 +1,11 @@
 ---
 import { getCollection, getEntry, render } from "astro:content";
-import { parseDocCollectionId, sortDocPages, getCleanSlug } from "@/utils/docs";
+import {
+  parseDocCollectionId,
+  sortDocPages,
+  getCleanSlug,
+  extractTitleFromMarkdown,
+} from "@/utils/docs";
 
 import DocsLayout from "@/layouts/DocsLayout.astro";
 import DocsMobileNav from "@/components/docs/DocsMobileNav.astro";
@@ -16,6 +21,11 @@ export async function getStaticPaths() {
   const paths = sortedPages.map((page) => {
     const parsed = parseDocCollectionId(page.id);
     const cleanSlug = getCleanSlug(page.id);
+    // Priority: frontmatter title → first H1 → slug-derived
+    const title =
+      page.data?.title ??
+      extractTitleFromMarkdown(page.body || "") ??
+      parsed.title;
     const isHomePage =
       parsed.slug.toLowerCase() === "home" && parsed.order === 1;
 
@@ -25,7 +35,7 @@ export async function getStaticPaths() {
       },
       props: {
         id: page.id,
-        title: parsed.title,
+        title,
         slug: parsed.slug,
         chapter: parsed.chapter,
         isFirstPage: isHomePage,

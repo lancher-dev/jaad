@@ -126,13 +126,36 @@ export function generateHeadingSlug(text: string): string {
 }
 
 /**
+ * Extract the first H1 heading from raw markdown content and return it as
+ * the page title. This is the authoritative title source because Astro's glob
+ * loader silently strips special characters (e.g. "&") from filenames,
+ * making slug-derived titles lossy.
+ * Returns null if no H1 is found (caller should fall back to slugToTitle).
+ */
+export function extractTitleFromMarkdown(body: string): string | null {
+  for (const line of body.split("\n")) {
+    const match = line.match(/^#\s+(.+)$/);
+    if (match) return match[1].trim();
+  }
+  return null;
+}
+
+/**
  * Extract h2/h3 headings from raw markdown content.
- * A single regex handles both levels in one pass.
+ * Fenced code blocks (``` or ~~~) are skipped so that headings written as
+ * examples inside code samples never appear in the table of contents.
  */
 export function extractHeadingsFromMarkdown(markdown: string): DocsHeadings[] {
   const headings: DocsHeadings[] = [];
+  let insideFence = false;
 
   for (const line of markdown.split("\n")) {
+    if (line.match(/^(`{3,}|~{3,})/)) {
+      insideFence = !insideFence;
+      continue;
+    }
+    if (insideFence) continue;
+
     const match = line.match(/^(#{2,3})\s+(.+)$/);
     if (!match) continue;
     const depth = match[1].length as 2 | 3;
@@ -151,15 +174,19 @@ export function extractHeadingsFromMarkdown(markdown: string): DocsHeadings[] {
  * @param sortedPages - Pages already sorted by sortDocPages()
  * @param currentSlug - The clean slug of the currently-viewed page
  */
-export function buildDocNavItems<T extends { id: string }>(
-  sortedPages: T[],
-  currentSlug: string,
-): DocsNavItem[] {
+export function buildDocNavItems<
+  T extends { id: string; body?: string; data?: { title?: string } },
+>(sortedPages: T[], currentSlug: string): DocsNavItem[] {
   return sortedPages.map((page) => {
     const parsed = parseDocCollectionId(page.id);
     const cleanSlug = getCleanSlug(page.id);
+    // Priority: explicit frontmatter title → first H1 in body → slug-derived title
+    const title =
+      page.data?.title ??
+      (page.body ? extractTitleFromMarkdown(page.body) : null) ??
+      parsed.title;
     return {
-      title: parsed.title,
+      title,
       chapter: parsed.chapter,
       primaryOrder: parsed.orderChapter ?? parsed.order,
       href: `/docs/${cleanSlug}`,

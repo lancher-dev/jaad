@@ -88,3 +88,11 @@ html {
   background: var(--color-surface);
   padding: 0.5rem;
 }
+
+/* Hide the ToC sidebar until initToc() has finished all DOM work.
+   This prevents a flash where stale/filtered items are briefly visible
+   before the JS module removes them. The attribute is removed by the script. */
+#toc-sidebar[data-toc-pending] {
+  opacity: 0;
+  pointer-events: none;
+}

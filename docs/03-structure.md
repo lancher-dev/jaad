@@ -45,6 +45,24 @@ Choose descriptive names using lowercase letters and hyphens. The conversion to 
 
 Number prefixes must be exactly two digits: `01`, `02`, through `99`. Files without number prefixes sort after numbered files alphabetically.
 
+## Page Title
+
+The first `# Heading` in each file is used as the page title — in the sidebar, the browser tab, and the previous/next navigation bar.
+
+For most files this is automatic and needs no configuration. If a filename contains characters that the build process strips from URLs (such as `&` in `07-images-&-videos.md`), or if you simply want a different display name, add an optional `title` field in frontmatter:
+
+```markdown
+---
+title: Images & Videos
+---
+
+# Images & Videos
+
+...
+```
+
+The `title` field controls only how the page appears in navigation. The URL is always derived from the filename. The field is never required — files without any frontmatter work exactly as before.
+
 ## Navigation Generation
 
 The sidebar builds automatically from the file structure. Current page highlighting, chapter grouping, and previous-next navigation all derive from file organization. No configuration files or frontmatter required.

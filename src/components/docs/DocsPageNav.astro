@@ -1,6 +1,11 @@
 ---
 import { getCollection } from "astro:content";
-import { parseDocCollectionId, sortDocPages, getCleanSlug } from "@/utils/docs";
+import {
+  parseDocCollectionId,
+  sortDocPages,
+  getCleanSlug,
+  extractTitleFromMarkdown,
+} from "@/utils/docs";
 
 interface Props {
   id: string;
@@ -13,11 +18,16 @@ const sortedPages = sortDocPages(allPages);
 
 const navigationItems = sortedPages.map((page) => {
   const parsed = parseDocCollectionId(page.id);
+  // Priority: frontmatter title → first H1 → slug-derived
+  const title =
+    page.data?.title ??
+    extractTitleFromMarkdown(page.body || "") ??
+    parsed.title;
 
   return {
     id: page.id,
     slug: getCleanSlug(page.id),
-    title: parsed.title,
+    title,
     order: parsed.order,
     orderChapter: parsed.orderChapter,
     chapter: parsed.chapter,
