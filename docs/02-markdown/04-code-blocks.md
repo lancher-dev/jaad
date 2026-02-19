@@ -1,5 +1,7 @@
 # Code Blocks
 
+## Base
+
 Code blocks support syntax highlighting through file extension hints:
 
 ```js

@@ -1,13 +1,4 @@
-# Inline HTML
-
-When markdown syntax isn't sufficient, inline HTML provides additional control:
-
-<div style="padding: 1rem; background: #eeeae5; border-radius: 0.5rem; margin: 1.5rem 0;">
-  <strong>Custom HTML Block</strong>
-  <p>This section uses HTML instead of markdown for precise styling control.</p>
-</div>
-
-## Details & Summary
+# Details & Summary
 
 The native HTML `<details>` and `<summary>` elements create collapsible sections. Standard markdown is supported inside:
 
@@ -42,9 +33,3 @@ export default defineConfig({
 ```
 
 </details>
-
-## Combinations
-
-All elements work together naturally. Here's a **bold statement** with an `inline code reference` followed by a [link to external docs](https://docs.astro.build). The text flows naturally and maintains readability.
-
-Complex combinations like this preserve formatting: **_bold italic text_** containing `code snippets` and [embedded links](/) all within the same sentence.

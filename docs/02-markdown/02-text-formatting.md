@@ -1,6 +1,6 @@
 # Text Formatting
 
-# Commons
+## Commons
 
 ```
 Regular paragraph text appears in the default body font.
