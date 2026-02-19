@@ -228,5 +228,48 @@ import Layout from "@/layouts/Layout.astro";
         </p>
       </div>
     </div>
+
+    <!-- Feature break -->
+    <div class="border-border/50 mt-8 border-t pt-16 pb-8">
+      <dl class="grid grid-cols-1 gap-10 sm:grid-cols-3">
+        <div class="text-center">
+          <dt
+            class="text-foreground-bright mb-2 font-serif text-base font-semibold"
+            style="font-family: 'Merriweather', Georgia, serif; font-style: italic;"
+          >
+            Markdown-first
+          </dt>
+          <dd class="text-foreground-secondary text-sm leading-relaxed">
+            Write plain markdown files. No frontmatter required, no special
+            syntax to learn.
+          </dd>
+        </div>
+        <div class="text-center">
+          <dt
+            class="text-foreground-bright mb-2 font-serif text-base font-semibold"
+            style="font-family: 'Merriweather', Georgia, serif; font-style: italic;"
+          >
+            Fully static
+          </dt>
+          <dd class="text-foreground-secondary text-sm leading-relaxed">
+            Builds to pure HTML. No server, no runtime dependencies. Deploy
+            anywhere in seconds.
+          </dd>
+        </div>
+        <div class="text-center">
+          <dt
+            class="text-foreground-bright mb-2 font-serif text-base font-semibold"
+            style="font-family: 'Merriweather', Georgia, serif; font-style: italic;"
+          >
+            Zero configuration
+          </dt>
+          <dd class="text-foreground-secondary text-sm leading-relaxed">
+            Drop files in <code class="text-xs">docs/</code>, run
+            <code class="text-xs">pnpm dev</code>. Navigation and ToC are
+            generated automatically.
+          </dd>
+        </div>
+      </dl>
+    </div>
   </section>
 </Layout>
