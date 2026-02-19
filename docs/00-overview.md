@@ -24,14 +24,6 @@ JAAD is assembled from a small set of well-established tools:
 
 Being built on Astro means you get everything Astro provides for free: fast static builds, view transitions, image optimization, and a large ecosystem of integrations. Anything not covered in this documentation can be found in the [Astro docs](https://docs.astro.build).
 
-## What JAAD handles for you
-
-- **Sidebar navigation** — generated automatically from the file and folder structure in `docs/`. Numbered prefixes control order; they are stripped from URLs.
-- **Table of contents** — built from the `##` and `###` headings of each page. Highlights the active section as you scroll.
-- **Syntax highlighting** — via Shiki with a warm paper theme, consistent across all code blocks.
-- **Markdown extensions** — GitHub-style alerts (`NOTE`, `TIP`, `WARNING`, …), tabbed code blocks, collapsible sections, and more, all documented in the [Markdown Reference](/docs/markdown/reference).
-- **Responsive layout** — sidebar and ToC collapse gracefully on mobile.
-
 ## What you configure
 
 Almost nothing. The two values worth setting in `astro.config.mjs` before going live are:
@@ -46,4 +38,4 @@ export default defineConfig({
 Everything else has sensible defaults.
 
 > [!TIP]
-> For advanced customisation — custom components, integrations, deployment targets — refer to the [Astro documentation](https://docs.astro.build). JAAD is a standard Astro project under the hood.
+> For advanced customization (f.e. custom components, integrations, deployment targets), refer to the [Astro documentation](https://docs.astro.build). JAAD is a standard Astro project under the hood.

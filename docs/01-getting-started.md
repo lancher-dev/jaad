@@ -2,7 +2,28 @@
 
 ## Installation
 
-JAAD is a standard [Astro](https://astro.build) project. Clone the repository and install dependencies with your preferred package manager:
+JAAD is a standard [Astro](https://astro.build) project.
+
+### Launch
+
+Launch a JAAD project using [lancher](https://lancher.dev) or cloning it from [GitHub Repository](https://github.com/lancher-dev/jaad).
+
+:::code-tabs
+
+```bash lancher
+lancher template add jaad gh:lancher-dev
+lancher create -t jaad -d my-docs
+```
+
+```bash git
+git clone https://github.com/lancher-dev/jaad my-docs
+```
+
+:::
+
+### Dependencies
+
+Once installed on your manchine, install the dependencies.
 
 :::code-tabs
 
@@ -61,19 +82,3 @@ docs/
 ```
 
 The first `# Heading` in each file becomes the page title. `##` and `###` headings appear automatically in the table of contents.
-
-## Building & deployment
-
-Generate the production build:
-
-```bash
-pnpm build
-```
-
-Preview it locally before publishing:
-
-```bash
-pnpm preview
-```
-
-The output in `dist/` is a fully static site with no server-side requirements. For hosting guides (Netlify, Vercel, GitHub Pages, Cloudflare Pages, …) see the [Astro deployment documentation](https://docs.astro.build/en/guides/deploy/).
