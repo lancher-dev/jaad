@@ -1,0 +1,177 @@
+<div class="mt-24 mb-20">
+  <div class="mx-auto max-w-4xl">
+    <!-- File structure -->
+    <div class="mb-8">
+      <div class="bg-background-secondary border-border rounded-lg border p-6">
+        <div
+          class="text-foreground-secondary mb-4 text-xs font-semibold tracking-wider uppercase"
+        >
+          Your markdown files
+        </div>
+        <div class="text-foreground-secondary space-y-2 font-mono text-xs">
+          <div class="flex items-center gap-2">
+            <span class="text-foreground-muted">📁</span>
+            <span>docs/</span>
+          </div>
+          <div class="flex items-center gap-2 pl-6">
+            <span class="text-foreground-muted">📄</span>
+            <span>01-getting-started.md</span>
+          </div>
+          <div class="flex items-center gap-2 pl-6">
+            <span class="text-foreground-muted">📄</span>
+            <span>02-markdown-reference.md</span>
+          </div>
+          <div class="flex items-center gap-2 pl-6">
+            <span class="text-foreground-muted">📄</span>
+            <span>03-structure.md</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Arrow -->
+    <div class="mb-8 flex justify-center">
+      <div class="text-foreground-muted flex items-center gap-3">
+        <div class="bg-border h-px w-12"></div>
+        <svg
+          class="h-5 w-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+        </svg>
+        <div class="bg-border h-px w-12"></div>
+      </div>
+    </div>
+
+    <!-- Generated docs interface -->
+    <div
+      class="bg-background border-border overflow-hidden rounded-lg border shadow-sm"
+    >
+      <!-- Browser chrome -->
+      <div
+        class="bg-background-tertiary border-border flex items-center gap-2 border-b px-4 py-3"
+      >
+        <div class="flex gap-1.5">
+          <div class="bg-foreground-muted h-2.5 w-2.5 rounded-full opacity-30">
+          </div>
+          <div class="bg-foreground-muted h-2.5 w-2.5 rounded-full opacity-30">
+          </div>
+          <div class="bg-foreground-muted h-2.5 w-2.5 rounded-full opacity-30">
+          </div>
+        </div>
+        <div class="text-foreground-muted ml-3 font-mono text-xs">
+          /docs/getting-started
+        </div>
+      </div>
+
+      <!-- Documentation layout -->
+      <div class="grid grid-cols-1 gap-0 lg:grid-cols-12">
+        <!-- Left sidebar (navigation) - hidden on mobile -->
+        <div class="hidden px-4 py-6 lg:col-span-3 lg:block">
+          <div class="space-y-1 text-xs">
+            <div
+              class="bg-primary/10 text-primary rounded px-3 py-2 font-semibold"
+            >
+              Getting Started
+            </div>
+            <div
+              class="text-foreground hover:bg-primary/10 hover:text-primary rounded px-3 py-2 transition-colors"
+            >
+              Markdown Reference
+            </div>
+            <div
+              class="text-foreground hover:bg-primary/10 hover:text-primary rounded px-3 py-2 transition-colors"
+            >
+              Structure
+            </div>
+            <div
+              class="text-foreground hover:bg-primary/10 hover:text-primary rounded px-3 py-2 transition-colors"
+            >
+              Deployment
+            </div>
+          </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="px-6 py-8 lg:col-span-6">
+          <div class="space-y-4">
+            <div
+              class="text-foreground-bright text-base font-semibold lg:text-lg"
+            >
+              Getting Started
+            </div>
+            <div class="space-y-2">
+              <div class="bg-foreground-muted h-2 w-full rounded opacity-15">
+              </div>
+              <div class="bg-foreground-muted h-2 w-11/12 rounded opacity-15">
+              </div>
+              <div class="bg-foreground-muted h-2 w-10/12 rounded opacity-15">
+              </div>
+            </div>
+            <div class="h-3"></div>
+            <div
+              class="text-foreground-secondary text-xs font-medium lg:text-sm"
+            >
+              Installation
+            </div>
+            <div class="space-y-1">
+              <div class="bg-foreground-muted h-2 w-full rounded opacity-15">
+              </div>
+              <div class="bg-foreground-muted h-2 w-9/12 rounded opacity-15">
+              </div>
+            </div>
+            <div class="h-3"></div>
+            <div
+              class="text-foreground-secondary text-xs font-medium lg:text-sm"
+            >
+              Creating Pages
+            </div>
+            <div class="space-y-1">
+              <div class="bg-foreground-muted h-2 w-full rounded opacity-15">
+              </div>
+              <div class="bg-foreground-muted h-2 w-10/12 rounded opacity-15">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right sidebar (TOC) - hidden on mobile -->
+        <div class="hidden px-4 py-6 lg:col-span-3 lg:block">
+          <div
+            class="text-primary/60 mb-4 text-xs font-semibold tracking-wider uppercase"
+          >
+            On This Page
+          </div>
+          <div class="space-y-2 text-xs">
+            <div
+              class="text-foreground/60 border-primary block border-l-2 py-1 pl-3"
+            >
+              Installation
+            </div>
+            <div
+              class="text-foreground/60 block border-l-2 border-transparent py-1 pl-3"
+            >
+              Creating Pages
+            </div>
+            <div
+              class="text-foreground/60 block border-l-2 border-transparent py-1 pl-3"
+            >
+              Building
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Caption -->
+    <p class="text-foreground-muted mt-6 text-center text-xs italic">
+      Automatic sidebar navigation, content area, and table of contents
+    </p>
+  </div>
+</div>
