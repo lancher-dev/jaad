@@ -37,18 +37,23 @@
 }
 
 .heading-links {
-  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
   text-decoration: none !important;
-  font-size: calc(var(--ok-font-size) * 0.67);
   cursor: pointer;
   vertical-align: middle;
   margin-left: 0.5rem;
 }
 
-.heading-links i {
+.heading-links svg {
+  width: calc(var(--ok-font-size) * 0.95);
+  height: calc(var(--ok-font-size) * 0.95);
   color: var(--color-primary);
+  fill: none;
+  stroke: currentColor;
+  flex-shrink: 0;
 }
 
 .heading-links:hover {
@@ -58,7 +63,10 @@
 @media (max-width: 600px) {
   .heading-links {
     opacity: 1;
-    font-size: calc(var(--ok-font-size) * 0.85);
+  }
+  .heading-links svg {
+    width: calc(var(--ok-font-size) * 1.1);
+    height: calc(var(--ok-font-size) * 1.1);
   }
 }
 
@@ -285,12 +293,13 @@
 
 .markdown-content table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;
-  border: 1px solid #b8b3ae;
   border-radius: 0.5rem;
   overflow: hidden;
+  box-shadow: 0 0 0 1px #b8b3ae;
 }
 
 .markdown-content th,
@@ -615,4 +624,24 @@
 }
 .markdown-content .markdown-alert-caution .markdown-alert-title {
   color: #cf222e;
+}
+
+/* ─── Spoiler ────────────────────────────────────────────────────────────────── */
+
+.markdown-content .spoiler {
+  background-color: var(--color-foreground-bright);
+  color: var(--color-foreground-bright);
+  border-radius: 0.2em;
+  padding: 0.1em 0.3em;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    color 0.25s ease,
+    background-color 0.25s ease;
+}
+
+.markdown-content .spoiler:hover,
+.markdown-content .spoiler.revealed {
+  background-color: var(--color-background-tertiary);
+  color: var(--color-foreground);
 }

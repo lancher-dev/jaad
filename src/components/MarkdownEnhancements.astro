@@ -43,7 +43,7 @@ const { selector = ".markdown-content" } = Astro.props;
         // Create link icon
         const linkIcon = document.createElement("a");
         linkIcon.className = "heading-links";
-        linkIcon.innerHTML = "<i class='nf nf-md-link_variant'></i>";
+        linkIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="1em" height="1em" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`;
         linkIcon.setAttribute("aria-label", `Link to ${text}`);
         linkIcon.setAttribute("href", `#${header.id}`);
         linkIcon.title = "Copy link to clipboard";
@@ -80,7 +80,8 @@ const { selector = ".markdown-content" } = Astro.props;
 
         const button = document.createElement("button");
         button.className = "code-copy-button";
-        button.innerHTML = '<i class="nf nf-md-content_copy"></i>';
+        button.innerHTML =
+          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="1em" height="1em" aria-hidden="true"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>';
         button.title = "Copy code to clipboard";
         button.setAttribute("aria-label", "Copy code to clipboard");
 
@@ -91,7 +92,8 @@ const { selector = ".markdown-content" } = Astro.props;
 
             // Visual feedback
             const originalIcon = button.innerHTML;
-            button.innerHTML = '<i class="nf nf-md-check"></i>';
+            button.innerHTML =
+              '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="1em" height="1em" aria-hidden="true"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>';
             button.style.color = "var(--color-success)";
 
             setTimeout(() => {
@@ -146,8 +148,8 @@ const { selector = ".markdown-content" } = Astro.props;
           <div class="image-lightbox-backdrop"></div>
           <div class="image-lightbox-content">
             <button class="image-lightbox-close" aria-label="Close">
-              <i class="nf nf-md-close"></i>
-            </button>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="1em" height="1em" aria-hidden="true"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+              </button>
             <img class="image-lightbox-img" src="" alt="" />
           </div>
         `;
@@ -186,6 +188,15 @@ const { selector = ".markdown-content" } = Astro.props;
     addCopyButtonsToCodeBlocks();
     addImageLightbox();
     initCodeTabs();
+    initSpoilers();
+  }
+
+  function initSpoilers() {
+    document.querySelectorAll(".markdown-content .spoiler").forEach((el) => {
+      if (el.dataset.spoilerInit) return;
+      el.dataset.spoilerInit = "1";
+      el.addEventListener("click", () => el.classList.toggle("revealed"));
+    });
   }
 
   /**

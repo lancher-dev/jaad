@@ -25,23 +25,50 @@ const navItems = sortedPages.map((page) => {
   return {
     title: parsed.title,
     chapter: parsed.chapter,
+    /** Primary sidebar order: dir prefix for chapter items, file prefix for root items */
+    primaryOrder: parsed.orderChapter ?? parsed.order,
+    fileOrder: parsed.order,
     href: `/docs/${cleanSlug}`,
     isActive: currentSlug === cleanSlug,
   };
 });
 
-const pagesWithoutChapter = navItems.filter((item) => !item.chapter);
-const pagesWithChapter = navItems.filter((item) => item.chapter);
+// Build interleaved sections: standalone root items + chapter groups, each with a sort order
+type StandaloneSection = {
+  type: "standalone";
+  order: number;
+  item: (typeof navItems)[number];
+};
+type ChapterSection = {
+  type: "chapter";
+  order: number;
+  chapter: string;
+  items: (typeof navItems)[number][];
+};
+type Section = StandaloneSection | ChapterSection;
 
-const grouped = pagesWithChapter.reduce(
-  (acc, item) => {
-    const chapter = item.chapter!;
-    if (!acc[chapter]) acc[chapter] = [];
-    acc[chapter].push(item);
-    return acc;
-  },
-  {} as Record<string, typeof navItems>,
-);
+const chapterMap = new Map<string, ChapterSection>();
+const sections: Section[] = [];
+
+for (const item of navItems) {
+  if (!item.chapter) {
+    sections.push({ type: "standalone", order: item.primaryOrder, item });
+  } else {
+    if (!chapterMap.has(item.chapter)) {
+      const sec: ChapterSection = {
+        type: "chapter",
+        order: item.primaryOrder,
+        chapter: item.chapter,
+        items: [],
+      };
+      chapterMap.set(item.chapter, sec);
+      sections.push(sec);
+    }
+    chapterMap.get(item.chapter)!.items.push(item);
+  }
+}
+
+sections.sort((a, b) => a.order - b.order);
 ---
 
 <aside
@@ -49,55 +76,48 @@ const grouped = pagesWithChapter.reduce(
 >
   <nav aria-label="Documentation navigation">
     {
-      pagesWithoutChapter.length > 0 && (
-        <div class="mb-6">
-          <ul class="space-y-1">
-            {pagesWithoutChapter.map((item) => (
-              <li>
-                <a
-                  href={item.href}
-                  class:list={[
-                    "block rounded px-3 py-2 text-sm no-underline transition-colors",
-                    item.isActive
-                      ? "bg-primary/10 text-primary font-semibold"
-                      : "text-foreground hover:bg-primary/10 hover:text-primary",
-                  ]}
-                  aria-current={item.isActive ? "page" : undefined}
-                >
-                  {item.title}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
+      sections.map((section, i) =>
+        section.type === "standalone" ? (
+          <div class:list={["mb-0.5", i > 0 && "mt-0.5"]}>
+            <a
+              href={section.item.href}
+              class:list={[
+                "block rounded px-3 py-1.5 text-sm no-underline transition-colors",
+                section.item.isActive
+                  ? "bg-primary/10 text-primary font-semibold"
+                  : "text-foreground hover:bg-primary/10 hover:text-primary",
+              ]}
+              aria-current={section.item.isActive ? "page" : undefined}
+            >
+              {section.item.title}
+            </a>
+          </div>
+        ) : (
+          <div class="mt-5 mb-1">
+            <h3 class="text-primary/50 mb-1 px-3 text-[0.65rem] font-semibold tracking-widest uppercase">
+              {formatChapterTitle(section.chapter)}
+            </h3>
+            <ul class="border-border/40 ml-3 space-y-0.5 border-l pl-0">
+              {section.items.map((item) => (
+                <li>
+                  <a
+                    href={item.href}
+                    class:list={[
+                      "block rounded-r px-3 py-1.5 text-xs no-underline transition-colors",
+                      item.isActive
+                        ? "border-primary text-primary -ml-px border-l-2 pl-[calc(0.75rem-1px)] font-semibold"
+                        : "text-foreground/70 hover:text-primary hover:bg-primary/5",
+                    ]}
+                    aria-current={item.isActive ? "page" : undefined}
+                  >
+                    {item.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ),
       )
-    }
-    {
-      Object.entries(grouped).map(([chapter, pages]) => (
-        <div class="mb-6">
-          <h3 class="text-primary/60 mb-2 px-3 text-xs font-semibold tracking-wider uppercase">
-            {formatChapterTitle(chapter)}
-          </h3>
-          <ul class="space-y-1">
-            {pages.map((item) => (
-              <li>
-                <a
-                  href={item.href}
-                  class:list={[
-                    "block rounded px-3 py-2 text-sm no-underline transition-colors",
-                    item.isActive
-                      ? "bg-primary/10 text-primary font-semibold"
-                      : "text-foreground hover:bg-primary/10 hover:text-primary",
-                  ]}
-                  aria-current={item.isActive ? "page" : undefined}
-                >
-                  {item.title}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))
     }
   </nav>
 </aside>
