@@ -93,8 +93,8 @@ sections.sort((a, b) => a.order - b.order);
             </a>
           </div>
         ) : (
-          <div class="mt-5 mb-1">
-            <h3 class="text-primary/50 mb-1 px-3 text-[0.65rem] font-semibold tracking-widest uppercase">
+          <div class="mt-5 mb-5">
+            <h3 class="text-primary/50 mb-1 px-3 text-[0.825rem] font-semibold tracking-widest uppercase">
               {formatChapterTitle(section.chapter)}
             </h3>
             <ul class="border-border/40 ml-3 space-y-0.5 border-l pl-0">
@@ -103,10 +103,10 @@ sections.sort((a, b) => a.order - b.order);
                   <a
                     href={item.href}
                     class:list={[
-                      "block rounded-r px-3 py-1.5 text-xs no-underline transition-colors",
+                      "block rounded-r px-3 py-1.5 text-sm no-underline transition-colors",
                       item.isActive
-                        ? "border-primary text-primary -ml-px border-l-2 pl-[calc(0.75rem-1px)] font-semibold"
-                        : "text-foreground/70 hover:text-primary hover:bg-primary/5",
+                        ? "border-primary bg-primary/10 text-primary -ml-px border-l-2 pl-2.75 font-semibold"
+                        : "text-foreground hover:bg-primary/10 hover:text-primary",
                     ]}
                     aria-current={item.isActive ? "page" : undefined}
                   >
