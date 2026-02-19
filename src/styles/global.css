@@ -34,8 +34,8 @@
 
   /* Fonts */
   --font-sans:
-    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-serif: "Merriweather", Georgia, serif;
+    var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-serif: var(--font-merriweather), Georgia, serif;
   --font-monospace:
     "SF Mono", SF Mono, Consolas, "Liberation Mono", Menlo, Courier, monospace;
 }
@@ -45,7 +45,7 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family:
-      "Inter",
+      var(--font-inter),
       -apple-system,
       BlinkMacSystemFont,
       "Segoe UI",
@@ -58,7 +58,7 @@
   h2,
   h3 {
     color: var(--color-foreground-bright);
-    font-family: "Merriweather", Georgia, serif;
+    font-family: var(--font-merriweather), Georgia, serif;
   }
 
   h2 {
@@ -98,7 +98,7 @@ i.nf {
 }
 
 @utility font-brand {
-  font-family: "Merriweather", Georgia, serif;
+  font-family: var(--font-merriweather), Georgia, serif;
   font-weight: 300;
   font-style: italic;
   letter-spacing: -0.01em;

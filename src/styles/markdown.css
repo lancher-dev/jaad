@@ -1,6 +1,6 @@
 .markdown-content {
-  --ok-font-serif: "Merriweather", Georgia, serif;
-  --ok-font-sans: "Inter", sans-serif;
+  --ok-font-serif: var(--font-merriweather), Georgia, serif;
+  --ok-font-sans: var(--font-inter), sans-serif;
   --ok-font-mono: "Fira Code", monospace;
   --ok-font-size: 1.125rem;
 }
