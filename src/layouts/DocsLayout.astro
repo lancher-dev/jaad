@@ -7,6 +7,7 @@ import TableOfContents from "@/components/docs/TableOfContents.astro";
 import { extractHeadingsFromMarkdown } from "@/utils/docs";
 import type { CollectionEntry } from "astro:content";
 import { Font } from "astro:assets";
+import { ClientRouter } from "astro:transitions";
 
 import "@/styles/global.css";
 import "@/styles/docs.css";
@@ -59,6 +60,8 @@ const headings = entry ? extractHeadingsFromMarkdown(entry.body || "") : [];
     <meta name="twitter:image" content="/og-image.png" />
 
     <meta name="generator" content={Astro.generator} />
+
+    <ClientRouter />
   </head>
   <body
     class="bg-background text-foreground flex min-h-screen flex-col text-[14px] leading-[1.6]"
