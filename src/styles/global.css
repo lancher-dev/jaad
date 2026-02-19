@@ -31,6 +31,13 @@
   --color-warning: #d4a259;
   --color-info: #5988c4;
   --color-success: #5a9c7e;
+
+  /* Fonts */
+  --font-sans:
+    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-serif: "Merriweather", Georgia, serif;
+  --font-monospace:
+    "SF Mono", SF Mono, Consolas, "Liberation Mono", Menlo, Courier, monospace;
 }
 
 @layer base {
@@ -88,4 +95,12 @@ section {
 
 i.nf {
   @apply text-foreground-bright;
+}
+
+@utility font-brand {
+  font-family: "Merriweather", Georgia, serif;
+  font-weight: 300;
+  font-style: italic;
+  letter-spacing: -0.01em;
+  line-height: 1;
 }
