@@ -189,8 +189,76 @@ const { selector = ".markdown-content" } = Astro.props;
     addImageLightbox();
     initCodeTabs();
     initSpoilers();
+    initDetails();
   }
 
+  /**
+   * Initialise details/summary elements within markdown content with smooth open/close animations
+   */
+  function initDetails() {
+    document.querySelectorAll(`${selector} details`).forEach((details) => {
+      // Skip if already initialised
+      if (details.dataset.detailsInit) return;
+      details.dataset.detailsInit = "1";
+
+      const summary = details.querySelector("summary");
+      if (!summary) return;
+
+      // Two-level wrap: wrapper is what we animate (height only),
+      // inner holds the padding so it's baked into scrollHeight
+      // and never animated separately — no jump at end of animation.
+      const wrapper = document.createElement("div");
+      wrapper.className = "details-body-wrapper";
+      const inner = document.createElement("div");
+      inner.className = "details-body-inner";
+      Array.from(details.childNodes).forEach((node) => {
+        if (node !== summary) inner.appendChild(node);
+      });
+      wrapper.appendChild(inner);
+      details.appendChild(wrapper);
+
+      // Collapsed by default if not open
+      if (!details.open) {
+        wrapper.style.height = "0px";
+        wrapper.style.overflow = "hidden";
+      }
+
+      summary.addEventListener("click", (e) => {
+        e.preventDefault();
+
+        if (details.open) {
+          // Closing
+          const startH = wrapper.scrollHeight;
+          wrapper.style.overflow = "hidden";
+          const anim = wrapper.animate(
+            [{ height: startH + "px" }, { height: "0px" }],
+            { duration: 280, easing: "ease" },
+          );
+          anim.onfinish = () => {
+            wrapper.style.height = "0px";
+            details.removeAttribute("open");
+          };
+        } else {
+          // Opening
+          details.setAttribute("open", "");
+          const endH = wrapper.scrollHeight;
+          wrapper.style.overflow = "hidden";
+          const anim = wrapper.animate(
+            [{ height: "0px" }, { height: endH + "px" }],
+            { duration: 280, easing: "ease" },
+          );
+          anim.onfinish = () => {
+            wrapper.style.height = "auto";
+            wrapper.style.overflow = "";
+          };
+        }
+      });
+    });
+  }
+
+  /**
+   * Initialise spoiler elements (.spoiler) which toggle a "revealed" class on click
+   */
   function initSpoilers() {
     document.querySelectorAll(".markdown-content .spoiler").forEach((el) => {
       if (el.dataset.spoilerInit) return;

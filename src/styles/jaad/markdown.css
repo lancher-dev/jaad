@@ -507,13 +507,18 @@
   background-color: var(--color-background-tertiary);
   border: 1px solid var(--jaad-details-border);
   border-radius: 0.5rem;
+  box-sizing: border-box;
   padding: 0 1.25rem;
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;
 }
 
-.markdown-content details[open] {
-  padding-bottom: 0.75rem;
+.markdown-content .details-body-wrapper {
+  overflow: hidden;
+}
+
+.markdown-content .details-body-inner {
+  padding: 0 0.25rem 0.75rem;
 }
 
 .markdown-content summary {
@@ -545,8 +550,13 @@
   transform: rotate(90deg);
 }
 
-.markdown-content details > *:not(summary) {
+.markdown-content details > *:not(summary),
+.markdown-content .details-body-wrapper > *:first-child {
   margin-top: 0;
+}
+
+.markdown-content .details-body-wrapper > *:last-child {
+  margin-bottom: 0;
 }
 
 /* ─── GitHub Blockquote Alerts ───────────────────────────────────────────────── */
