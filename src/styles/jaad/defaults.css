@@ -1,59 +1,79 @@
-/* JAAD Default Variables */
+/* JAAD Default Variables
+   Wrapped in @layer jaad.defaults so that ANY unlayered :root rule (e.g. in
+   global.css) automatically takes precedence, regardless of import order.
+*/
 
-:root {
-  /* Typography */
-  --jaad-font-sans: var(--font-sans), sans-serif;
-  --jaad-font-serif: var(--font-serif), Georgia, serif;
-  --jaad-font-mono: var(--font-monospace), monospace;
-  --jaad-font-size: 1.125rem;
+@layer jaad.defaults {
+  :root {
+    /* Typography */
+    --jaad-font-sans: var(--font-sans), sans-serif;
+    --jaad-font-serif: var(--font-serif), Georgia, serif;
+    --jaad-font-mono: var(--font-monospace), monospace;
+    --jaad-font-size: 1.125rem;
+    --jaad-line-height: 1.6;
 
-  /* Inline code */
-  --jaad-code-bg: #e8e4df;
-  --jaad-code-border: #d0cbc6;
-  --jaad-code-fg: var(--color-foreground-bright);
+    /* Headings */
+    --jaad-heading-border-color: rgb(from var(--color-primary) r g b / 0.4);
 
-  /* Code blocks (pre) */
-  --jaad-pre-bg: var(--color-background-tertiary);
-  --jaad-pre-border: var(--color-border-dark);
-  --jaad-pre-fg: var(--color-primary);
+    /* Inline code */
+    --jaad-code-bg: #e8e4df;
+    --jaad-code-border: #d0cbc6;
+    --jaad-code-fg: var(--color-foreground-bright);
 
-  /* Copy button */
-  --jaad-copy-btn-bg: var(--color-border);
-  --jaad-copy-btn-border: #a8a39e;
-  --jaad-copy-btn-fg: var(--color-primary);
-  --jaad-copy-btn-hover-bg: var(--color-border-dark);
-  --jaad-copy-btn-hover-border: #9a958f;
-  --jaad-copy-btn-hover-fg: var(--color-foreground-bright);
+    /* Code blocks (pre) */
+    --jaad-pre-bg: var(--color-background-tertiary);
+    --jaad-pre-border: var(--color-border-dark);
+    --jaad-pre-fg: var(--color-primary);
 
-  /* Blockquote */
-  --jaad-blockquote-border: #5a5a5a;
-  --jaad-blockquote-fg: var(--color-primary-light);
+    /* Copy button */
+    --jaad-copy-btn-bg: var(--color-border);
+    --jaad-copy-btn-border: #a8a39e;
+    --jaad-copy-btn-fg: var(--color-primary);
+    --jaad-copy-btn-hover-bg: var(--color-border-dark);
+    --jaad-copy-btn-hover-border: #9a958f;
+    --jaad-copy-btn-hover-fg: var(--color-foreground-bright);
 
-  /* Emphasis */
-  --jaad-em-fg: var(--color-primary-light);
+    /* Blockquote */
+    --jaad-blockquote-bg: var(--color-background-tertiary);
+    --jaad-blockquote-border: #5a5a5a;
+    --jaad-blockquote-fg: var(--color-primary-light);
 
-  /* Table */
-  --jaad-table-border: #b8b3ae;
-  --jaad-table-hover-bg: #e0dcd7;
+    /* Emphasis */
+    --jaad-em-fg: var(--color-primary-light);
 
-  /* Code tabs */
-  --jaad-tabs-border: var(--color-border-dark);
-  --jaad-tabs-header-bg: #e0dcd7;
-  --jaad-tabs-btn-hover-bg: #d0cbc6;
-  --jaad-tabs-btn-active-bg: var(--color-background-tertiary);
+    /* Horizontal rule */
+    --jaad-hr-color: rgb(from var(--color-primary) r g b / 0.4);
 
-  /* Details / Summary */
-  --jaad-details-border: var(--color-border-dark);
+    /* Table */
+    --jaad-table-border: #b8b3ae;
+    --jaad-table-header-bg: var(--color-background-tertiary);
+    --jaad-table-hover-bg: #e0dcd7;
 
-  /* Alerts */
-  --jaad-alert-note-color: #0969da;
-  --jaad-alert-note-bg: #dff0fd;
-  --jaad-alert-tip-color: #1a7f37;
-  --jaad-alert-tip-bg: #dafbe1;
-  --jaad-alert-important-color: #8250df;
-  --jaad-alert-important-bg: #fbefff;
-  --jaad-alert-warning-color: #9a6700;
-  --jaad-alert-warning-bg: #fff8c5;
-  --jaad-alert-caution-color: #cf222e;
-  --jaad-alert-caution-bg: #ffebe9;
+    /* Code tabs */
+    --jaad-tabs-border: var(--color-border-dark);
+    --jaad-tabs-header-bg: #e0dcd7;
+    --jaad-tabs-btn-hover-bg: #d0cbc6;
+    --jaad-tabs-btn-active-bg: var(--color-background-tertiary);
+
+    /* Details / Summary */
+    --jaad-details-bg: var(--color-background-tertiary);
+    --jaad-details-border: var(--color-border-dark);
+
+    /* Spoiler */
+    --jaad-spoiler-hidden-color: var(--color-foreground-bright);
+    --jaad-spoiler-revealed-bg: var(--color-background-tertiary);
+    --jaad-spoiler-revealed-fg: var(--color-foreground);
+
+    /* Alerts */
+    --jaad-alert-note-color: #0969da;
+    --jaad-alert-note-bg: #dff0fd;
+    --jaad-alert-tip-color: #1a7f37;
+    --jaad-alert-tip-bg: #dafbe1;
+    --jaad-alert-important-color: #8250df;
+    --jaad-alert-important-bg: #fbefff;
+    --jaad-alert-warning-color: #9a6700;
+    --jaad-alert-warning-bg: #fff8c5;
+    --jaad-alert-caution-color: #cf222e;
+    --jaad-alert-caution-bg: #ffebe9;
+  }
 }

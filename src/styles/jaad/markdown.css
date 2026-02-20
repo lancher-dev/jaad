@@ -1,16 +1,9 @@
 .markdown-content {
-  --ok-font-serif: var(--jaad-font-serif);
-  --ok-font-sans: var(--jaad-font-sans);
-  --ok-font-mono: var(--jaad-font-mono);
-  --ok-font-size: var(--jaad-font-size);
-}
-
-.markdown-content {
   color: var(--color-foreground);
-  line-height: 1.6;
+  line-height: var(--jaad-line-height);
   max-width: none;
-  font-family: var(--ok-font-family);
-  font-size: var(--ok-font-size);
+  font-family: var(--jaad-font-sans);
+  font-size: var(--jaad-font-size);
 }
 
 .markdown-content h1,
@@ -48,8 +41,8 @@
 }
 
 .heading-links svg {
-  width: calc(var(--ok-font-size) * 0.95);
-  height: calc(var(--ok-font-size) * 0.95);
+  width: calc(var(--jaad-font-size) * 0.95);
+  height: calc(var(--jaad-font-size) * 0.95);
   color: var(--color-primary);
   fill: none;
   stroke: currentColor;
@@ -65,8 +58,8 @@
     opacity: 1;
   }
   .heading-links svg {
-    width: calc(var(--ok-font-size) * 1.1);
-    height: calc(var(--ok-font-size) * 1.1);
+    width: calc(var(--jaad-font-size) * 1.1);
+    height: calc(var(--jaad-font-size) * 1.1);
   }
 }
 
@@ -80,23 +73,23 @@
 }
 
 .markdown-content h1 {
-  font-size: calc(var(--ok-font-size) * 2.22);
+  font-size: calc(var(--jaad-font-size) * 2.22);
   margin-top: 0;
 }
 
 .markdown-content h2 {
-  font-size: calc(var(--ok-font-size) * 1.67);
+  font-size: calc(var(--jaad-font-size) * 1.67);
   border-bottom-width: 2px;
-  border-bottom-color: rgb(from var(--color-primary) r g b / 0.4);
+  border-bottom-color: var(--jaad-heading-border-color);
   padding-bottom: 0.5rem;
 }
 
 .markdown-content h3 {
-  font-size: calc(var(--ok-font-size) * 1.33);
+  font-size: calc(var(--jaad-font-size) * 1.33);
 }
 
 .markdown-content h4 {
-  font-size: calc(var(--ok-font-size) * 1.11);
+  font-size: calc(var(--jaad-font-size) * 1.11);
 }
 
 .markdown-content p {
@@ -126,8 +119,8 @@
   border-color: var(--jaad-code-border);
   border-radius: 0.25rem;
   color: var(--jaad-code-fg);
-  font-size: calc(var(--ok-font-size) * 0.78);
-  font-family: var(--ok-font-mono);
+  font-size: calc(var(--jaad-font-size) * 0.78);
+  font-family: var(--jaad-font-mono);
   white-space: nowrap;
 }
 
@@ -140,7 +133,7 @@
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;
   position: relative;
-  line-height: 1.6;
+  line-height: var(--jaad-line-height);
 }
 
 .markdown-content pre > code {
@@ -169,7 +162,7 @@
   color: var(--jaad-copy-btn-fg);
   border-radius: 0.25rem;
   padding: 0.5rem;
-  font-size: calc(var(--ok-font-size) * 0.67);
+  font-size: calc(var(--jaad-font-size) * 0.67);
   transition: all 0.2s ease;
   width: 2rem;
   height: 2rem;
@@ -195,11 +188,11 @@
   border: none;
   padding: 0;
   color: var(--jaad-pre-fg);
-  font-size: calc(var(--ok-font-size) * 0.85);
+  font-size: calc(var(--jaad-font-size) * 0.85);
   white-space: pre;
   word-break: normal;
   word-wrap: normal;
-  line-height: 1.6;
+  line-height: var(--jaad-line-height);
 }
 
 /* ─── Shiki/Astro code blocks ─────────────────────────────────────────────────────────────── */
@@ -213,13 +206,13 @@
 .markdown-content pre.shiki code,
 .markdown-content pre.astro-code code {
   display: block;
-  font-family: var(--ok-font-mono);
+  font-family: var(--jaad-font-mono);
 }
 
 .markdown-content blockquote {
   border-left-width: 4px;
   border-left-color: var(--jaad-blockquote-border);
-  background-color: var(--color-background-tertiary);
+  background-color: var(--jaad-blockquote-bg);
   padding-left: 1.5rem;
   padding-right: 1.5rem;
   padding-top: 1rem;
@@ -240,7 +233,7 @@
 .markdown-content .markdown-alert {
   border-left-width: 4px;
   border-left-color: var(--jaad-blockquote-border);
-  background-color: var(--color-background-tertiary);
+  background-color: var(--jaad-blockquote-bg);
   padding-left: 1.5rem;
   padding-right: 1.5rem;
   padding-top: 1rem;
@@ -271,7 +264,7 @@
 .markdown-content li {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
-  line-height: 1.6;
+  line-height: var(--jaad-line-height);
 }
 
 .markdown-content strong {
@@ -287,7 +280,7 @@
 .markdown-content hr {
   border-width: 0;
   border-top-width: 2px;
-  border-top-color: rgb(from var(--color-primary) r g b / 0.4);
+  border-top-color: var(--jaad-hr-color);
   margin-top: 2rem;
   margin-bottom: 2rem;
 }
@@ -323,15 +316,15 @@
 }
 
 .markdown-content th {
-  background-color: var(--color-background-tertiary);
+  background-color: var(--jaad-table-header-bg);
   color: var(--color-foreground-bright);
   font-weight: 600;
-  font-size: calc(var(--ok-font-size) * 0.78);
+  font-size: calc(var(--jaad-font-size) * 0.78);
 }
 
 .markdown-content td {
   color: var(--color-foreground);
-  font-size: calc(var(--ok-font-size) * 0.78);
+  font-size: calc(var(--jaad-font-size) * 0.78);
 }
 
 .markdown-content td code {
@@ -462,8 +455,8 @@
   border-bottom: none;
   border-radius: 0.375rem 0.375rem 0 0;
   padding: 0.375rem 0.875rem;
-  font-size: calc(var(--ok-font-size) * 0.72);
-  font-family: var(--ok-font-mono);
+  font-size: calc(var(--jaad-font-size) * 0.72);
+  font-family: var(--jaad-font-mono);
   font-weight: 500;
   color: var(--color-foreground);
   cursor: pointer;
@@ -504,7 +497,7 @@
 /* ─── Details / Summary ──────────────────────────────────────────────────────── */
 
 .markdown-content details {
-  background-color: var(--color-background-tertiary);
+  background-color: var(--jaad-details-bg);
   border: 1px solid var(--jaad-details-border);
   border-radius: 0.5rem;
   box-sizing: border-box;
@@ -530,7 +523,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: calc(var(--ok-font-size) * 0.89);
+  font-size: calc(var(--jaad-font-size) * 0.89);
   user-select: none;
 }
 
@@ -575,7 +568,7 @@
   align-items: center;
   gap: 0.5rem;
   font-weight: 700;
-  font-size: calc(var(--ok-font-size) * 0.83);
+  font-size: calc(var(--jaad-font-size) * 0.83);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   margin-bottom: 0.5rem;
@@ -634,8 +627,8 @@
 /* ─── Spoiler ────────────────────────────────────────────────────────────────── */
 
 .markdown-content .spoiler {
-  background-color: var(--color-foreground-bright);
-  color: var(--color-foreground-bright);
+  background-color: var(--jaad-spoiler-hidden-color);
+  color: var(--jaad-spoiler-hidden-color);
   border-radius: 0.2em;
   padding: 0.1em 0.3em;
   cursor: pointer;
@@ -647,8 +640,8 @@
 
 .markdown-content .spoiler:hover,
 .markdown-content .spoiler.revealed {
-  background-color: var(--color-background-tertiary);
-  color: var(--color-foreground);
+  background-color: var(--jaad-spoiler-revealed-bg);
+  color: var(--jaad-spoiler-revealed-fg);
 }
 
 /* ─── Animation ─────────────────────────────────────────────── */

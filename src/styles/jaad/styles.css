@@ -1,6 +1,10 @@
 /* Single entry-point for all JAAD-specific styles. */
 
-/* Default custom-property values (can be overridden in global.css) */
+/* Declare the layer order. jaad.defaults is lowest priority, so any
+   unlayered :root rule in global.css wins automatically. */
+@layer jaad.defaults;
+
+/* Default custom-property values */
 @import "./defaults.css";
 
 /* Alert styles from remark-github-blockquote-alert */
