@@ -1,4 +1,5 @@
 // @ts-check
+
 import { defineConfig, fontProviders } from "astro/config";
 import path from "path";
 import { fileURLToPath } from "url";
