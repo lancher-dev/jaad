@@ -19,7 +19,7 @@ import type { Root } from "mdast";
  * If no meta is present, the language name is used as the label.
  */
 const remarkCodeTabs: Plugin<[], Root> = () => {
-  return (tree) => {
+  return (tree: Root) => {
     visit(tree, "containerDirective", (node: any, index, parent: any) => {
       if (node.name !== "code-tabs") return;
       if (index === undefined || !parent) return;
