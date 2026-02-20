@@ -1,6 +1,6 @@
 ---
 import { getCollection, render } from "astro:content";
-import { parseDocCollectionId, sortDocPages, getCleanSlug } from "@/utils/docs";
+import { sortDocPages, getCleanSlug } from "@/utils/docs";
 import DocsLayout from "@/layouts/DocsLayout.astro";
 import DocsMobileNav from "@/components/docs/DocsMobileNav.astro";
 import DocsPageNav from "@/components/docs/DocsPageNav.astro";
@@ -16,7 +16,6 @@ if (!firstPage) {
 
 // Render the first page
 const { Content } = await render(firstPage);
-const parsed = parseDocCollectionId(firstPage.id, true);
 
 // Generate clean slug for current page highlighting
 const currentSlug = getCleanSlug(firstPage.id);
