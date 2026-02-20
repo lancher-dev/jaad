@@ -1,10 +1,8 @@
-# Getting Started
-
-## Installation
+# Installation
 
 JAAD is a standard [Astro](https://astro.build) project.
 
-### Launch
+### How to get
 
 Launch a JAAD project using [lancher](https://lancher.dev) or cloning it from [GitHub Repository](https://github.com/lancher-dev/jaad).
 
