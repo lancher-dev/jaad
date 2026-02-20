@@ -67,9 +67,17 @@ html {
 }
 
 /* Mobile navigation select styling */
+/*
+ * CSS variables cannot be used inside data: URIs, so the arrow SVG is exposed
+ * as --jaad-select-arrow. Override it in your own :root block to change the
+ * chevron colour (replace %232d2d2d with a URL-encoded hex colour).
+ */
 .docs-mobile-nav select {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%232d2d2d' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+  background-image: var(
+    --jaad-select-arrow,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%232d2d2d' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E")
+  );
   background-position: right 0.5rem center;
   background-repeat: no-repeat;
   background-size: 1.5em 1.5em;

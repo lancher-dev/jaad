@@ -1,0 +1,13 @@
+/* Single entry-point for all JAAD-specific styles. */
+
+/* Default custom-property values (can be overridden in global.css) */
+@import "./defaults.css";
+
+/* Alert styles from remark-github-blockquote-alert */
+@import "remark-github-blockquote-alert/alert.css";
+
+/* Documentation chrome (sidebar, TOC, mobile nav, …) */
+@import "./docs.css";
+
+/* Markdown content typography & components */
+@import "./markdown.css";
