@@ -6,7 +6,12 @@ interface Props {
   class?: string;
 }
 
-const { code, language = "bash", copyable = true, class: className } = Astro.props;
+const {
+  code,
+  language = "bash",
+  copyable = true,
+  class: className,
+} = Astro.props;
 const codeId = `code-${Math.random().toString(36).substr(2, 9)}`;
 ---
 
@@ -17,7 +22,7 @@ const codeId = `code-${Math.random().toString(36).substr(2, 9)}`;
 >
   <code
     id={codeId}
-    class="scrollbar-hide flex flex-1 items-center overflow-x-auto bg-none text-sm whitespace-nowrap text-primary"
+    class="scrollbar-hide text-primary flex flex-1 items-center overflow-x-auto bg-none text-sm whitespace-nowrap"
     aria-label={`${language} code`}
     style="scrollbar-width: none; -ms-overflow-style: none;"
   >
@@ -26,7 +31,7 @@ const codeId = `code-${Math.random().toString(36).substr(2, 9)}`;
   {
     copyable && (
       <button
-        class="ml-4 flex shrink-0 cursor-pointer items-center justify-center rounded border border-border-light bg-border-dark px-4 py-2 text-xs text-foreground-muted transition-colors hover:bg-border hover:text-foreground-bright"
+        class="border-border-light bg-border-dark text-foreground-muted hover:bg-border hover:text-foreground-bright ml-4 flex shrink-0 cursor-pointer items-center justify-center rounded border px-4 py-2 text-xs transition-colors"
         data-copy-code={code}
         title="Copy to clipboard"
         aria-label="Copy code to clipboard"
@@ -37,28 +42,24 @@ const codeId = `code-${Math.random().toString(36).substr(2, 9)}`;
   }
 </div>
 
-{
-  copyable && (
-    <script is:inline>
-      document.addEventListener("DOMContentLoaded", () => {
-        const copyButtons = document.querySelectorAll("[data-copy-code]");
-        copyButtons.forEach((button) => {
-          button.addEventListener("click", () => {
-            const code = button.getAttribute("data-copy-code");
-            if (code) {
-              navigator.clipboard.writeText(code);
-              const icon = button.querySelector("i");
-              if (icon) {
-                const originalClass = icon.className;
-                icon.className = "nf nf-md-check";
-                setTimeout(() => {
-                  icon.className = originalClass;
-                }, 2000);
-              }
-            }
-          });
-        });
+<script is:inline>
+  document.addEventListener("DOMContentLoaded", () => {
+    const copyButtons = document.querySelectorAll("[data-copy-code]");
+    copyButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const code = button.getAttribute("data-copy-code");
+        if (code) {
+          navigator.clipboard.writeText(code);
+          const icon = button.querySelector("i");
+          if (icon) {
+            const originalClass = icon.className;
+            icon.className = "nf nf-md-check";
+            setTimeout(() => {
+              icon.className = originalClass;
+            }, 2000);
+          }
+        }
       });
-    </script>
-  )
-}
+    });
+  });
+</script>
