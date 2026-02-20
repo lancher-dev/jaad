@@ -1,8 +1,8 @@
 .markdown-content {
-  --ok-font-serif: var(--font-merriweather), Georgia, serif;
-  --ok-font-sans: var(--font-inter), sans-serif;
-  --ok-font-mono: "Fira Code", monospace;
-  --ok-font-size: 1.125rem;
+  --ok-font-serif: var(--jaad-font-serif);
+  --ok-font-sans: var(--jaad-font-sans);
+  --ok-font-mono: var(--jaad-font-mono);
+  --ok-font-size: var(--jaad-font-size);
 }
 
 .markdown-content {
@@ -117,24 +117,24 @@
 }
 
 .markdown-content code {
-  background-color: #e8e4df;
+  background-color: var(--jaad-code-bg);
   padding-left: 0.5rem;
   padding-right: 0.5rem;
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
   border-width: 1px;
-  border-color: #d0cbc6;
+  border-color: var(--jaad-code-border);
   border-radius: 0.25rem;
-  color: #1a1a1a;
+  color: var(--jaad-code-fg);
   font-size: calc(var(--ok-font-size) * 0.78);
   font-family: var(--ok-font-mono);
   white-space: nowrap;
 }
 
 .markdown-content pre {
-  background-color: #eeeae5 !important;
+  background-color: var(--jaad-pre-bg) !important;
   border-width: 1px;
-  border-color: #c8c4bf;
+  border-color: var(--jaad-pre-border);
   border-radius: 0.5rem;
   padding: 1rem;
   margin-top: 1.5rem;
@@ -164,9 +164,9 @@
   top: 0.5rem;
   right: 0.5rem;
   cursor: pointer;
-  border: 1px solid #a8a39e;
-  background-color: #d8d4cf;
-  color: #2d2d2d;
+  border: 1px solid var(--jaad-copy-btn-border);
+  background-color: var(--jaad-copy-btn-bg);
+  color: var(--jaad-copy-btn-fg);
   border-radius: 0.25rem;
   padding: 0.5rem;
   font-size: calc(var(--ok-font-size) * 0.67);
@@ -185,16 +185,16 @@
 }
 
 .markdown-content pre > .code-copy-button:hover {
-  background-color: #c8c4bf;
-  color: #1a1a1a;
-  border-color: #9a958f;
+  background-color: var(--jaad-copy-btn-hover-bg);
+  color: var(--jaad-copy-btn-hover-fg);
+  border-color: var(--jaad-copy-btn-hover-border);
 }
 
 .markdown-content pre code {
   background-color: transparent;
   border: none;
   padding: 0;
-  color: #2d2d2d;
+  color: var(--jaad-pre-fg);
   font-size: calc(var(--ok-font-size) * 0.85);
   white-space: pre;
   word-break: normal;
@@ -202,10 +202,11 @@
   line-height: 1.6;
 }
 
-/* Shiki/Astro code blocks */
+/* ─── Shiki/Astro code blocks ─────────────────────────────────────────────────────────────── */
+
 .markdown-content pre.shiki,
 .markdown-content pre.astro-code {
-  background-color: #eeeae5 !important;
+  background-color: var(--jaad-pre-bg) !important;
   padding: 1rem;
 }
 
@@ -217,7 +218,7 @@
 
 .markdown-content blockquote {
   border-left-width: 4px;
-  border-left-color: #5a5a5a;
+  border-left-color: var(--jaad-blockquote-border);
   background-color: var(--color-background-tertiary);
   padding-left: 1.5rem;
   padding-right: 1.5rem;
@@ -233,12 +234,12 @@
 .markdown-content blockquote p {
   margin: 0;
   font-style: italic;
-  color: #4a4a4a;
+  color: var(--jaad-blockquote-fg);
 }
 
 .markdown-content .markdown-alert {
   border-left-width: 4px;
-  border-left-color: #5a5a5a;
+  border-left-color: var(--jaad-blockquote-border);
   background-color: var(--color-background-tertiary);
   padding-left: 1.5rem;
   padding-right: 1.5rem;
@@ -280,7 +281,7 @@
 
 .markdown-content em {
   font-style: italic;
-  color: #4a4a4a;
+  color: var(--jaad-em-fg);
 }
 
 .markdown-content hr {
@@ -291,6 +292,8 @@
   margin-bottom: 2rem;
 }
 
+/* ─── Tables ─────────────────────────────────────────────────────────────── */
+
 .markdown-content table {
   width: 100%;
   border-collapse: separate;
@@ -299,15 +302,15 @@
   margin-bottom: 1.5rem;
   border-radius: 0.5rem;
   overflow: hidden;
-  box-shadow: 0 0 0 1px #b8b3ae;
+  box-shadow: 0 0 0 1px var(--jaad-table-border);
 }
 
 .markdown-content th,
 .markdown-content td {
   padding: 0.75rem 1rem;
   text-align: left;
-  border-bottom: 1px solid #b8b3ae;
-  border-right: 1px solid #b8b3ae;
+  border-bottom: 1px solid var(--jaad-table-border);
+  border-right: 1px solid var(--jaad-table-border);
 }
 
 .markdown-content th:last-child,
@@ -336,8 +339,10 @@
 }
 
 .markdown-content tbody tr:hover {
-  background-color: #e0dcd7;
+  background-color: var(--jaad-table-hover-bg);
 }
+
+/* ─── Images & Videos ─────────────────────────────────────────────────────────────── */
 
 .markdown-content img,
 .markdown-content video {
@@ -349,7 +354,8 @@
   margin-right: auto;
 }
 
-/* Image lightbox styles */
+/* ─── Lightbox ─────────────────────────────────────────────────────────────── */
+
 .image-lightbox {
   position: fixed;
   inset: 0;
@@ -421,16 +427,6 @@
   transform: scale(0.95);
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* Make markdown images look clickable */
 .markdown-content img.lightbox-enabled {
   transition:
     opacity 0.2s ease,
@@ -447,7 +443,7 @@
 .markdown-content .code-tabs {
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;
-  border: 1px solid #c8c4bf;
+  border: 1px solid var(--jaad-tabs-border);
   border-radius: 0.5rem;
   overflow: hidden;
 }
@@ -455,8 +451,8 @@
 .markdown-content .code-tab-buttons {
   display: flex;
   gap: 0;
-  background-color: #e0dcd7;
-  border-bottom: 1px solid #c8c4bf;
+  background-color: var(--jaad-tabs-header-bg);
+  border-bottom: 1px solid var(--jaad-tabs-border);
   padding: 0.25rem 0.5rem 0;
 }
 
@@ -480,14 +476,14 @@
 }
 
 .markdown-content .code-tab-btn:hover:not(.active) {
-  background-color: #d0cbc6;
+  background-color: var(--jaad-tabs-btn-hover-bg);
   color: var(--color-foreground-bright);
 }
 
 .markdown-content .code-tab-btn.active {
-  background-color: #eeeae5;
-  border-color: #c8c4bf;
-  border-bottom-color: #eeeae5;
+  background-color: var(--jaad-tabs-btn-active-bg);
+  border-color: var(--jaad-tabs-border);
+  border-bottom-color: var(--jaad-tabs-btn-active-bg);
   color: var(--color-primary);
 }
 
@@ -509,7 +505,7 @@
 
 .markdown-content details {
   background-color: var(--color-background-tertiary);
-  border: 1px solid #c8c4bf;
+  border: 1px solid var(--jaad-details-border);
   border-radius: 0.5rem;
   padding: 0 1.25rem;
   margin-top: 1.5rem;
@@ -586,43 +582,43 @@
 }
 
 .markdown-content .markdown-alert-note {
-  border-left-color: #0969da;
-  background-color: #dff0fd;
+  border-left-color: var(--jaad-alert-note-color);
+  background-color: var(--jaad-alert-note-bg);
 }
 .markdown-content .markdown-alert-note .markdown-alert-title {
-  color: #0969da;
+  color: var(--jaad-alert-note-color);
 }
 
 .markdown-content .markdown-alert-tip {
-  border-left-color: #1a7f37;
-  background-color: #dafbe1;
+  border-left-color: var(--jaad-alert-tip-color);
+  background-color: var(--jaad-alert-tip-bg);
 }
 .markdown-content .markdown-alert-tip .markdown-alert-title {
-  color: #1a7f37;
+  color: var(--jaad-alert-tip-color);
 }
 
 .markdown-content .markdown-alert-important {
-  border-left-color: #8250df;
-  background-color: #fbefff;
+  border-left-color: var(--jaad-alert-important-color);
+  background-color: var(--jaad-alert-important-bg);
 }
 .markdown-content .markdown-alert-important .markdown-alert-title {
-  color: #8250df;
+  color: var(--jaad-alert-important-color);
 }
 
 .markdown-content .markdown-alert-warning {
-  border-left-color: #9a6700;
-  background-color: #fff8c5;
+  border-left-color: var(--jaad-alert-warning-color);
+  background-color: var(--jaad-alert-warning-bg);
 }
 .markdown-content .markdown-alert-warning .markdown-alert-title {
-  color: #9a6700;
+  color: var(--jaad-alert-warning-color);
 }
 
 .markdown-content .markdown-alert-caution {
-  border-left-color: #cf222e;
-  background-color: #ffebe9;
+  border-left-color: var(--jaad-alert-caution-color);
+  background-color: var(--jaad-alert-caution-bg);
 }
 .markdown-content .markdown-alert-caution .markdown-alert-title {
-  color: #cf222e;
+  color: var(--jaad-alert-caution-color);
 }
 
 /* ─── Spoiler ────────────────────────────────────────────────────────────────── */
@@ -643,4 +639,15 @@
 .markdown-content .spoiler.revealed {
   background-color: var(--color-background-tertiary);
   color: var(--color-foreground);
+}
+
+/* ─── Animation ─────────────────────────────────────────────── */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
