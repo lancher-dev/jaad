@@ -392,9 +392,9 @@
 }
 
 .image-lightbox-close {
-  position: absolute;
-  top: -48px;
-  right: 0;
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: white;
@@ -408,6 +408,7 @@
   font-size: 24px;
   transition: all 0.2s ease;
   backdrop-filter: blur(8px);
+  z-index: 10;
 }
 
 .image-lightbox-close:hover {
