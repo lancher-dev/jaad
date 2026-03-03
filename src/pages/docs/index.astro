@@ -1,5 +1,6 @@
 ---
 import { getCollection, render } from "astro:content";
+import MarkdownContent from "jaamd/components";
 import { sortDocPages, getCleanSlug } from "@/utils/docs";
 import DocsLayout from "@/layouts/DocsLayout.astro";
 import DocsMobileNav from "@/components/docs/DocsMobileNav.astro";
@@ -30,12 +31,12 @@ const currentSlug = getCleanSlug(firstPage.id);
     <DocsMobileNav currentSlug={currentSlug} entry={firstPage} />
 
     <article>
-      <div
+      <MarkdownContent
         id="content"
-        class="markdown-content w-full leading-relaxed wrap-break-word"
+        class="w-full leading-relaxed wrap-break-word"
       >
         <Content />
-      </div>
+      </MarkdownContent>
     </article>
 
     <DocsPageNav id={firstPage.id} />

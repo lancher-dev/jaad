@@ -1,5 +1,6 @@
 ---
 import { getCollection, getEntry, render } from "astro:content";
+import MarkdownContent from "jaamd/components";
 import {
   parseDocCollectionId,
   sortDocPages,
@@ -72,12 +73,12 @@ const currentSlug = Astro.params.slug || "";
     <DocsMobileNav currentSlug={currentSlug} entry={docPage} />
 
     <article>
-      <div
+      <MarkdownContent
         id="content"
-        class="markdown-content w-full leading-relaxed wrap-break-word"
+        class="w-full leading-relaxed wrap-break-word"
       >
         <Content />
-      </div>
+      </MarkdownContent>
     </article>
 
     <DocsPageNav id={id} />

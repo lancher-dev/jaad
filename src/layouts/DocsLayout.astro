@@ -1,7 +1,6 @@
 ---
 import Footer from "@/components/Footer.astro";
 import Header from "@/components/Header.astro";
-import MarkdownEnhancements from "@/components/docs/MarkdownEnhancements.astro";
 import DocsSidebarLeft from "@/components/docs/DocsSidebarLeft.astro";
 import TableOfContents from "@/components/docs/TableOfContents.astro";
 import { extractHeadingsFromMarkdown } from "@/utils/docs";
@@ -10,7 +9,9 @@ import { Font } from "astro:assets";
 import { ClientRouter } from "astro:transitions";
 
 import "@/styles/global.css";
-import "@/styles/jaad/styles.css";
+import "@/styles/docs.css";
+import "@/styles/jaamd.css";
+import "jaamd/styles.css";
 
 interface Props {
   title?: string;
@@ -76,7 +77,6 @@ const headings = entry ? extractHeadingsFromMarkdown(entry.body || "") : [];
       <TableOfContents headings={headings} />
     </div>
 
-    <MarkdownEnhancements />
     <Footer />
   </body>
 </html>

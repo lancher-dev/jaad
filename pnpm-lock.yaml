@@ -21,32 +21,26 @@ importers:
         specifier: ^19.2.3
         version: 19.2.3(@types/react@19.2.14)
       astro:
-        specifier: ^5.17.2
-        version: 5.17.2(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.52.5)(typescript@5.9.3)(yaml@2.8.2)
+        specifier: ^5.18.0
+        version: 5.18.0(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.52.5)(typescript@5.9.3)(yaml@2.8.2)
       github-slugger:
         specifier: ^2.0.0
         version: 2.0.0
+      jaamd:
+        specifier: ^0.1.10
+        version: 0.1.10(astro@5.18.0(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.52.5)(typescript@5.9.3)(yaml@2.8.2))
       react:
         specifier: ^19.2.4
         version: 19.2.4
       react-dom:
         specifier: ^19.2.4
         version: 19.2.4(react@19.2.4)
-      remark-directive:
-        specifier: ^4.0.0
-        version: 4.0.0
-      remark-github-blockquote-alert:
-        specifier: ^2.0.1
-        version: 2.0.1
       sharp:
         specifier: ^0.34.5
         version: 0.34.5
       tailwindcss:
         specifier: ^4.1.18
         version: 4.1.18
-      unist-util-visit:
-        specifier: ^5.1.0
-        version: 5.1.0
     devDependencies:
       '@types/mdast':
         specifier: ^4.0.4
@@ -81,9 +75,6 @@ importers:
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
-      unified:
-        specifier: ^11.0.5
-        version: 11.0.5
 
 packages:
 
@@ -1160,8 +1151,8 @@ packages:
     resolution: {integrity: sha512-aOLc/aDR7lTWAHlytEefwn4Y6qs6uMr69DZvUx2A1AOAZsWhGB/paiRWPtVchh9wzMvLeqr+DkbENhVreVr9AQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  astro@5.17.2:
-    resolution: {integrity: sha512-7jnMqGo53hOQNwo1N/wqeOvUp8wwW/p+DeerSjSkHNx8L/1mhy6P7rVo7EhdmF8DpKqw0tl/B5Fx1WcIzg1ysA==}
+  astro@5.18.0:
+    resolution: {integrity: sha512-CHiohwJIS4L0G6/IzE1Fx3dgWqXBCXus/od0eGUfxrZJD2um2pE7ehclMmgL/fXqbU7NfE1Ze2pq34h2QaA6iQ==}
     engines: {node: 18.20.8 || ^20.3.0 || >=22.0.0, npm: '>=9.6.5', pnpm: '>=7.1.0'}
     hasBin: true
 
@@ -1726,6 +1717,11 @@ packages:
 
   isexe@2.0.0:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
+
+  jaamd@0.1.10:
+    resolution: {integrity: sha512-kqhaUMztzm1oXG3QzNAbeVAhBJubUOZU0cjD4oaCuhRffRdvxCeaSCXdpTDJ+dEvtqFAdxsfZZq1HH/77lS+hg==}
+    peerDependencies:
+      astro: '>=4.0.0'
 
   jiti@2.6.1:
     resolution: {integrity: sha512-ekilCSN1jwRvIbgeg/57YFh8qQDNbwDb9xT/qu2DAHbFFZUicIl4ygVaAvzveMhMVr3LnpSKTNnwt8PoOfmKhQ==}
@@ -2297,10 +2293,6 @@ packages:
 
   remark-gfm@4.0.1:
     resolution: {integrity: sha512-1quofZ2RQ9EWdeN34S79+KExV1764+wCUGop5CPL1WGdD0ocPpu91lzPGbwWMECpEpd42kJGQwzRfyov9j4yNg==}
-
-  remark-github-blockquote-alert@2.0.1:
-    resolution: {integrity: sha512-0w0u3/wjBEK555yzm5UUnDCWO38Qk60laA5FvJrnES+YA/+r3hvvLgE/5SpMjaVpPOpVzunXk9caob1NTheM0g==}
-    engines: {node: '>=16'}
 
   remark-parse@11.0.0:
     resolution: {integrity: sha512-FCxlKLNGknS5ba/1lmpYijMUzX2esxW5xQqjWxw2eHFfS2MSdaHVINFmhjo+qN1WhZhNimq0dZATN9pH0IDrpA==}
@@ -3646,7 +3638,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  astro@5.17.2(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.52.5)(typescript@5.9.3)(yaml@2.8.2):
+  astro@5.18.0(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.52.5)(typescript@5.9.3)(yaml@2.8.2):
     dependencies:
       '@astrojs/compiler': 2.13.0
       '@astrojs/internal-helpers': 0.7.5
@@ -3655,7 +3647,7 @@ snapshots:
       '@capsizecss/unpack': 4.0.0
       '@oslojs/encoding': 1.1.0
       '@rollup/pluginutils': 5.3.0(rollup@4.52.5)
-      acorn: 8.15.0
+      acorn: 8.16.0
       aria-query: 5.3.2
       axobject-query: 4.1.0
       boxen: 8.0.1
@@ -4363,6 +4355,14 @@ snapshots:
 
   isexe@2.0.0: {}
 
+  jaamd@0.1.10(astro@5.18.0(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.52.5)(typescript@5.9.3)(yaml@2.8.2)):
+    dependencies:
+      astro: 5.18.0(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.52.5)(typescript@5.9.3)(yaml@2.8.2)
+      remark-directive: 4.0.0
+      unist-util-visit: 5.1.0
+    transitivePeerDependencies:
+      - supports-color
+
   jiti@2.6.1: {}
 
   js-tokens@4.0.0: {}
@@ -4486,8 +4486,8 @@ snapshots:
 
   magicast@0.5.1:
     dependencies:
-      '@babel/parser': 7.28.5
-      '@babel/types': 7.28.5
+      '@babel/parser': 7.29.0
+      '@babel/types': 7.29.0
       source-map-js: 1.2.1
 
   markdown-table@3.0.4: {}
@@ -5072,10 +5072,6 @@ snapshots:
       unified: 11.0.5
     transitivePeerDependencies:
       - supports-color
-
-  remark-github-blockquote-alert@2.0.1:
-    dependencies:
-      unist-util-visit: 5.1.0
 
   remark-parse@11.0.0:
     dependencies:

@@ -6,10 +6,7 @@ import { fileURLToPath } from "url";
 
 import tailwindcss from "@tailwindcss/vite";
 
-// Remark plugins
-import { remarkAlert } from "remark-github-blockquote-alert";
-import remarkDirective from "remark-directive";
-import remarkCodeTabs from "./src/utils/remark-code-tabs.ts";
+import jaamd from "jaamd";
 
 import react from "@astrojs/react";
 
@@ -39,7 +36,6 @@ export default defineConfig({
   },
 
   markdown: {
-    remarkPlugins: [remarkAlert, remarkDirective, remarkCodeTabs],
     rehypePlugins: [],
     shikiConfig: {
       theme: "github-light",
@@ -47,7 +43,7 @@ export default defineConfig({
     },
   },
 
-  integrations: [react()],
+  integrations: [react(), jaamd()],
 
   experimental: {
     fonts: [

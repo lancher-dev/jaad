@@ -1,0 +1,77 @@
+/* JAAMD Default Variables
+   Wrapped in @layer jaamd.defaults so that ANY unlayered :root rule (e.g. in
+   global.css) automatically takes precedence, regardless of import order.
+*/
+
+:root {
+  /* Typography */
+  --jaamd-font-sans: var(--font-sans), sans-serif;
+  --jaamd-font-serif: var(--font-serif), Georgia, serif;
+  --jaamd-font-mono: var(--font-mono), monospace;
+  --jaamd-font-size: 1.125rem;
+  --jaamd-line-height: 1.6;
+
+  /* Headings */
+  --jaamd-heading-border-color: rgb(from var(--color-primary) r g b / 0.4);
+
+  /* Inline code */
+  --jaamd-code-bg: #e8e4df;
+  --jaamd-code-border: #d0cbc6;
+  --jaamd-code-fg: var(--color-foreground-bright);
+
+  /* Code blocks (pre) */
+  --jaamd-pre-bg: var(--color-background-tertiary);
+  --jaamd-pre-border: var(--color-border-dark);
+  --jaamd-pre-fg: var(--color-primary);
+
+  /* Copy button */
+  --jaamd-copy-btn-bg: var(--color-border);
+  --jaamd-copy-btn-border: #a8a39e;
+  --jaamd-copy-btn-fg: var(--color-primary);
+  --jaamd-copy-btn-hover-bg: var(--color-border-dark);
+  --jaamd-copy-btn-hover-border: #9a958f;
+  --jaamd-copy-btn-hover-fg: var(--color-foreground-bright);
+
+  /* Blockquote */
+  --jaamd-blockquote-bg: var(--color-background-tertiary);
+  --jaamd-blockquote-border: #5a5a5a;
+  --jaamd-blockquote-fg: var(--color-primary-light);
+
+  /* Emphasis */
+  --jaamd-em-fg: var(--color-primary-light);
+
+  /* Horizontal rule */
+  --jaamd-hr-color: rgb(from var(--color-primary) r g b / 0.4);
+
+  /* Table */
+  --jaamd-table-border: #b8b3ae;
+  --jaamd-table-header-bg: var(--color-background-tertiary);
+  --jaamd-table-hover-bg: #e0dcd7;
+
+  /* Code tabs */
+  --jaamd-tabs-border: var(--color-border-dark);
+  --jaamd-tabs-header-bg: #e0dcd7;
+  --jaamd-tabs-btn-hover-bg: #d0cbc6;
+  --jaamd-tabs-btn-active-bg: var(--color-background-tertiary);
+
+  /* Details / Summary */
+  --jaamd-details-bg: var(--color-background-tertiary);
+  --jaamd-details-border: var(--color-border-dark);
+
+  /* Spoiler */
+  --jaamd-spoiler-hidden-color: var(--color-foreground-bright);
+  --jaamd-spoiler-revealed-bg: var(--color-background-tertiary);
+  --jaamd-spoiler-revealed-fg: var(--color-foreground);
+
+  /* Alerts */
+  --jaamd-alert-note-color: #0969da;
+  --jaamd-alert-note-bg: #dff0fd;
+  --jaamd-alert-tip-color: #1a7f37;
+  --jaamd-alert-tip-bg: #dafbe1;
+  --jaamd-alert-important-color: #8250df;
+  --jaamd-alert-important-bg: #fbefff;
+  --jaamd-alert-warning-color: #9a6700;
+  --jaamd-alert-warning-bg: #fff8c5;
+  --jaamd-alert-caution-color: #cf222e;
+  --jaamd-alert-caution-bg: #ffebe9;
+}

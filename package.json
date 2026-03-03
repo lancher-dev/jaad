@@ -18,15 +18,13 @@
     "@tailwindcss/vite": "^4.1.18",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "astro": "^5.17.2",
+    "astro": "^5.18.0",
     "github-slugger": "^2.0.0",
+    "jaamd": "^0.1.10",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "remark-directive": "^4.0.0",
-    "remark-github-blockquote-alert": "^2.0.1",
     "sharp": "^0.34.5",
-    "tailwindcss": "^4.1.18",
-    "unist-util-visit": "^5.1.0"
+    "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
     "@types/mdast": "^4.0.4",
@@ -39,8 +37,7 @@
     "prettier": "3.8.1",
     "prettier-plugin-astro": "0.14.1",
     "prettier-plugin-tailwindcss": "0.7.2",
-    "typescript": "^5.9.3",
-    "unified": "^11.0.5"
+    "typescript": "^5.9.3"
   },
   "lint-staged": {
     "*.{ts,tsx,astro}": [
