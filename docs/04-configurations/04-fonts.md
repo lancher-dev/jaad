@@ -35,8 +35,15 @@ export default defineConfig({
 });
 ```
 
-Change `name` to any family on [Google Fonts](https://fonts.google.com), or switch `provider` to load from a different source — Bunny, Fontsource, or local files on disk are all supported out of the box.
+Change `name` to any family on [Google Fonts](https://fonts.google.com), or switch `provider` to load from a different source: Bunny, Fontsource, or local files on disk are all supported out of the box.
 
-The variables `--font-inter` and `--font-merriweather` are referenced across `global.css` and `markdown.css`; update those too if you rename a family.
+The variables `--font-inter` and `--font-merriweather` are referenced in `global.css` and forwarded to JAAMD's theming tokens (`--jaamd-font-sans`, `--jaamd-font-mono`). If you rename a font family, update those tokens in `global.css` as well:
+
+```css
+/* src/styles/global.css */
+:root {
+  --jaamd-font-sans: var(--font-my-custom-family), ui-sans-serif, sans-serif;
+}
+```
 
 For the full list of providers and options see the [Astro fonts documentation](https://docs.astro.build/en/reference/experimental-flags/fonts/).

@@ -1,6 +1,6 @@
 # Overview
 
-**JAAD** (Just Another Astro Docs) is a minimal, file-driven documentation framework. Drop markdown files into a folder, run one command, and get a fully functional documentation site — complete with sidebar navigation, per-page table of contents, syntax highlighting, and responsive layout.
+**JAAD** (_Just Another Astro Docs_) is a minimal, file-driven documentation framework. Drop markdown files into a folder, run one command, and get a fully functional documentation site — complete with sidebar navigation, per-page table of contents, syntax highlighting, and responsive layout.
 
 It is intentionally thin: no CMS, no database, no special frontmatter required. The file system is the source of truth.
 
