@@ -43,8 +43,19 @@ import "@/styles/global.css";
     <meta name="twitter:image" content="/og-image.png" />
 
     <meta name="generator" content={Astro.generator} />
+
+    <script is:inline>
+      (function () {
+        var t = localStorage.getItem("theme");
+        if (
+          t === "dark" ||
+          (!t && matchMedia("(prefers-color-scheme: dark)").matches)
+        )
+          document.documentElement.classList.add("dark");
+      })();
+    </script>
   </head>
-  <body class="flex min-h-screen flex-col text-[14px] leading-[1.6]">
+  <body class="bg-background text-foreground flex min-h-screen flex-col text-[14px] leading-[1.6]">
     <Header />
     <main
       role="main"

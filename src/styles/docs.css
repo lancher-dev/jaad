@@ -97,6 +97,11 @@ html {
   padding: 0.5rem;
 }
 
+/* Dark mode: lighter arrow for mobile nav selects */
+html.dark .docs-mobile-nav select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23c9d1d9' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+}
+
 /* Hide the ToC sidebar until initToc() has finished all DOM work.
    This prevents a flash where stale/filtered items are briefly visible
    before the JS module removes them. The attribute is removed by the script. */
