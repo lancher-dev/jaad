@@ -18,21 +18,62 @@ function readSearchIndex(): SearchItem[] {
   }
 }
 
+/** Split `text` around every case-insensitive occurrence of `query` and
+ *  wrap each match in a <mark> for visual highlighting. */
+function Highlighted({ text, query }: { text: string; query: string }) {
+  if (!query.trim()) return <>{text}</>;
+  const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const parts = text.split(new RegExp(`(${escaped})`, "gi"));
+  return (
+    <>
+      {parts.map((part, i) =>
+        part.toLowerCase() === query.toLowerCase() ? (
+          <mark
+            key={i}
+            className="bg-primary/20 text-foreground-bright rounded-sm px-0.5 font-semibold not-italic"
+          >
+            {part}
+          </mark>
+        ) : (
+          <span key={i}>{part}</span>
+        ),
+      )}
+    </>
+  );
+}
+
 export default function SearchPalette() {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchItem[]>([]);
   const [index, setIndex] = useState<SearchItem[] | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  // Lazy initializer reads the DOM synchronously at hydration time so the
+  // trigger button is already visible on the first paint — no flash on navigation.
+  const [inDocs, setInDocs] = useState<boolean>(
+    () =>
+      typeof document !== "undefined" &&
+      !!document.getElementById("jaad-search-index"),
+  );
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
-  // Parse embedded index on first open
+  // Keep inDocs in sync after every View Transition swap.
   useEffect(() => {
-    if (isOpen && !index) {
-      setIndex(readSearchIndex());
+    const check = () =>
+      setInDocs(!!document.getElementById("jaad-search-index"));
+    document.addEventListener("astro:after-swap", check);
+    return () => document.removeEventListener("astro:after-swap", check);
+  }, []);
+
+  // Re-read the index every time the palette opens so stale/empty state
+  // from a previous non-docs page never blocks results.
+  useEffect(() => {
+    if (isOpen) {
+      const fresh = readSearchIndex();
+      setIndex(fresh.length > 0 ? fresh : null);
     }
-  }, [isOpen, index]);
+  }, [isOpen]);
 
   // Search when query changes
   useEffect(() => {
@@ -61,21 +102,25 @@ export default function SearchPalette() {
     setSelectedIndex(0);
   }, [query, index, isOpen]);
 
-  // Global keyboard shortcut
+  // Global keyboard shortcuts — use functional updater for isOpen so the
+  // handler never holds a stale closure value.
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "k") {
         e.preventDefault();
         setIsOpen((prev) => !prev);
+        return;
       }
-      if (e.key === "Escape" && isOpen) {
-        e.preventDefault();
-        setIsOpen(false);
+      if (e.key === "Escape") {
+        setIsOpen((prev) => {
+          if (prev) e.preventDefault();
+          return false;
+        });
       }
     };
     document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
-  }, [isOpen]);
+  }, []);
 
   // Focus input when opened
   useEffect(() => {
@@ -93,6 +138,15 @@ export default function SearchPalette() {
       | undefined;
     item?.scrollIntoView({ block: "nearest" });
   }, [selectedIndex]);
+
+  // Close palette when navigating away from docs
+  useEffect(() => {
+    const onSwap = () => {
+      if (!document.getElementById("jaad-search-index")) setIsOpen(false);
+    };
+    document.addEventListener("astro:after-swap", onSwap);
+    return () => document.removeEventListener("astro:after-swap", onSwap);
+  }, []);
 
   const navigate = useCallback((slug: string) => {
     setIsOpen(false);
@@ -126,56 +180,61 @@ export default function SearchPalette() {
   };
 
   const isMac =
-    typeof navigator !== "undefined" && /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
+    typeof navigator !== "undefined" &&
+    /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
   const shortcutLabel = isMac ? "⌘K" : "Ctrl K";
 
   return (
     <>
       {/* Desktop trigger — looks like a compact search bar */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className="border-border bg-surface hover:bg-surface-hover text-foreground-muted hidden cursor-pointer items-center gap-2 rounded-lg border px-3 py-1.5 text-sm transition-colors md:flex"
-        aria-label="Search documentation"
-      >
-        <svg
-          className="h-4 w-4 shrink-0"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+      {inDocs && (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="border-border bg-surface hover:bg-surface-hover text-foreground-muted hidden cursor-pointer items-center gap-2 rounded-lg border px-3 py-1.5 text-sm transition-colors md:flex"
+          aria-label="Search documentation"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-          />
-        </svg>
-        <span className="hidden lg:inline">Search docs...</span>
-        <kbd className="bg-background-secondary text-foreground-muted rounded px-1.5 py-0.5 text-xs font-medium">
-          {shortcutLabel}
-        </kbd>
-      </button>
+          <svg
+            className="h-4 w-4 shrink-0"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+          <span className="hidden lg:inline">Search docs...</span>
+          <kbd className="bg-background-secondary text-foreground-muted rounded px-1.5 py-0.5 text-xs font-medium">
+            {shortcutLabel}
+          </kbd>
+        </button>
+      )}
 
       {/* Mobile trigger — icon only */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className="text-foreground-secondary hover:text-foreground-bright flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg transition-colors md:hidden"
-        aria-label="Search documentation"
-      >
-        <svg
-          className="h-5 w-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+      {inDocs && (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="text-foreground-secondary hover:text-foreground-bright flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg transition-colors md:hidden"
+          aria-label="Search documentation"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-          />
-        </svg>
-      </button>
+          <svg
+            className="h-5 w-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+        </button>
+      )}
 
       {/* Overlay */}
       {isOpen && (
@@ -215,7 +274,7 @@ export default function SearchPalette() {
                 spellCheck={false}
               />
               <kbd
-                className="bg-background-secondary text-foreground-muted shrink-0 rounded px-1.5 py-0.5 text-xs"
+                className="bg-background-secondary text-foreground-muted shrink-0 cursor-pointer rounded px-1.5 py-0.5 text-xs"
                 onClick={() => setIsOpen(false)}
               >
                 ESC
@@ -241,7 +300,11 @@ export default function SearchPalette() {
               {results.map((item, i) => {
                 const snippet = getSnippet(item.body, query);
                 return (
-                  <li key={item.slug} role="option" aria-selected={i === selectedIndex}>
+                  <li
+                    key={item.slug}
+                    role="option"
+                    aria-selected={i === selectedIndex}
+                  >
                     <button
                       onClick={() => navigate(item.slug)}
                       onMouseEnter={() => setSelectedIndex(i)}
@@ -253,7 +316,7 @@ export default function SearchPalette() {
                     >
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-medium">
-                          {item.title}
+                          <Highlighted text={item.title} query={query} />
                         </span>
                         {item.chapter && (
                           <span className="text-foreground-muted bg-background-secondary rounded px-1.5 py-0.5 text-[0.65rem]">
@@ -263,7 +326,7 @@ export default function SearchPalette() {
                       </div>
                       {snippet && (
                         <p className="text-foreground-secondary mt-1 line-clamp-1 text-xs">
-                          {snippet}
+                          <Highlighted text={snippet} query={query} />
                         </p>
                       )}
                     </button>
@@ -275,13 +338,22 @@ export default function SearchPalette() {
             {/* Footer */}
             <div className="border-border text-foreground-muted flex items-center gap-4 border-t px-4 py-2 text-xs">
               <span>
-                <kbd className="bg-background-secondary rounded px-1 py-0.5">↑↓</kbd> navigate
+                <kbd className="bg-background-secondary rounded px-1 py-0.5">
+                  ↑↓
+                </kbd>{" "}
+                navigate
               </span>
               <span>
-                <kbd className="bg-background-secondary rounded px-1 py-0.5">↵</kbd> open
+                <kbd className="bg-background-secondary rounded px-1 py-0.5">
+                  ↵
+                </kbd>{" "}
+                open
               </span>
               <span>
-                <kbd className="bg-background-secondary rounded px-1 py-0.5">esc</kbd> close
+                <kbd className="bg-background-secondary rounded px-1 py-0.5">
+                  esc
+                </kbd>{" "}
+                close
               </span>
             </div>
           </div>
