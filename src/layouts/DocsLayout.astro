@@ -120,5 +120,48 @@ const searchIndex = buildSearchIndex(sortDocPages(docsCollection));
     </div>
 
     <Footer />
+
+    <script is:inline>
+      (function () {
+        function navigate() {
+          var nav = document.querySelector('nav[aria-label="Page navigation"]');
+          if (!nav) return;
+          var links = nav.querySelectorAll("a[href]");
+          var prev = null,
+            next = null;
+          links.forEach(function (a) {
+            var icon = a.querySelector("i");
+            if (!icon) return;
+            if (icon.classList.contains("nf-md-chevron_left")) prev = a;
+            if (icon.classList.contains("nf-md-chevron_right")) next = a;
+          });
+          return { prev: prev, next: next };
+        }
+        function onKey(e) {
+          var tag = document.activeElement && document.activeElement.tagName;
+          if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+          if (
+            document.activeElement &&
+            document.activeElement.isContentEditable
+          )
+            return;
+          var pages = navigate();
+          if (!pages) return;
+          if (e.key === "ArrowLeft" && pages.prev) {
+            e.preventDefault();
+            pages.prev.click();
+          }
+          if (e.key === "ArrowRight" && pages.next) {
+            e.preventDefault();
+            pages.next.click();
+          }
+        }
+        document.addEventListener("keydown", onKey);
+        document.addEventListener("astro:after-swap", function () {
+          document.removeEventListener("keydown", onKey);
+          document.addEventListener("keydown", onKey);
+        });
+      })();
+    </script>
   </body>
 </html>
