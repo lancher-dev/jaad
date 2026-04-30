@@ -84,39 +84,39 @@ const nextUrl = nextPage ? `/docs/${nextPage.slug}` : null;
 }
 
 <script is:inline define:vars={{ previousUrl, nextUrl }}>
-  function initPageNav() {
-    // Only add keyboard navigation if there are navigation buttons
-    if (!previousUrl && !nextUrl) return;
-
-    function handleKeyPress(event) {
-      // Only handle arrow keys if no input elements are focused
-      if (
-        document.activeElement?.tagName === "INPUT" ||
-        document.activeElement?.tagName === "TEXTAREA" ||
-        document.activeElement?.contentEditable === "true"
-      ) {
-        return;
-      }
-
-      switch (event.key) {
-        case "ArrowLeft":
-          if (previousUrl) {
-            event.preventDefault();
-            window.location.href = previousUrl;
-          }
-          break;
-        case "ArrowRight":
-          if (nextUrl) {
-            event.preventDefault();
-            window.location.href = nextUrl;
-          }
-          break;
-      }
+  function handleKeyPress(event) {
+    if (
+      document.activeElement?.tagName === "INPUT" ||
+      document.activeElement?.tagName === "TEXTAREA" ||
+      document.activeElement?.contentEditable === "true"
+    ) {
+      return;
     }
 
-    document.addEventListener("keydown", handleKeyPress);
+    switch (event.key) {
+      case "ArrowLeft": {
+        const prevLink = previousUrl
+          ? document.querySelector(`a[href="${previousUrl}"]`)
+          : null;
+        if (prevLink) {
+          event.preventDefault();
+          prevLink.click();
+        }
+        break;
+      }
+      case "ArrowRight": {
+        const nextLink = nextUrl
+          ? document.querySelector(`a[href="${nextUrl}"]`)
+          : null;
+        if (nextLink) {
+          event.preventDefault();
+          nextLink.click();
+        }
+        break;
+      }
+    }
   }
 
-  initPageNav();
-  document.addEventListener("astro:page-load", initPageNav);
+  document.removeEventListener("keydown", handleKeyPress);
+  document.addEventListener("keydown", handleKeyPress);
 </script>

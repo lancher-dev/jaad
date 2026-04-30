@@ -1,17 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type Theme = "light" | "dark";
 
 export default function ThemeSwitcher() {
-  const [theme, setTheme] = useState<Theme>(
-    // Read synchronously from the DOM to avoid a flash of the wrong icon.
-    // The inline head script has already set html.dark before React hydrates.
-    () =>
-      typeof document !== "undefined" &&
-      document.documentElement.classList.contains("dark")
-        ? "dark"
-        : "light",
-  );
+  const [theme, setTheme] = useState<Theme>("light");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    // Legge il tema reale dopo il mount, evitando il mismatch SSR/client
+    const isDark = document.documentElement.classList.contains("dark");
+    setTheme(isDark ? "dark" : "light");
+    setMounted(true);
+  }, []);
 
   const toggle = () => {
     const next: Theme = theme === "light" ? "dark" : "light";
@@ -19,6 +19,12 @@ export default function ThemeSwitcher() {
     document.documentElement.classList.toggle("dark", next === "dark");
     localStorage.setItem("theme", next);
   };
+
+  if (!mounted) {
+    return (
+      <div className="flex h-9 w-9 items-center justify-center rounded-lg" />
+    );
+  }
 
   return (
     <button

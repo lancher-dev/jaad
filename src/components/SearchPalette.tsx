@@ -150,7 +150,11 @@ export default function SearchPalette() {
 
   const navigate = useCallback((slug: string) => {
     setIsOpen(false);
-    window.location.href = `/docs/${slug}`;
+    const a = document.createElement("a");
+    a.href = `/docs/${slug}`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   }, []);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
