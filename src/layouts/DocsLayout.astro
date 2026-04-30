@@ -71,12 +71,27 @@ const searchIndex = buildSearchIndex(sortDocPages(docsCollection));
 
     <script is:inline>
       (function () {
-        var t = localStorage.getItem("theme");
-        if (
-          t === "dark" ||
-          (!t && matchMedia("(prefers-color-scheme: dark)").matches)
-        )
-          document.documentElement.classList.add("dark");
+        function isDark() {
+          var t = localStorage.getItem("theme");
+          return (
+            t === "dark" ||
+            (!t && matchMedia("(prefers-color-scheme: dark)").matches)
+          );
+        }
+        function applyTheme(root) {
+          if (isDark()) {
+            root.classList.add("dark");
+          } else {
+            root.classList.remove("dark");
+          }
+        }
+        applyTheme(document.documentElement);
+        document.addEventListener("astro:before-swap", function (e) {
+          applyTheme(e.newDocument.documentElement);
+        });
+        document.addEventListener("astro:after-swap", function () {
+          applyTheme(document.documentElement);
+        });
       })();
     </script>
 

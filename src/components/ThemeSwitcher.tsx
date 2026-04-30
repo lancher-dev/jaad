@@ -1,16 +1,17 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 type Theme = "light" | "dark";
 
 export default function ThemeSwitcher() {
-  const [theme, setTheme] = useState<Theme>("light");
-
-  useEffect(() => {
-    // Read initial state from the DOM (set by the inline head script)
-    setTheme(
-      document.documentElement.classList.contains("dark") ? "dark" : "light",
-    );
-  }, []);
+  const [theme, setTheme] = useState<Theme>(
+    // Read synchronously from the DOM to avoid a flash of the wrong icon.
+    // The inline head script has already set html.dark before React hydrates.
+    () =>
+      typeof document !== "undefined" &&
+      document.documentElement.classList.contains("dark")
+        ? "dark"
+        : "light",
+  );
 
   const toggle = () => {
     const next: Theme = theme === "light" ? "dark" : "light";
