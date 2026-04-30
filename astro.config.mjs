@@ -35,15 +35,10 @@ export default defineConfig({
     },
   },
 
-  markdown: {
-    rehypePlugins: [],
-    shikiConfig: {
-      theme: "github-light",
-      wrap: true,
-    },
-  },
-
-  integrations: [react(), jaamd()],
+  integrations: [
+    react(),
+    jaamd({ theme: { light: "github-light", dark: "github-dark" } }),
+  ],
 
   fonts: [
     {

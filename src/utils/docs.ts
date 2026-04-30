@@ -194,3 +194,53 @@ export function buildDocNavItems<
     };
   });
 }
+
+// ── Search index ────────────────────────────────────────────────────────────
+
+export interface DocsSearchEntry {
+  title: string;
+  slug: string;
+  chapter: string | null;
+  body: string;
+}
+
+/** Strip markdown syntax to plain text for search indexing. */
+function stripMarkdown(text: string): string {
+  return text
+    .replace(/^#{1,6}\s+/gm, "")
+    .replace(/\*\*(.+?)\*\*/g, "$1")
+    .replace(/\*(.+?)\*/g, "$1")
+    .replace(/`{3,}[\s\S]*?`{3,}/g, "")
+    .replace(/`(.+?)`/g, "$1")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/!\[([^\]]*)\]\([^)]+\)/g, "")
+    .replace(/^>\s?/gm, "")
+    .replace(/^[-*+]\s+/gm, "")
+    .replace(/^\d+\.\s+/gm, "")
+    .replace(/^:::.*$/gm, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+/**
+ * Build a search index from sorted doc pages.
+ * Used at build time to generate the static data embedded in every docs page.
+ */
+export function buildSearchIndex<
+  T extends { id: string; body?: string; data?: { title?: string } },
+>(sortedPages: T[]): DocsSearchEntry[] {
+  return sortedPages.map((page) => {
+    const parsed = parseDocCollectionId(page.id);
+    const cleanSlug = getCleanSlug(page.id);
+    const title =
+      page.data?.title ??
+      (page.body ? extractTitleFromMarkdown(page.body) : null) ??
+      parsed.title;
+    return {
+      title,
+      slug: cleanSlug,
+      chapter: formatChapterTitle(parsed.chapter),
+      body: stripMarkdown(page.body || ""),
+    };
+  });
+}

@@ -75,3 +75,32 @@
   --jaamd-alert-caution-color: #cf222e;
   --jaamd-alert-caution-bg: #ffebe9;
 }
+
+/* Dark mode — override hardcoded hex values.
+   Properties referencing var(--color-*) update automatically. */
+html.dark {
+  --jaamd-code-bg: var(--color-background-secondary);
+  --jaamd-code-border: var(--color-border);
+
+  --jaamd-copy-btn-border: var(--color-border-dark);
+  --jaamd-copy-btn-hover-border: var(--color-foreground-muted);
+
+  --jaamd-blockquote-border: var(--color-border-dark);
+
+  --jaamd-table-border: var(--color-border);
+  --jaamd-table-hover-bg: var(--color-background-tertiary);
+
+  --jaamd-tabs-header-bg: var(--color-background-tertiary);
+  --jaamd-tabs-btn-hover-bg: var(--color-surface);
+
+  --jaamd-alert-note-color: #58a6ff;
+  --jaamd-alert-note-bg: rgba(56, 139, 253, 0.1);
+  --jaamd-alert-tip-color: #3fb950;
+  --jaamd-alert-tip-bg: rgba(46, 160, 67, 0.1);
+  --jaamd-alert-important-color: #a371f7;
+  --jaamd-alert-important-bg: rgba(163, 113, 247, 0.1);
+  --jaamd-alert-warning-color: #d29922;
+  --jaamd-alert-warning-bg: rgba(187, 128, 9, 0.1);
+  --jaamd-alert-caution-color: #f85149;
+  --jaamd-alert-caution-bg: rgba(248, 81, 73, 0.1);
+}
