@@ -18,7 +18,7 @@
     "@tailwindcss/vite": "^4.2.4",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "astro": "^6.2.0",
+    "astro": "^6.4.6",
     "github-slugger": "^2.0.0",
     "jaamd": "^0.2.0",
     "react": "^19.2.5",
