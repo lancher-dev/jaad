@@ -99,29 +99,32 @@ const headings = extractHeadingsFromMarkdown(entry.body || "");
 
 <ScrollToTop client:load />
 
-<script is:inline>
-  function initMobileNav() {
-    const pageSelect = document.getElementById("page-select");
-    const sectionSelect = document.getElementById("section-select");
+<script>
+  import { navigate } from "astro:transitions/client";
 
-    // Page navigation
-    if (pageSelect) {
-      pageSelect.addEventListener("change", (e) => {
-        const value = e.target.value;
-        if (value) window.location.href = value;
+  function initMobileNav(): void {
+    const pageSelect =
+      document.querySelector<HTMLSelectElement>("#page-select");
+    const sectionSelect =
+      document.querySelector<HTMLSelectElement>("#section-select");
+
+    if (pageSelect && !pageSelect.dataset.navInit) {
+      pageSelect.dataset.navInit = "1";
+      pageSelect.addEventListener("change", () => {
+        if (pageSelect.value) navigate(pageSelect.value);
       });
     }
 
-    // Section navigation - event listener
-    if (sectionSelect) {
-      sectionSelect.addEventListener("change", (e) => {
-        const value = e.target.value;
-        if (value) {
-          document
-            .querySelector(value)
-            ?.scrollIntoView({ behavior: "smooth", block: "start" });
-          setTimeout(() => (sectionSelect.value = ""), 500);
-        }
+    if (sectionSelect && !sectionSelect.dataset.navInit) {
+      sectionSelect.dataset.navInit = "1";
+      sectionSelect.addEventListener("change", () => {
+        const target = sectionSelect.value;
+        if (!target) return;
+        document
+          .querySelector(target)
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+        // Reset so picking the same section twice in a row fires again.
+        setTimeout(() => (sectionSelect.value = ""), 500);
       });
     }
   }
