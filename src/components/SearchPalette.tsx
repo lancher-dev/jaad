@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { navigate } from "astro:transitions/client";
 
 interface SearchItem {
   title: string;
@@ -7,15 +8,31 @@ interface SearchItem {
   body: string;
 }
 
-/** Read the static search index embedded in the page by DocsLayout. */
-function readSearchIndex(): SearchItem[] {
-  const el = document.getElementById("jaad-search-index");
-  if (!el?.textContent) return [];
-  try {
-    return JSON.parse(el.textContent) as SearchItem[];
-  } catch {
-    return [];
+interface Props {
+  inDocs?: boolean;
+}
+
+const INDEX_URL = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/search-index.json`;
+
+let indexCache: SearchItem[] | null = null;
+let indexRequest: Promise<SearchItem[]> | null = null;
+
+function loadSearchIndex(): Promise<SearchItem[]> {
+  if (indexCache) return Promise.resolve(indexCache);
+  if (!indexRequest) {
+    indexRequest = fetch(INDEX_URL)
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data: SearchItem[]) => {
+        indexCache = data;
+        return data;
+      })
+      .catch(() => {
+        // Allow a later attempt to retry rather than caching the failure.
+        indexRequest = null;
+        return [];
+      });
   }
+  return indexRequest;
 }
 
 /** Split `text` around every case-insensitive occurrence of `query` and
@@ -42,37 +59,39 @@ function Highlighted({ text, query }: { text: string; query: string }) {
   );
 }
 
-export default function SearchPalette() {
+export default function SearchPalette({ inDocs: inDocsProp = false }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchItem[]>([]);
-  const [index, setIndex] = useState<SearchItem[] | null>(null);
+  const [index, setIndex] = useState<SearchItem[] | null>(indexCache);
   const [selectedIndex, setSelectedIndex] = useState(0);
-  // Lazy initializer reads the DOM synchronously at hydration time so the
-  // trigger button is already visible on the first paint — no flash on navigation.
-  const [inDocs, setInDocs] = useState<boolean>(
-    () =>
-      typeof document !== "undefined" &&
-      !!document.getElementById("jaad-search-index"),
-  );
+  // Seeded from the server so the trigger is painted with the page.
+  const [inDocs, setInDocs] = useState(inDocsProp);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
+  const restoreFocusRef = useRef<HTMLElement | null>(null);
 
   // Keep inDocs in sync after every View Transition swap.
   useEffect(() => {
-    const check = () =>
-      setInDocs(!!document.getElementById("jaad-search-index"));
+    const check = () => {
+      const nowInDocs = document.body.hasAttribute("data-docs");
+      setInDocs(nowInDocs);
+      if (!nowInDocs) setIsOpen(false);
+    };
     document.addEventListener("astro:after-swap", check);
     return () => document.removeEventListener("astro:after-swap", check);
   }, []);
 
-  // Re-read the index every time the palette opens so stale/empty state
-  // from a previous non-docs page never blocks results.
+  // Fetch the index when the palette opens (no-op once cached).
   useEffect(() => {
-    if (isOpen) {
-      const fresh = readSearchIndex();
-      setIndex(fresh.length > 0 ? fresh : null);
-    }
+    if (!isOpen) return;
+    let cancelled = false;
+    loadSearchIndex().then((data) => {
+      if (!cancelled) setIndex(data.length > 0 ? data : null);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [isOpen]);
 
   // Search when query changes
@@ -122,39 +141,32 @@ export default function SearchPalette() {
     return () => document.removeEventListener("keydown", handler);
   }, []);
 
-  // Focus input when opened
+  // Focus the input on open, lock background scrolling, and hand focus back to
+  // whatever triggered the palette on close.
   useEffect(() => {
     if (isOpen) {
+      restoreFocusRef.current = document.activeElement as HTMLElement | null;
+      const previousOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
       requestAnimationFrame(() => inputRef.current?.focus());
-    } else {
-      setQuery("");
+      return () => {
+        document.body.style.overflow = previousOverflow;
+      };
     }
+    setQuery("");
+    restoreFocusRef.current?.focus?.();
   }, [isOpen]);
 
   // Scroll selected item into view
   useEffect(() => {
     const item = listRef.current?.children[selectedIndex] as
-      | HTMLElement
-      | undefined;
+      HTMLElement | undefined;
     item?.scrollIntoView({ block: "nearest" });
   }, [selectedIndex]);
 
-  // Close palette when navigating away from docs
-  useEffect(() => {
-    const onSwap = () => {
-      if (!document.getElementById("jaad-search-index")) setIsOpen(false);
-    };
-    document.addEventListener("astro:after-swap", onSwap);
-    return () => document.removeEventListener("astro:after-swap", onSwap);
-  }, []);
-
-  const navigate = useCallback((slug: string) => {
+  const goTo = useCallback((slug: string) => {
     setIsOpen(false);
-    const a = document.createElement("a");
-    a.href = `/docs/${slug}`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    navigate(`/docs/${slug}`);
   }, []);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -165,7 +177,7 @@ export default function SearchPalette() {
       e.preventDefault();
       setSelectedIndex((prev) => Math.max(prev - 1, 0));
     } else if (e.key === "Enter" && results[selectedIndex]) {
-      navigate(results[selectedIndex].slug);
+      goTo(results[selectedIndex].slug);
     }
   };
 
@@ -188,12 +200,22 @@ export default function SearchPalette() {
     /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
   const shortcutLabel = isMac ? "⌘K" : "Ctrl K";
 
+  // Warm the index before the palette is even opened, so the first search is
+  // instant for anyone who hovers the trigger first.
+  const prefetch = () => void loadSearchIndex();
+
+  const activeOptionId = results[selectedIndex]
+    ? `search-option-${selectedIndex}`
+    : undefined;
+
   return (
     <>
       {/* Desktop trigger — looks like a compact search bar */}
       {inDocs && (
         <button
           onClick={() => setIsOpen(true)}
+          onMouseEnter={prefetch}
+          onFocus={prefetch}
           className="border-border bg-surface hover:bg-surface-hover text-foreground-muted hidden cursor-pointer items-center gap-2 rounded-lg border px-3 py-1.5 text-sm transition-colors md:flex"
           aria-label="Search documentation"
         >
@@ -202,6 +224,7 @@ export default function SearchPalette() {
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
+            aria-hidden="true"
           >
             <path
               strokeLinecap="round"
@@ -221,6 +244,8 @@ export default function SearchPalette() {
       {inDocs && (
         <button
           onClick={() => setIsOpen(true)}
+          onMouseEnter={prefetch}
+          onFocus={prefetch}
           className="text-foreground-secondary hover:text-foreground-bright flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg transition-colors md:hidden"
           aria-label="Search documentation"
         >
@@ -229,6 +254,7 @@ export default function SearchPalette() {
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
+            aria-hidden="true"
           >
             <path
               strokeLinecap="round"
@@ -242,7 +268,12 @@ export default function SearchPalette() {
 
       {/* Overlay */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center px-4 pt-[15vh]">
+        <div
+          className="fixed inset-0 z-50 flex items-start justify-center px-4 pt-[15vh]"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Search documentation"
+        >
           {/* Backdrop */}
           <div
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
@@ -258,6 +289,7 @@ export default function SearchPalette() {
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path
                   strokeLinecap="round"
@@ -276,6 +308,12 @@ export default function SearchPalette() {
                 className="text-foreground placeholder-foreground-muted min-w-0 flex-1 bg-transparent text-sm outline-none"
                 autoComplete="off"
                 spellCheck={false}
+                role="combobox"
+                aria-expanded="true"
+                aria-controls="search-results"
+                aria-autocomplete="list"
+                aria-activedescendant={activeOptionId}
+                aria-label="Search documentation"
               />
               <kbd
                 className="bg-background-secondary text-foreground-muted shrink-0 cursor-pointer rounded px-1.5 py-0.5 text-xs"
@@ -288,8 +326,10 @@ export default function SearchPalette() {
             {/* Results */}
             <ul
               ref={listRef}
+              id="search-results"
               className="max-h-80 overflow-y-auto p-2"
               role="listbox"
+              aria-label="Search results"
             >
               {results.length === 0 && query.trim() && (
                 <li className="text-foreground-muted px-3 py-6 text-center text-sm">
@@ -306,34 +346,32 @@ export default function SearchPalette() {
                 return (
                   <li
                     key={item.slug}
+                    id={`search-option-${i}`}
                     role="option"
                     aria-selected={i === selectedIndex}
+                    onClick={() => goTo(item.slug)}
+                    onMouseEnter={() => setSelectedIndex(i)}
+                    className={`cursor-pointer rounded-lg px-3 py-2.5 text-left transition-colors ${
+                      i === selectedIndex
+                        ? "bg-primary/10 text-foreground-bright"
+                        : "text-foreground hover:bg-primary/5"
+                    }`}
                   >
-                    <button
-                      onClick={() => navigate(item.slug)}
-                      onMouseEnter={() => setSelectedIndex(i)}
-                      className={`w-full cursor-pointer rounded-lg px-3 py-2.5 text-left transition-colors ${
-                        i === selectedIndex
-                          ? "bg-primary/10 text-foreground-bright"
-                          : "text-foreground hover:bg-primary/5"
-                      }`}
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium">
-                          <Highlighted text={item.title} query={query} />
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium">
+                        <Highlighted text={item.title} query={query} />
+                      </span>
+                      {item.chapter && (
+                        <span className="text-foreground-muted bg-background-secondary rounded px-1.5 py-0.5 text-[0.65rem]">
+                          {item.chapter}
                         </span>
-                        {item.chapter && (
-                          <span className="text-foreground-muted bg-background-secondary rounded px-1.5 py-0.5 text-[0.65rem]">
-                            {item.chapter}
-                          </span>
-                        )}
-                      </div>
-                      {snippet && (
-                        <p className="text-foreground-secondary mt-1 line-clamp-1 text-xs">
-                          <Highlighted text={snippet} query={query} />
-                        </p>
                       )}
-                    </button>
+                    </div>
+                    {snippet && (
+                      <p className="text-foreground-secondary mt-1 line-clamp-1 text-xs">
+                        <Highlighted text={snippet} query={query} />
+                      </p>
+                    )}
                   </li>
                 );
               })}

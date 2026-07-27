@@ -3,6 +3,15 @@ import Nav from "./Nav.astro";
 import NavMobile from "./NavMobile";
 import ThemeSwitcher from "./ThemeSwitcher";
 import SearchPalette from "./SearchPalette";
+
+interface Props {
+  /**
+   * Whether this page is part of the docs, where search is available
+   */
+  inDocs?: boolean;
+}
+
+const { inDocs = false } = Astro.props;
 ---
 
 <header class="w-full" aria-labelledby="header-heading" transition:persist>
@@ -13,7 +22,7 @@ import SearchPalette from "./SearchPalette";
       </span>
 
       <div class="ml-auto flex items-center gap-2">
-        <SearchPalette client:load />
+        <SearchPalette client:load inDocs={inDocs} />
         <Nav />
         <ThemeSwitcher client:load />
         <NavMobile client:load />
