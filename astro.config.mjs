@@ -9,6 +9,7 @@ import tailwindcss from "@tailwindcss/vite";
 import jaamd from "jaamd";
 
 import react from "@astrojs/react";
+import sitemap from "@astrojs/sitemap";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -38,6 +39,7 @@ export default defineConfig({
   integrations: [
     react(),
     jaamd({ theme: { light: "github-light", dark: "github-dark" } }),
+    sitemap(),
   ],
 
   fonts: [

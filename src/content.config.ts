@@ -6,6 +6,8 @@ const docsPages = defineCollection({
   // All fields are optional: pure markdown files without frontmatter work fine.
   schema: z.object({
     title: z.string().optional(),
+    /** Overrides the auto-extracted excerpt used for <meta description> and social cards. */
+    description: z.string().optional(),
   }),
 });
 

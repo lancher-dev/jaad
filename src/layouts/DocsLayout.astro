@@ -3,7 +3,7 @@ import Footer from "@/components/Footer.astro";
 import Header from "@/components/Header.astro";
 import DocsSidebarLeft from "@/components/docs/DocsSidebarLeft.astro";
 import TableOfContents from "@/components/docs/TableOfContents.astro";
-import { extractHeadingsFromMarkdown } from "@/utils/docs";
+import { extractHeadingsFromMarkdown, extractDescription } from "@/utils/docs";
 import type { CollectionEntry } from "astro:content";
 import { Font } from "astro:assets";
 import { ClientRouter } from "astro:transitions";
@@ -26,6 +26,15 @@ const pageTitle = `${title ? `${title} | ` : ""}JAAD - Docs`;
 
 // Extract headings from markdown content
 const headings = entry ? extractHeadingsFromMarkdown(entry.body || "") : [];
+
+const fallbackDescription =
+  "JAAD - Just Another Astro Docs. A clean, minimalist documentation framework.";
+const pageDescription =
+  entry?.data.description ??
+  (entry ? extractDescription(entry.body || "", title || "") : null) ??
+  fallbackDescription;
+
+const canonicalURL = Astro.url.href;
 ---
 
 <!doctype html>
@@ -33,29 +42,27 @@ const headings = entry ? extractHeadingsFromMarkdown(entry.body || "") : [];
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <meta
-      name="description"
-      content="JAAD - Just Another Astro Docs. A clean, minimalist documentation framework."
-    />
+    <meta name="description" content={pageDescription} />
     <title>{pageTitle}</title>
+    <link rel="canonical" href={canonicalURL} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="shortcut icon" href="/favicon.svg" />
     <Font cssVariable="--font-inter" preload />
     <Font cssVariable="--font-merriweather" preload />
 
     <!-- Open Graph Meta Tags -->
-    <meta property="og:url" content="#" />
+    <meta property="og:url" content={canonicalURL} />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="JAAD - Just Another Astro Docs" />
-    <meta property="og:description" content="JAAD - Just Another Astro Docs" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
     <meta property="og:image" content="/og-image.png" />
 
     <!-- Twitter Meta Tags -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta property="twitter:domain" content="#" />
-    <meta property="twitter:url" content="#" />
-    <meta name="twitter:title" content="JAAD - Just Another Astro Docs" />
-    <meta name="twitter:description" content="JAAD - Just Another Astro Docs" />
+    <meta property="twitter:domain" content={Astro.url.hostname} />
+    <meta property="twitter:url" content={canonicalURL} />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
     <meta name="twitter:image" content="/og-image.png" />
 
     <meta name="generator" content={Astro.generator} />

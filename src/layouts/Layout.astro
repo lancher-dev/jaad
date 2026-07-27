@@ -4,6 +4,18 @@ import Header from "@/components/Header.astro";
 import { Font } from "astro:assets";
 
 import "@/styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "JAAD",
+  description = "JAAD - Just Another Astro Docs. A clean, minimalist documentation framework.",
+} = Astro.props;
+
+const canonicalURL = Astro.url.href;
 ---
 
 <!doctype html>
@@ -11,35 +23,27 @@ import "@/styles/global.css";
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <meta
-      name="description"
-      content="JAAD - Just Another Astro Docs. A clean, minimalist documentation framework."
-    />
-    <title>JAAD</title>
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <link rel="canonical" href={canonicalURL} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="shortcut icon" href="/favicon.svg" />
     <Font cssVariable="--font-inter" preload />
     <Font cssVariable="--font-merriweather" preload />
 
     <!-- Open Graph Meta Tags -->
-    <meta property="og:url" content="#" />
+    <meta property="og:url" content={canonicalURL} />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="JAAD - Just Another Astro Docs" />
-    <meta
-      property="og:description"
-      content="A clean, minimalist documentation framework built with Astro."
-    />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
     <meta property="og:image" content="/og-image.png" />
 
     <!-- Twitter Meta Tags -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta property="twitter:domain" content="#" />
-    <meta property="twitter:url" content="#" />
-    <meta name="twitter:title" content="JAAD - Just Another Astro Docs" />
-    <meta
-      name="twitter:description"
-      content="A clean, minimalist documentation framework built with Astro."
-    />
+    <meta property="twitter:domain" content={Astro.url.hostname} />
+    <meta property="twitter:url" content={canonicalURL} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content="/og-image.png" />
 
     <meta name="generator" content={Astro.generator} />
