@@ -7,7 +7,7 @@ export default function ThemeSwitcher() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Legge il tema reale dopo il mount, evitando il mismatch SSR/client
+    // Read the real theme after mount, avoiding an SSR/client mismatch
     const isDark = document.documentElement.classList.contains("dark");
     setTheme(isDark ? "dark" : "light");
     setMounted(true);
