@@ -11,6 +11,12 @@
   --jaamd-font-size: 1.125rem;
   --jaamd-line-height: 1.6;
 
+  /* Core colors */
+  --jaamd-color-fg: var(--color-foreground);
+  --jaamd-color-fg-bright: var(--color-foreground-bright);
+  --jaamd-color-primary: var(--color-primary);
+  --jaamd-color-primary-light: var(--color-primary-light);
+
   /* Headings */
   --jaamd-heading-border-color: rgb(from var(--color-primary) r g b / 0.4);
 
