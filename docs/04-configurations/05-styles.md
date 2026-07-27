@@ -4,16 +4,24 @@ JAAD ships with a complete set of design tokens that control every visual aspect
 
 ## How it works
 
-Markdown styling is provided by **[JAAMD](https://github.com/lancher-dev/jaamd)**. All tokens are defined as CSS custom properties with neutral slate/gray fallbacks and are scoped under `:root`. To override them, declare your values anywhere in `src/styles/global.css` — no import order concerns, the last declaration wins as usual in the cascade.
+Markdown styling is provided by **[JAAMD](https://github.com/lancher-dev/jaamd)**. All tokens are CSS custom properties scoped under `:root`, with warm neutral defaults.
+
+JAAMD wraps its defaults in `@layer jaamd.defaults`. Because unlayered CSS always beats layered CSS in the cascade, **any `:root` block you write outside a layer wins automatically — regardless of import order**. You never have to think about where your stylesheet sits relative to JAAMD's.
+
+In JAAD the markdown tokens are overridden in `src/styles/jaamd.css`, which is where you should put your changes. (Layout tokens — the `--color-*` family — live in `src/styles/global.css`.)
 
 ```css
-/* src/styles/global.css */
+/* src/styles/global.css — layout tokens */
 
 @import "tailwindcss";
 
 @theme {
   --color-primary: #1d4ed8; /* your brand blue */
 }
+```
+
+```css
+/* src/styles/jaamd.css — markdown tokens */
 
 :root {
   --jaamd-font-mono: "JetBrains Mono", monospace;
@@ -23,11 +31,28 @@ Markdown styling is provided by **[JAAMD](https://github.com/lancher-dev/jaamd)*
 }
 ```
 
-Tailwind's `@theme` block runs first and exposes its `--color-*` and `--font-*` tokens, so your overrides can reference them freely as shown above.
+Tailwind's `@theme` block exposes its `--color-*` and `--font-*` tokens globally, so your markdown overrides can reference them freely as shown above.
+
+## Core colors
+
+Four tokens set the base text and accent colours that most other elements inherit from. They are the ones to change first when adapting JAAMD to a palette.
+
+`--jaamd-color-fg` is the default body text colour. `--jaamd-color-fg-bright` is used wherever text should stand out against it — headings, `**bold**`, table headers, and `<summary>` labels. `--jaamd-color-primary` is the accent applied to links, the active code tab, and the `<details>` arrow; `--jaamd-color-primary-light` is its hover/secondary variant, also used for blockquote text.
+
+```css
+:root {
+  --jaamd-color-fg: var(--color-foreground);
+  --jaamd-color-fg-bright: var(--color-foreground-bright);
+  --jaamd-color-primary: var(--color-primary);
+  --jaamd-color-primary-light: var(--color-primary-light);
+}
+```
+
+A fifth token, `--jaamd-color-success`, sets the colour the copy button flashes after a successful copy.
 
 ## Typography
 
-Three tokens govern the type system inside markdown content.
+Four tokens govern the type system inside markdown content.
 
 `--jaamd-font-sans` defaults to the project's configured sans-serif stack. `--jaamd-font-mono` is used for both inline code spans and code blocks. `--jaamd-font-size` is the base value from which every other font size in the markdown is derived (headings, table cells, copy buttons, tab labels) so changing this one token scales the entire content area proportionally. `--jaamd-line-height` controls the default vertical rhythm and is applied to the content wrapper, `<pre>` blocks, and list items.
 
