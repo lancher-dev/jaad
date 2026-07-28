@@ -22,10 +22,14 @@ const { inDocs = false } = Astro.props;
       </span>
 
       <div class="ml-auto flex items-center gap-2">
-        <SearchPalette client:load inDocs={inDocs} />
+        {
+          /* All three render fully on the server, so hydration can be
+             deferred. NavMobile is `md:hidden` and never hydrates on desktop. */
+        }
+        <SearchPalette client:idle inDocs={inDocs} />
         <Nav />
-        <ThemeSwitcher client:load />
-        <NavMobile client:load />
+        <ThemeSwitcher client:idle />
+        <NavMobile client:media="(max-width: 767px)" />
       </div>
     </div>
   </div>

@@ -169,7 +169,7 @@ export default function SearchPalette({ inDocs: inDocsProp = false }: Props) {
     navigate(`/docs/${slug}`);
   }, []);
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: KeyboardEvent) => {
     if (e.key === "ArrowDown") {
       e.preventDefault();
       setSelectedIndex((prev) => Math.min(prev + 1, results.length - 1));
@@ -302,12 +302,12 @@ export default function SearchPalette({ inDocs: inDocsProp = false }: Props) {
                 ref={inputRef}
                 type="text"
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onInput={(e) => setQuery(e.currentTarget.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Search documentation..."
                 className="text-foreground placeholder-foreground-muted min-w-0 flex-1 bg-transparent text-sm outline-none"
                 autoComplete="off"
-                spellCheck={false}
+                spellcheck={false}
                 role="combobox"
                 aria-expanded="true"
                 aria-controls="search-results"
