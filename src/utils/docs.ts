@@ -204,13 +204,14 @@ export interface DocsSearchEntry {
   body: string;
 }
 
-/** Strip markdown syntax to plain text for search indexing. */
-function stripMarkdown(text: string): string {
+/** Strip markdown (and inline HTML) syntax to plain text for search indexing. */
+export function stripMarkdown(text: string): string {
   return text
     .replace(/^#{1,6}\s+/gm, "")
     .replace(/\*\*(.+?)\*\*/g, "$1")
     .replace(/\*(.+?)\*/g, "$1")
     .replace(/`{3,}[\s\S]*?`{3,}/g, "")
+    .replace(/(?<!`)<[^>]+>(?!`)/g, "")
     .replace(/`(.+?)`/g, "$1")
     .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
     .replace(/!\[([^\]]*)\]\([^)]+\)/g, "")
@@ -220,6 +221,33 @@ function stripMarkdown(text: string): string {
     .replace(/^:::.*$/gm, "")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
+}
+
+/**
+ * Derive a short excerpt from a page's markdown body, suitable for
+ * <meta description> and social-card tags when the page has no explicit
+ * frontmatter description.
+ */
+export function extractDescription(
+  body: string,
+  title: string,
+  maxLength: number = 155,
+): string | null {
+  const stripped = stripMarkdown(body);
+  const paragraphs = stripped
+    .split(/\n{2,}/)
+    .map((p) => p.replace(/\s+/g, " ").trim())
+    .filter(Boolean);
+
+  const firstParagraph = paragraphs.find(
+    (p) => p.toLowerCase() !== title.trim().toLowerCase(),
+  );
+  if (!firstParagraph) return null;
+
+  if (firstParagraph.length <= maxLength) return firstParagraph;
+  const truncated = firstParagraph.slice(0, maxLength);
+  const lastSpace = truncated.lastIndexOf(" ");
+  return `${truncated.slice(0, lastSpace > 0 ? lastSpace : maxLength)}…`;
 }
 
 /**

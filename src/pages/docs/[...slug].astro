@@ -11,6 +11,8 @@ import {
 import DocsLayout from "@/layouts/DocsLayout.astro";
 import DocsMobileNav from "@/components/docs/DocsMobileNav.astro";
 import DocsPageNav from "@/components/docs/DocsPageNav.astro";
+import Breadcrumbs from "@/components/docs/Breadcrumbs.astro";
+import PageActions from "@/components/docs/PageActions.astro";
 
 export async function getStaticPaths() {
   const docsCollection = await getCollection("docsPages");
@@ -47,7 +49,7 @@ export async function getStaticPaths() {
   return paths;
 }
 
-const { id, title, isFirstPage } = Astro.props;
+const { id, title, chapter, isFirstPage } = Astro.props;
 
 const docPage = await getEntry("docsPages", id);
 if (!docPage) {
@@ -73,6 +75,9 @@ const currentSlug = Astro.params.slug || "";
     <DocsMobileNav currentSlug={currentSlug} entry={docPage} />
 
     <article>
+      <Breadcrumbs chapter={chapter} title={title} />
+      <PageActions id={id} cleanSlug={currentSlug} />
+
       <MarkdownContent
         id="content"
         class="w-full leading-relaxed wrap-break-word"

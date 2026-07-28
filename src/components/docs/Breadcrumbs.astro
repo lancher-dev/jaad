@@ -1,0 +1,30 @@
+---
+import { formatChapterTitle } from "@/utils/docs";
+
+interface Props {
+  chapter?: string;
+  title: string;
+}
+
+const { chapter, title } = Astro.props;
+const chapterTitle = formatChapterTitle(chapter);
+---
+
+<nav
+  aria-label="Breadcrumb"
+  class="text-foreground-muted mb-4 flex items-center gap-1.5 text-xs"
+>
+  <a href="/docs" class="hover:text-foreground-bright no-underline">Docs</a>
+  {
+    chapterTitle && (
+      <>
+        <span aria-hidden="true">/</span>
+        <span>{chapterTitle}</span>
+      </>
+    )
+  }
+  <span aria-hidden="true">/</span>
+  <span class="text-foreground-bright font-medium" aria-current="page">
+    {title}
+  </span>
+</nav>
