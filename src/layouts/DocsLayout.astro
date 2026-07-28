@@ -116,43 +116,56 @@ const canonicalURL = Astro.url.href;
     <script>
       import { navigate } from "astro:transitions/client";
 
+      /** Prev/next are identified by their `rel`, not by their icon markup. */
       function getPageLinks(): {
         prev: HTMLAnchorElement | null;
         next: HTMLAnchorElement | null;
       } {
         const nav = document.querySelector('nav[aria-label="Page navigation"]');
         if (!nav) return { prev: null, next: null };
-        let prev: HTMLAnchorElement | null = null;
-        let next: HTMLAnchorElement | null = null;
-        nav.querySelectorAll<HTMLAnchorElement>("a[href]").forEach((a) => {
-          const icon = a.querySelector("i");
-          if (!icon) return;
-          if (icon.classList.contains("nf-md-chevron_left")) prev = a;
-          if (icon.classList.contains("nf-md-chevron_right")) next = a;
-        });
-        return { prev, next };
+        return {
+          prev: nav.querySelector<HTMLAnchorElement>('a[rel~="prev"][href]'),
+          next: nav.querySelector<HTMLAnchorElement>('a[rel~="next"][href]'),
+        };
+      }
+
+      /** True when the focus sits inside something the arrow keys should
+       *  scroll instead, such as a wide table or code block. */
+      function inHorizontallyScrollable(el: Element | null): boolean {
+        for (let node = el; node && node !== document.body;) {
+          if (node instanceof HTMLElement) {
+            const overflowX = getComputedStyle(node).overflowX;
+            if (
+              (overflowX === "auto" || overflowX === "scroll") &&
+              node.scrollWidth > node.clientWidth
+            )
+              return true;
+          }
+          node = node.parentElement;
+        }
+        return false;
       }
 
       function onKey(e: KeyboardEvent) {
-        const tag = (document.activeElement as HTMLElement)?.tagName;
+        // Leave modified chords alone, notably the browser's back/forward.
+        if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+        if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+
+        const active = document.activeElement as HTMLElement | null;
+        const tag = active?.tagName;
         if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
-        if ((document.activeElement as HTMLElement)?.isContentEditable) return;
+        if (active?.isContentEditable) return;
+        if (inHorizontallyScrollable(active)) return;
+
         const { prev, next } = getPageLinks();
-        if (e.key === "ArrowLeft" && prev) {
-          e.preventDefault();
-          navigate(prev.href);
-        }
-        if (e.key === "ArrowRight" && next) {
-          e.preventDefault();
-          navigate(next.href);
-        }
+        const target = e.key === "ArrowLeft" ? prev : next;
+        if (!target) return;
+        e.preventDefault();
+        navigate(target.href);
       }
 
+      // This module runs once and `document` survives View Transitions.
       document.addEventListener("keydown", onKey);
-      document.addEventListener("astro:after-swap", () => {
-        document.removeEventListener("keydown", onKey);
-        document.addEventListener("keydown", onKey);
-      });
     </script>
   </body>
 </html>
