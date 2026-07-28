@@ -21,10 +21,8 @@ interface Props {
 
 const { title, currentSlug = "", entry } = Astro.props;
 
-// Set dynamic page title
 const pageTitle = `${title ? `${title} | ` : ""}JAAD - Docs`;
 
-// Extract headings from markdown content
 const headings = entry ? extractHeadingsFromMarkdown(entry.body || "") : [];
 
 const fallbackDescription =

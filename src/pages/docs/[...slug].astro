@@ -17,10 +17,8 @@ import PageActions from "@/components/docs/PageActions.astro";
 export async function getStaticPaths() {
   const docsCollection = await getCollection("docsPages");
 
-  // Sort all pages using the utility function
   const sortedPages = sortDocPages(docsCollection);
 
-  // Generate paths for each page
   const paths = sortedPages.map((page) => {
     const parsed = parseDocCollectionId(page.id);
     const cleanSlug = getCleanSlug(page.id);
@@ -58,11 +56,9 @@ if (!docPage) {
 
 const { Content } = await render(docPage);
 
-// Set page title
 const pageTitle =
   isFirstPage && title.toLowerCase() === "home" ? undefined : title;
 
-// Get current slug for sidebar highlighting
 const currentSlug = Astro.params.slug || "";
 ---
 

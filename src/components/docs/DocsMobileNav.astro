@@ -36,7 +36,6 @@ const grouped = pagesWithChapter.reduce(
   {} as Record<string, DocsNavItem[]>,
 );
 
-// Extract headings from markdown content
 const headings = extractHeadingsFromMarkdown(entry.body || "");
 ---
 

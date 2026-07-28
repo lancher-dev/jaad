@@ -18,7 +18,6 @@ export function parseDocCollectionId(
   id: string,
   isNumbered: boolean = true,
 ): ParsedDocsCollectionId {
-  // Default values
   let order = 999;
   let orderChapter: number | undefined;
   let chapter: string | undefined;
@@ -30,7 +29,6 @@ export function parseDocCollectionId(
   if (parts.length >= 2) {
     const chapterPart = parts[parts.length - 2];
 
-    // Extract chapter name and order if numbered
     if (isNumbered) {
       const chapterMatch = chapterPart.match(NUMBERED_PREFIX_RE);
       if (chapterMatch) {
@@ -44,7 +42,6 @@ export function parseDocCollectionId(
     }
   }
 
-  // If the filename is numbered, extract order and slug
   if (isNumbered) {
     const match = slug.match(NUMBERED_PREFIX_RE);
     if (match) {
@@ -53,7 +50,6 @@ export function parseDocCollectionId(
     }
   }
 
-  // Generate a human-readable title from the slug
   const title = slugToTitle(slug);
 
   return { order, orderChapter, chapter, slug, title };

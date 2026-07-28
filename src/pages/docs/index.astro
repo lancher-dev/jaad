@@ -13,7 +13,6 @@ import DocsPageNav from "@/components/docs/DocsPageNav.astro";
 import Breadcrumbs from "@/components/docs/Breadcrumbs.astro";
 import PageActions from "@/components/docs/PageActions.astro";
 
-// Get first page from sorted docs
 const docsCollection = await getCollection("docsPages");
 const sortedPages = sortDocPages(docsCollection);
 
@@ -22,10 +21,8 @@ if (!firstPage) {
   return Astro.redirect("/404");
 }
 
-// Render the first page
 const { Content } = await render(firstPage);
 
-// Generate clean slug for current page highlighting
 const currentSlug = getCleanSlug(firstPage.id);
 
 const parsed = parseDocCollectionId(firstPage.id);

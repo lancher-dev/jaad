@@ -94,7 +94,6 @@ export default function SearchPalette({ inDocs: inDocsProp = false }: Props) {
     };
   }, [isOpen]);
 
-  // Search when query changes
   useEffect(() => {
     if (!index || !query.trim()) {
       setResults(isOpen && index && !query.trim() ? index.slice(0, 8) : []);
@@ -157,7 +156,6 @@ export default function SearchPalette({ inDocs: inDocsProp = false }: Props) {
     restoreFocusRef.current?.focus?.();
   }, [isOpen]);
 
-  // Scroll selected item into view
   useEffect(() => {
     const item = listRef.current?.children[selectedIndex] as
       HTMLElement | undefined;
