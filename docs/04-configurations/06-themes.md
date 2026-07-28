@@ -73,4 +73,4 @@ import "jaamd/themes/dracula/dark";
 
 ## Creating a custom theme
 
-Copy any preset from `jaamd/src/themes/` and change the variable values. Every `--jaamd-*` property is documented in [`jaamd/src/styles/variables.css`](https://github.com/lancher-dev/jaamd/blob/main/src/styles/variables.css). Override them on `:root` or scope them under `html.dark` to create a custom dark theme.
+Copy any preset from `jaamd/src/themes/` and change the variable values. All 50 `--jaamd-*` properties are listed with their light and dark defaults in [Styles](/docs/configurations/styles). Override them on `:root` or scope them under `html.dark` to create a custom dark theme.

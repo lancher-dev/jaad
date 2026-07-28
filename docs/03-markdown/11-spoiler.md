@@ -12,7 +12,7 @@ The answer is <span class="spoiler">42</span>.
 
 The answer is <span class="spoiler">42</span>.
 
-Click the dark block to reveal the text. Click again to hide it.
+Click the dark block to reveal the text. Click again to hide it. Spoilers are also reachable with <kbd>Tab</kbd> and toggle with <kbd>Enter</kbd> or <kbd>Space</kbd>; hovering does not reveal them.
 
 ## Block spoilers
 
