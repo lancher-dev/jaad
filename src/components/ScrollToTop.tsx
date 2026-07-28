@@ -30,7 +30,20 @@ export default function ScrollToTop() {
       }`}
       aria-label="Scroll to top"
     >
-      <i className="nf nf-md-arrow_up text-2xl"></i>
+      <svg
+        className="h-6 w-6"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M5 10l7-7m0 0l7 7m-7-7v18"
+        />
+      </svg>
     </button>
   );
 }
