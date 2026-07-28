@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Format
+        run: pnpm format
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Type check
+        run: pnpm check
+
+      - name: Build
+        run: pnpm build
+
+      # jaamd skips its remark plugins with a warning, not an error, if it
+      # cannot recognise Astro's default processor, so a green build proves
+      # nothing. Assert on the built HTML instead.
+      - name: Verify markdown pipeline output
+        run: |
+          set -euo pipefail
+          grep -q 'markdown-alert' dist/docs/markdown/alerts/index.html \
+            || { echo "::error::jaamd alerts missing from built HTML"; exit 1; }
+          grep -q 'code-tabs' dist/docs/markdown/code-blocks/index.html \
+            || { echo "::error::jaamd code-tabs missing from built HTML"; exit 1; }
+          echo "markdown pipeline OK"
+
+      # Dropping the Nerd Font CDN import was about keeping visitors off a
+      # third-party host on the critical path. Keep it that way.
+      - name: Assert no third-party assets on the critical path
+        run: |
+          set -euo pipefail
+          if grep -rq 'nerdfonts.com' dist/; then
+            echo "::error::a third-party font import came back into the build"
+            exit 1
+          fi
+          echo "no external stylesheet imports"
