@@ -12,7 +12,6 @@ export function walk(dir) {
   });
 }
 
-/** Reading a page that isn't there must fail loudly, not assert on "". */
 export function page(relative) {
   const file = join(DIST, relative);
   if (!existsSync(file)) {
@@ -23,4 +22,14 @@ export function page(relative) {
 
 export function distFiles(ext) {
   return walk(DIST).filter((f) => f.endsWith(ext));
+}
+
+export function allCss() {
+  const linked = distFiles(".css").map((f) => readFileSync(f, "utf8"));
+  const inline = distFiles(".html").flatMap((f) =>
+    [
+      ...readFileSync(f, "utf8").matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g),
+    ].map((m) => m[1]),
+  );
+  return [...linked, ...inline].join("\n");
 }

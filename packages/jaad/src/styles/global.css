@@ -1,38 +1,73 @@
 @import "tailwindcss";
 
-/* Relative to this file, so it keeps pointing at the package's own sources
-   wherever the installer puts them. */
+/* Relative to this file, so it follows the package wherever it is installed. */
 @source "../";
 
 @theme {
-  /* Background colors - Soft paper-like tones */
+  /* Seeds */
+
   --color-background: #faf8f5;
-  --color-background-secondary: #f5f3f0;
-  --color-background-tertiary: #eeeae5;
   --color-surface: #ffffff;
-  --color-surface-hover: #f0ede8;
-
-  /* Primary colors - Soft ink black */
-  --color-primary: #2d2d2d;
-  --color-primary-dark: #1a1a1a;
-  --color-primary-light: #4a4a4a;
-
-  /* Foreground colors - Writing-focused */
   --color-foreground: #3a3a3a;
-  --color-foreground-secondary: #6a6a6a;
-  --color-foreground-muted: #8a8a8a;
   --color-foreground-bright: #1a1a1a;
+  --color-primary: #2d2d2d;
 
-  /* Border colors - Subtle separators */
-  --color-border: #d8d4cf;
-  --color-border-light: #e5e1dc;
-  --color-border-dark: #c8c4bf;
-
-  /* Utility colors - Muted tones */
   --color-error: #c45959;
   --color-warning: #d4a259;
   --color-info: #5988c4;
   --color-success: #5a9c7e;
+
+  /* Derived */
+
+  --color-background-secondary: color-mix(
+    in oklab,
+    var(--color-foreground) 2%,
+    var(--color-background)
+  );
+  --color-background-tertiary: color-mix(
+    in oklab,
+    var(--color-foreground) 6%,
+    var(--color-background)
+  );
+  --color-surface-hover: color-mix(
+    in oklab,
+    var(--color-foreground) 5%,
+    var(--color-background)
+  );
+
+  --color-border-light: color-mix(
+    in oklab,
+    var(--color-foreground) 11%,
+    var(--color-background)
+  );
+  --color-border: color-mix(
+    in oklab,
+    var(--color-foreground) 17%,
+    var(--color-background)
+  );
+  --color-border-dark: color-mix(
+    in oklab,
+    var(--color-foreground) 25%,
+    var(--color-background)
+  );
+
+  --color-foreground-muted: color-mix(
+    in oklab,
+    var(--color-foreground) 55%,
+    var(--color-background)
+  );
+  --color-foreground-secondary: color-mix(
+    in oklab,
+    var(--color-foreground) 72%,
+    var(--color-background)
+  );
+
+  --color-primary-dark: var(--color-foreground-bright);
+  --color-primary-light: color-mix(
+    in oklab,
+    var(--color-primary) 83%,
+    var(--color-background)
+  );
 
   /* Fonts */
   --font-sans:
@@ -108,38 +143,73 @@ i.nf {
   line-height: 1;
 }
 
-/* ── Dark mode ─────────────────────────────────────────────── */
+/* Dark mode */
 
 html.dark {
   color-scheme: dark;
 
   --color-background: #0d1117;
-  --color-background-secondary: #161b22;
-  --color-background-tertiary: #1c2128;
   --color-surface: #21262d;
-  --color-surface-hover: #30363d;
-
-  --color-primary: #c9d1d9;
-  --color-primary-dark: #e6edf3;
-  --color-primary-light: #8b949e;
-
   --color-foreground: #c9d1d9;
-  --color-foreground-secondary: #8b949e;
-  --color-foreground-muted: #6e7681;
   --color-foreground-bright: #e6edf3;
-
-  --color-border: #30363d;
-  --color-border-light: #21262d;
-  --color-border-dark: #484f58;
+  --color-primary: #c9d1d9;
 
   --color-error: #f85149;
   --color-warning: #d29922;
   --color-info: #58a6ff;
   --color-success: #3fb950;
+
+  --color-background-secondary: color-mix(
+    in oklab,
+    var(--color-foreground) 7%,
+    var(--color-background)
+  );
+  --color-background-tertiary: color-mix(
+    in oklab,
+    var(--color-foreground) 10%,
+    var(--color-background)
+  );
+  --color-surface-hover: color-mix(
+    in oklab,
+    var(--color-foreground) 22%,
+    var(--color-background)
+  );
+
+  --color-border-light: color-mix(
+    in oklab,
+    var(--color-foreground) 13%,
+    var(--color-background)
+  );
+  --color-border: color-mix(
+    in oklab,
+    var(--color-foreground) 22%,
+    var(--color-background)
+  );
+  --color-border-dark: color-mix(
+    in oklab,
+    var(--color-foreground) 36%,
+    var(--color-background)
+  );
+
+  --color-foreground-muted: color-mix(
+    in oklab,
+    var(--color-foreground) 57%,
+    var(--color-background)
+  );
+  --color-foreground-secondary: color-mix(
+    in oklab,
+    var(--color-foreground) 71%,
+    var(--color-background)
+  );
+
+  --color-primary-light: color-mix(
+    in oklab,
+    var(--color-primary) 71%,
+    var(--color-background)
+  );
 }
 
-/* Both toggle icons ship in the markup and CSS picks one, so the control is
-   already correct in server-rendered HTML. */
+/* Both icons ship; CSS picks one, so the server-rendered control is correct. */
 .theme-icon-to-light {
   display: none;
 }
@@ -152,7 +222,7 @@ html.dark .theme-icon-to-light {
   display: block;
 }
 
-/* ── Reduced motion ──────────────────────────────────────────── */
+/* Reduced motion */
 
 @media (prefers-reduced-motion: reduce) {
   html {

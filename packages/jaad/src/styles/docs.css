@@ -67,10 +67,8 @@ html {
 }
 
 /* Mobile navigation select styling */
-/*
- * CSS variables cannot be used inside data: URIs, so the arrow SVG is exposed
- * as --jaad-select-arrow. Override it in your own :root block to change the
- * chevron colour (replace %232d2d2d with a URL-encoded hex colour).
+/* CSS variables do not work inside data: URIs, so the whole SVG is the token.
+   Override --jaad-select-arrow with a URL-encoded colour to restyle it.
  */
 .docs-mobile-nav select {
   appearance: none;
@@ -102,9 +100,7 @@ html.dark .docs-mobile-nav select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23c9d1d9' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
 }
 
-/* Hide the ToC sidebar until initToc() has finished all DOM work.
-   This prevents a flash where stale/filtered items are briefly visible
-   before the JS module removes them. The attribute is removed by the script. */
+/* Hidden until initToc() has pruned it, otherwise stale items flash. */
 #toc-sidebar[data-toc-pending] {
   opacity: 0;
   pointer-events: none;

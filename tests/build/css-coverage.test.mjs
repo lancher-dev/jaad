@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync, statSync } from "node:fs";
+import { allCss } from "../dist.mjs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -18,10 +19,7 @@ const walk = (dir) =>
 const escape = (cls) => cls.replace(/[.:/[\]%()!,#]/g, (c) => "\\" + c);
 
 test("every utility used by the package ships in the built CSS", () => {
-  const css = walk(join(DIST, "_astro"))
-    .filter((f) => f.endsWith(".css"))
-    .map((f) => readFileSync(f, "utf8"))
-    .join("\n");
+  const css = allCss();
 
   const classes = new Set();
   for (const file of walk(SRC).filter((f) => f.endsWith(".astro"))) {

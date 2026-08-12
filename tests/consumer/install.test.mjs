@@ -59,8 +59,8 @@ test(
       "nested chapter page missing",
     );
 
-    const css = walk(join(dist, "_astro"))
-      .filter((f) => f.endsWith(".css"))
+    const css = walk(dist)
+      .filter((f) => f.endsWith(".css") || f.endsWith(".html"))
       .map((f) => readFileSync(f, "utf8"))
       .join("\n");
 
