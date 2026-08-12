@@ -1,33 +1,23 @@
 {
-  "name": "jaad",
+  "name": "jaad-monorepo",
+  "private": true,
   "type": "module",
-  "version": "1.1.1",
   "packageManager": "pnpm@10.34.4",
   "scripts": {
     "prepare": "husky",
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro",
-    "check": "astro check",
+    "dev": "pnpm --filter www dev",
+    "build": "pnpm --filter www build",
+    "preview": "pnpm --filter www preview",
+    "check": "pnpm -r check",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
     "lint": "eslint .",
-    "lint:fix": "eslint --fix ."
-  },
-  "dependencies": {
-    "@astrojs/preact": "6.0.2",
-    "@astrojs/sitemap": "^3.7.3",
-    "@tailwindcss/vite": "^4.3.3",
-    "astro": "^7.2.0",
-    "github-slugger": "^2.0.0",
-    "jaamd": "^0.5.0",
-    "preact": "^10.29.8",
-    "sharp": "^0.35.3",
-    "tailwindcss": "^4.3.3"
+    "lint:fix": "eslint --fix .",
+    "test": "node --test \"tests/unit/**/*.test.ts\"",
+    "test:build": "node --test \"tests/build/**/*.test.mjs\"",
+    "test:consumer": "node --test \"tests/consumer/**/*.test.mjs\""
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.10",
     "@typescript-eslint/parser": "^8.65.0",
     "eslint": "^10.1.0",
     "eslint-config-prettier": "^10.1.8",
