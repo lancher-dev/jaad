@@ -1,13 +1,12 @@
 ---
 import { getEntry, render } from "astro:content";
-import { getDocsPages } from "../collection.ts";
+import { getSortedDocsPages } from "../collection.ts";
 import MarkdownContent from "jaamd/components";
 import {
   parseDocCollectionId,
-  sortDocPages,
   getCleanSlug,
   extractTitleFromMarkdown,
-} from "../utils/docs";
+} from "../utils/docs.ts";
 
 import DocsLayout from "../layouts/Docs.astro";
 import DocsMobileNav from "../components/docs/DocsMobileNav.astro";
@@ -17,9 +16,7 @@ import PageActions from "../components/docs/PageActions.astro";
 import config from "virtual:jaad/config";
 
 export async function getStaticPaths() {
-  const docsCollection = await getDocsPages();
-
-  const sortedPages = sortDocPages(docsCollection);
+  const sortedPages = await getSortedDocsPages();
 
   const paths = sortedPages.map((page) => {
     const parsed = parseDocCollectionId(page.id);
@@ -64,7 +61,12 @@ const pageTitle =
 const currentSlug = Astro.params.slug || "";
 ---
 
-<DocsLayout title={pageTitle} currentSlug={currentSlug} entry={docPage}>
+<DocsLayout
+  title={pageTitle}
+  currentSlug={currentSlug}
+  chapter={chapter}
+  entry={docPage}
+>
   <main
     role="main"
     aria-label="Main content"

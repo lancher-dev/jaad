@@ -1,11 +1,10 @@
 ---
-import { getDocsPages } from "../../collection.ts";
+import { getSortedDocsPages } from "../../collection.ts";
 import {
   parseDocCollectionId,
-  sortDocPages,
   getCleanSlug,
   extractTitleFromMarkdown,
-} from "../../utils/docs";
+} from "../../utils/docs.ts";
 import config from "virtual:jaad/config";
 
 interface Props {
@@ -14,8 +13,7 @@ interface Props {
 
 const { id } = Astro.props;
 
-const allPages = await getDocsPages();
-const sortedPages = sortDocPages(allPages);
+const sortedPages = await getSortedDocsPages();
 
 const navigationItems = sortedPages.map((page) => {
   const parsed = parseDocCollectionId(page.id);

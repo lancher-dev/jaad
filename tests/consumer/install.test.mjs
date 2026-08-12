@@ -5,7 +5,7 @@ import { mkdtempSync, cpSync, writeFileSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { walk } from "../dist.mjs";
+import { walk, packageClasses, missingFrom } from "../dist.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "..", "..");
@@ -75,20 +75,8 @@ test(
       .map((f) => readFileSync(f, "utf8"))
       .join("\n");
 
-    const escape = (c) => c.replace(/[.:/[\]%()!,#]/g, (x) => "\\" + x);
-    const classes = new Set();
-    for (const file of walk(join(PKG, "src")).filter((f) =>
-      f.endsWith(".astro"),
-    )) {
-      for (const m of readFileSync(file, "utf8").matchAll(
-        /\bclass(?:Name)?="([^"{}]+)"/g,
-      )) {
-        for (const token of m[1].split(/\s+/)) if (token) classes.add(token);
-      }
-    }
-    const missing = [...classes].filter((c) => !css.includes("." + escape(c)));
     assert.deepEqual(
-      missing.sort(),
+      missingFrom(css, packageClasses(join(PKG, "src"))),
       [],
       "package utilities missing from the CSS",
     );

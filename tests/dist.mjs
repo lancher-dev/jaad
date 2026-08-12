@@ -33,3 +33,22 @@ export function allCss() {
   );
   return [...linked, ...inline].join("\n");
 }
+
+export const escapeClass = (cls) =>
+  cls.replace(/[.:/[\]%()!,#]/g, (c) => "\\" + c);
+
+export function packageClasses(srcDir) {
+  const classes = new Set();
+  for (const file of walk(srcDir).filter((f) => f.endsWith(".astro"))) {
+    for (const m of readFileSync(file, "utf8").matchAll(
+      /\bclass(?:Name)?="([^"{}]+)"/g,
+    )) {
+      for (const token of m[1].split(/\s+/)) if (token) classes.add(token);
+    }
+  }
+  return classes;
+}
+
+export function missingFrom(css, classes) {
+  return [...classes].filter((c) => !css.includes("." + escapeClass(c))).sort();
+}

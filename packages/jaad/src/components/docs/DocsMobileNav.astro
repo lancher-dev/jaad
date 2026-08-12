@@ -1,25 +1,23 @@
 ---
-import { getDocsPages } from "../../collection.ts";
-import type { CollectionEntry } from "astro:content";
+import { getSortedDocsPages } from "../../collection.ts";
+import type { DocsEntry } from "../../@types/docs.ts";
 import {
-  sortDocPages,
   formatChapterTitle,
   extractHeadingsFromMarkdown,
   buildDocNavItems,
-} from "../../utils/docs";
-import type { DocsNavItem } from "../../@types/docs";
+} from "../../utils/docs.ts";
+import type { DocsNavItem } from "../../@types/docs.ts";
 import ScrollToTop from "../ScrollToTop.astro";
 import config from "virtual:jaad/config";
 
 interface Props {
   currentSlug: string;
-  entry: CollectionEntry<"docsPages">;
+  entry: DocsEntry;
 }
 
 const { currentSlug, entry } = Astro.props;
 
-const docsCollection = await getDocsPages();
-const sortedPages = sortDocPages(docsCollection);
+const sortedPages = await getSortedDocsPages();
 
 const base = config.routeBase.replace(/\/$/, "");
 const navItems = buildDocNavItems(sortedPages, currentSlug, base);

@@ -1,11 +1,7 @@
 ---
-import { getDocsPages } from "../../collection.ts";
-import {
-  sortDocPages,
-  formatChapterTitle,
-  buildDocNavItems,
-} from "../../utils/docs";
-import type { DocsNavItem } from "../../@types/docs";
+import { getSortedDocsPages } from "../../collection.ts";
+import { formatChapterTitle, buildDocNavItems } from "../../utils/docs.ts";
+import type { DocsNavItem } from "../../@types/docs.ts";
 import config from "virtual:jaad/config";
 
 interface Props {
@@ -14,8 +10,7 @@ interface Props {
 
 const { currentSlug } = Astro.props;
 
-const docsCollection = await getDocsPages();
-const sortedPages = sortDocPages(docsCollection);
+const sortedPages = await getSortedDocsPages();
 
 const base = config.routeBase.replace(/\/$/, "");
 const navItems = buildDocNavItems(sortedPages, currentSlug, base);

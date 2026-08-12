@@ -1,7 +1,6 @@
 import type { APIRoute } from "astro";
-import { getDocsPages } from "../collection.ts";
+import { getSortedDocsPages } from "../collection.ts";
 import {
-  sortDocPages,
   parseDocCollectionId,
   getCleanSlug,
   extractTitleFromMarkdown,
@@ -17,8 +16,7 @@ import config from "virtual:jaad/config";
  * discover and fetch the site's content without scraping HTML.
  */
 export const GET: APIRoute = async ({ site }) => {
-  const docsCollection = await getDocsPages();
-  const sortedPages = sortDocPages(docsCollection);
+  const sortedPages = await getSortedDocsPages();
 
   const base = site ? site.href.replace(/\/$/, "") : "";
   const routeBase = config.routeBase.replace(/\/$/, "");

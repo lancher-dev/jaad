@@ -55,26 +55,20 @@ export function parseDocCollectionId(
   return { order, orderChapter, chapter, slug, title };
 }
 
-/**
- * Sort doc pages by chapter and order.
- * Primary order key:
- *  - For pages inside a chapter directory → orderChapter (the dir numeric prefix)
- *  - For root-level pages → their own file order
- * Secondary key: file order within the same chapter.
- */
+/** Sorts by chapter, then by file order within it. Root pages sort by their own
+ *  number, so they interleave with chapters. Returns a new array. */
 export function sortDocPages<T extends { id: string }>(pages: T[]): T[] {
-  return pages.sort((a, b) => {
-    const aParsed = parseDocCollectionId(a.id);
-    const bParsed = parseDocCollectionId(b.id);
-
-    const aPrimary = aParsed.orderChapter ?? aParsed.order;
-    const bPrimary = bParsed.orderChapter ?? bParsed.order;
-
-    if (aPrimary !== bPrimary) return aPrimary - bPrimary;
-
-    // Same primary (same chapter): sort by file order
-    return aParsed.order - bParsed.order;
-  });
+  return pages
+    .map((page) => {
+      const parsed = parseDocCollectionId(page.id);
+      return {
+        page,
+        primary: parsed.orderChapter ?? parsed.order,
+        secondary: parsed.order,
+      };
+    })
+    .sort((a, b) => a.primary - b.primary || a.secondary - b.secondary)
+    .map((entry) => entry.page);
 }
 
 /**

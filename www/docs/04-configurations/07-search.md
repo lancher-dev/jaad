@@ -23,3 +23,14 @@ Code blocks, images, and directives are removed from the body before indexing.
 ## Responsive behavior
 
 On desktop, the header shows a compact search bar with the keyboard shortcut hint. On mobile, it collapses to a search icon. Both open the same full-screen overlay palette.
+
+## Scale
+
+The index is one file holding the stripped text of every page, so it grows with the corpus:
+roughly 1.2 kB per page, about 31 kB for 25 pages. It is fetched once and cached for the
+session.
+
+That is comfortable for the sites JAAD targets. Past a few hundred pages the single fetch
+becomes noticeable, and at that point a dedicated search index is the right answer rather
+than a bigger JSON. Truncating page bodies is not: it silently drops matches deep in long
+pages, which is where search earns its keep.

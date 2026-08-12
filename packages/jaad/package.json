@@ -21,7 +21,6 @@
     ".": "./index.ts",
     "./content": "./src/content.ts",
     "./layouts/Base.astro": "./src/layouts/Base.astro",
-    "./utils": "./src/utils/docs.ts",
     "./site": "./site.ts"
   },
   "files": [

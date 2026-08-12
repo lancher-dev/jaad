@@ -1,21 +1,19 @@
 ---
 import { render } from "astro:content";
-import { getDocsPages } from "../collection.ts";
+import { getSortedDocsPages } from "../collection.ts";
 import MarkdownContent from "jaamd/components";
 import {
-  sortDocPages,
   getCleanSlug,
   parseDocCollectionId,
   extractTitleFromMarkdown,
-} from "../utils/docs";
+} from "../utils/docs.ts";
 import DocsLayout from "../layouts/Docs.astro";
 import DocsMobileNav from "../components/docs/DocsMobileNav.astro";
 import DocsPageNav from "../components/docs/DocsPageNav.astro";
 import Breadcrumbs from "../components/docs/Breadcrumbs.astro";
 import PageActions from "../components/docs/PageActions.astro";
 
-const docsCollection = await getDocsPages();
-const sortedPages = sortDocPages(docsCollection);
+const sortedPages = await getSortedDocsPages();
 
 const firstPage = sortedPages[0];
 if (!firstPage) {
@@ -33,7 +31,11 @@ const title =
   parsed.title;
 ---
 
-<DocsLayout currentSlug={currentSlug} entry={firstPage}>
+<DocsLayout
+  currentSlug={currentSlug}
+  chapter={parsed.chapter}
+  entry={firstPage}
+>
   <main
     role="main"
     aria-label="Main content"

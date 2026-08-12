@@ -46,3 +46,21 @@ test("every page declares a language", () => {
     assert.match(readFileSync(file, "utf8"), /<html lang="[^"]+"/, file);
   }
 });
+
+test("docs pages carry parseable structured data with absolute urls", () => {
+  const html = page("docs/markdown/tables/index.html");
+  const block = html.match(
+    /<script type="application\/ld\+json">([\s\S]*?)<\/script>/,
+  );
+  assert.ok(block, "no JSON-LD on a docs page");
+
+  const data = JSON.parse(block[1]);
+  assert.equal(data["@type"], "TechArticle");
+  assert.ok(data.headline);
+
+  const crumbs = data.breadcrumb.itemListElement;
+  assert.ok(crumbs.length >= 2, "breadcrumb has no trail");
+  for (const crumb of crumbs) {
+    if (crumb.item) assert.match(crumb.item, /^https?:\/\//, crumb.name);
+  }
+});

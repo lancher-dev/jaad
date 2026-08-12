@@ -3,8 +3,6 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { page, distFiles, allCss } from "../dist.mjs";
 
-// jaamd only warns when it cannot register its remark plugins, so a green build
-// says nothing about whether they ran.
 test("jaamd alerts reach the built HTML", () => {
   assert.match(page("docs/markdown/alerts/index.html"), /markdown-alert/);
 });
@@ -32,4 +30,23 @@ test("every docs page carries its search index and llms entry", () => {
   const index = JSON.parse(page("search-index.json"));
   assert.ok(index.length > 0, "search index is empty");
   assert.match(page("llms.txt"), /^# /);
+});
+
+test("the sidebar follows the numeric prefixes", () => {
+  const links = [
+    ...page("docs/index.html").matchAll(/href="(\/docs\/[^"#]*)"/g),
+  ].map((m) => m[1]);
+
+  const first = links.indexOf("/docs/overview");
+  assert.equal(first, 0, "00-overview should lead");
+  assert.ok(
+    links.indexOf("/docs/getting-started/installation") <
+      links.indexOf("/docs/markdown/reference"),
+    "chapter 02 must come before chapter 03",
+  );
+  assert.ok(
+    links.indexOf("/docs/getting-started/installation") <
+      links.indexOf("/docs/getting-started/deployment"),
+    "files inside a chapter must follow their own numbers",
+  );
 });

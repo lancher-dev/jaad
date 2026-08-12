@@ -4,12 +4,13 @@ import Header from "../components/Header.astro";
 import Head from "../components/Head.astro";
 import DocsSidebarLeft from "../components/docs/DocsSidebarLeft.astro";
 import TableOfContents from "../components/docs/TableOfContents.astro";
+import StructuredData from "../components/docs/StructuredData.astro";
 import {
   extractHeadingsFromMarkdown,
   extractDescription,
   extractTitleFromMarkdown,
 } from "../utils/docs.ts";
-import type { CollectionEntry } from "astro:content";
+import type { DocsEntry } from "../@types/docs.ts";
 import { ClientRouter } from "astro:transitions";
 import config from "virtual:jaad/config";
 
@@ -23,10 +24,11 @@ import "virtual:jaad/user.css";
 interface Props {
   title?: string;
   currentSlug?: string;
-  entry?: CollectionEntry<"docsPages">;
+  chapter?: string;
+  entry?: DocsEntry;
 }
 
-const { title, currentSlug = "", entry } = Astro.props;
+const { title, currentSlug = "", chapter, entry } = Astro.props;
 
 const pageTitle = title ? `${title} | ${config.title}` : config.title;
 const headings = entry ? extractHeadingsFromMarkdown(entry.body || "") : [];
@@ -47,6 +49,11 @@ const pageDescription =
 <html lang={config.lang}>
   <head>
     <Head title={pageTitle} description={pageDescription} />
+    <StructuredData
+      title={entryTitle || config.title}
+      description={pageDescription}
+      chapter={chapter}
+    />
     <ClientRouter />
   </head>
   <body

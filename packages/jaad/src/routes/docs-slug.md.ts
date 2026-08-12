@@ -1,7 +1,7 @@
 import type { APIRoute, GetStaticPaths } from "astro";
 import { getEntry } from "astro:content";
-import { getDocsPages } from "../collection.ts";
-import { sortDocPages, getCleanSlug } from "../utils/docs.ts";
+import { getSortedDocsPages } from "../collection.ts";
+import { getCleanSlug } from "../utils/docs.ts";
 
 /**
  * Raw markdown source for every docs page, served alongside the HTML route at
@@ -10,8 +10,7 @@ import { sortDocPages, getCleanSlug } from "../utils/docs.ts";
  * fetch the source without stripping it back out of rendered HTML.
  */
 export const getStaticPaths: GetStaticPaths = async () => {
-  const docsCollection = await getDocsPages();
-  const sortedPages = sortDocPages(docsCollection);
+  const sortedPages = await getSortedDocsPages();
 
   return sortedPages.map((page) => ({
     params: { slug: getCleanSlug(page.id) },
