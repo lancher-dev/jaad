@@ -2,6 +2,7 @@
 import Layout from "jaad/layouts/Base.astro";
 import Hero from "@/components/Hero.astro";
 import StructurePreview from "@/components/StructurePreview.astro";
+import QuickStart from "@/components/QuickStart.astro";
 ---
 
 <Layout>
@@ -15,8 +16,9 @@ import StructurePreview from "@/components/StructurePreview.astro";
       </p>
 
       <p class="text-foreground-secondary text-base leading-relaxed">
-        JAAD transforms your markdown files into organized documentation with
-        automatic navigation, table of contents, and a clean reading experience.
+        An Astro integration that turns a folder of markdown into a
+        documentation site. Point it at the files you already have and it works
+        out the navigation, the table of contents and the reading experience.
       </p>
 
       <div class="mt-12 flex justify-center gap-6">
@@ -26,8 +28,18 @@ import StructurePreview from "@/components/StructurePreview.astro";
         >
           Read the docs
         </a>
+        <a
+          href="https://www.npmjs.com/package/jaad"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="border-border text-foreground-secondary hover:text-foreground-bright hover:border-border-dark rounded-sm border px-8 py-3 font-medium no-underline transition-colors"
+        >
+          View on npm
+        </a>
       </div>
     </div>
+
+    <QuickStart />
 
     <StructurePreview />
 
@@ -54,8 +66,8 @@ import StructurePreview from "@/components/StructurePreview.astro";
             Fully static
           </dt>
           <dd class="text-foreground-secondary text-sm leading-relaxed">
-            Builds to pure HTML. No server, no runtime dependencies. Deploy
-            anywhere in seconds.
+            Builds to pure HTML with no UI framework shipped. No server, no
+            runtime. Deploy anywhere.
           </dd>
         </div>
         <div class="text-center">
@@ -63,11 +75,11 @@ import StructurePreview from "@/components/StructurePreview.astro";
             class="text-foreground-bright mb-2 font-serif text-base font-semibold"
             style="font-family: 'Merriweather', Georgia, serif; font-style: italic;"
           >
-            Customizable
+            Yours to restyle
           </dt>
           <dd class="text-foreground-secondary text-sm leading-relaxed">
-            Built with Astro and Tailwind. Fully customizable with your own
-            components and styles.
+            Colours, fonts and surfaces are CSS custom properties. One file
+            overrides any of them.
           </dd>
         </div>
       </dl>

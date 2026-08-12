@@ -1,0 +1,54 @@
+---
+const pre =
+  "bg-background-secondary border-border text-foreground overflow-x-auto rounded-lg border px-4 py-3 font-mono text-xs leading-relaxed";
+
+const escape = (s: string) =>
+  s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+const steps = [
+  {
+    label: "Install it",
+    code: "npm install jaad",
+  },
+  {
+    label: "Point it at your markdown",
+    code: `// astro.config.mjs
+integrations: [jaad({ title: "My Project" })]`,
+  },
+  {
+    label: "Write",
+    code: `docs/
+  01-introduction.md
+  02-guides/
+    01-setup.md`,
+  },
+];
+---
+
+<section class="mx-auto mt-20 max-w-2xl" aria-labelledby="quickstart-heading">
+  <h2 class="sr-only" id="quickstart-heading">Quick start</h2>
+
+  <ol class="space-y-6">
+    {
+      steps.map((step, i) => (
+        <li class="flex gap-4">
+          <span
+            class="border-border text-foreground-muted mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs"
+            aria-hidden="true"
+          >
+            {i + 1}
+          </span>
+          <div class="min-w-0 flex-1">
+            <p class="text-foreground-secondary mb-2 text-sm">{step.label}</p>
+
+            <pre class={pre} set:html={`<code>${escape(step.code)}</code>`} />
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+
+  <p class="text-foreground-muted mt-6 text-center text-sm">
+    No sidebar to configure. No frontmatter. Numbers set the order.
+  </p>
+</section>
