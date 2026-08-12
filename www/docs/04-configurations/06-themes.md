@@ -2,25 +2,34 @@
 
 Dark mode is built in and needs no configuration. The switcher in the header toggles it, starting from the reader's system preference.
 
-## How it works
+## Named themes
 
-A `dark` class on `<html>` drives everything. A small inline script in `<head>` reads the stored preference, or falls back to `prefers-color-scheme`, and applies the class before the first paint, so there is no flash of the wrong theme.
+One word sets the site chrome, the rendered markdown and the code block colours together:
 
-To change the colours in either mode, define them in `src/jaad.css`:
-
-```css
-:root {
-  --color-primary: #3b5bdb;
-}
-
-html.dark {
-  --color-primary: #748ffc;
-}
+```js
+jaad({ title: "My Project", theme: "dracula" });
 ```
 
-## Code block themes
+| Name       | Notes                                  |
+| ---------- | -------------------------------------- |
+| `default`  | Paper light, GitHub dark. The default. |
+| `dracula`  | Dark in both modes                     |
+| `nord`     | Dark in both modes                     |
+| `one-dark` | Dark in both modes                     |
 
-Syntax highlighting uses [Shiki](https://shiki.style/themes). Pass a pair and code follows the light/dark toggle:
+An unknown name stops the build and lists the ones that exist, so a typo never falls back silently.
+
+Everything except `default` is a dark palette applied in **both** modes: the toggle still works, but the colours do not change. To keep a light mode as well, set the theme's values yourself under `html.dark` only.
+
+## How it works
+
+A `dark` class on `<html>` drives the theme. A small inline script in `<head>` reads the stored preference, or falls back to `prefers-color-scheme`, and applies the class before the first paint, so there is no flash of the wrong theme.
+
+A theme is a short list of seed values. Surfaces, borders, muted text and alert backgrounds are computed from them with `color-mix()`, which is why the chrome and the markdown never drift apart.
+
+## Code blocks only
+
+To change syntax highlighting without touching the colours, pass a [Shiki](https://shiki.style/themes) pair instead of a name:
 
 ```js
 jaad({
@@ -29,49 +38,45 @@ jaad({
 });
 ```
 
-A single string pins one theme in both modes:
+## Your own
 
-```js
-jaad({ title: "My Project", theme: "dracula" });
-```
-
-## JAAMD theme presets
-
-The markdown styles come from JAAMD, which ships three presets that restyle the rendered content to match popular editor schemes.
-
-| Preset   | Import                  | Pairs with Shiki |
-| -------- | ----------------------- | ---------------- |
-| Dracula  | `jaamd/themes/dracula`  | `dracula`        |
-| Nord     | `jaamd/themes/nord`     | `nord`           |
-| One Dark | `jaamd/themes/one-dark` | `one-dark-pro`   |
-
-Import one from `src/jaad.css` and pair it with the matching Shiki theme:
+A theme is nine values. Set them in `src/jaad.css` and everything follows:
 
 ```css
 /* src/jaad.css */
-@import "jaamd/themes/dracula.css";
-```
+:root,
+html.dark {
+  --color-background: #1e1e2e;
+  --color-surface: #313244;
+  --color-foreground: #cdd6f4;
+  --color-foreground-bright: #f5f5f5;
+  --color-primary: #89b4fa;
 
-```js
-jaad({ title: "My Project", theme: "dracula" });
-```
-
-Each preset also has a `/dark` variant that applies only under `html.dark`, so you can keep the default look in light mode:
-
-```css
-@import "jaamd/themes/dracula/dark.css";
-```
-
-## Rolling your own
-
-Rather than copying a preset, set the JAAMD seed tokens and let the rest derive:
-
-```css
-:root {
-  --jaamd-bg: #282a36;
-  --jaamd-color-fg: #f8f8f2;
-  --jaamd-color-primary: #bd93f9;
+  --color-error: #f38ba8;
+  --color-warning: #f9e2af;
+  --color-info: #89dceb;
+  --color-success: #a6e3a1;
 }
 ```
 
-Surfaces, borders and alert backgrounds are computed from those, so they stay consistent without being listed. Override individual `--jaamd-*` tokens by name when you want an exception. The presets do exactly that, because hand-picked editor palettes are not tints of a background.
+Use `:root` alone for a light theme, `html.dark` alone to restyle only dark mode, or both together to apply it everywhere. Pair it with a Shiki theme so the code matches.
+
+## Exceptions
+
+Hand-designed palettes are not always tints of their background. Dracula's borders are a distinct blue, and its tab strip is _darker_ than the page, which a scale that mixes text into background cannot produce.
+
+For those cases, override the token by name:
+
+```css
+:root,
+html.dark {
+  --jaamd-border-strong: #6272a4;
+  --jaamd-tabs-header-bg: #21222c;
+  --jaamd-em-fg: #8be9fd;
+}
+```
+
+The bundled themes do exactly this, and only where the palette demands it.
+
+> [!NOTE]
+> The derived values use `color-mix()`, supported in Chrome and Edge 111+, Safari 16.2+ and Firefox 113+. On older browsers those colours do not apply.

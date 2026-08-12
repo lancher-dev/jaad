@@ -111,11 +111,27 @@ jaad({
 
 ## Theme
 
-| Option  | Type                                        | Default                                          |
-| ------- | ------------------------------------------- | ------------------------------------------------ |
-| `theme` | `string \| { light: string; dark: string }` | `{ light: "github-light", dark: "github-dark" }` |
+| Option  | Type                                        | Default     |
+| ------- | ------------------------------------------- | ----------- |
+| `theme` | `string \| { light: string; dark: string }` | `"default"` |
 
-A pair of [Shiki themes](https://shiki.style/themes) for code blocks, passed through to JAAMD. Colours and fonts are changed with CSS tokens instead. See [Styles](/docs/configurations/styles).
+A name sets the chrome, the markdown and the code colours together:
+
+```js
+jaad({ title: "My Project", theme: "dracula" });
+```
+
+Bundled: `default`, `dracula`, `nord`, `one-dark`. An unknown name stops the build and lists
+the ones that exist.
+
+An object is a [Shiki](https://shiki.style/themes) pair instead, leaving the colours to the
+CSS tokens:
+
+```js
+jaad({ title: "…", theme: { light: "github-light", dark: "github-dark" } });
+```
+
+See [Themes](/docs/configurations/themes) for writing your own.
 
 ## Worked out for you
 
