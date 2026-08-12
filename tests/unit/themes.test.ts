@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -57,4 +57,34 @@ test("an unknown theme is a build error, not a silent fallback", () => {
 test("isPreset agrees with the exported names", () => {
   for (const name of PRESET_NAMES) assert.ok(isPreset(name));
   assert.ok(!isPreset("nope"));
+});
+
+test("every preset names shiki themes that shiki actually bundles", () => {
+  // shiki is a transitive dependency of astro, so it is not resolvable from
+  // here; read the bundled theme files instead.
+  const pnpm = join(THEMES, "../../../../node_modules/.pnpm");
+  const dir = readdirSync(pnpm)
+    .filter((d) => d.startsWith("@shikijs+themes@"))
+    .map((d) => join(pnpm, d, "node_modules/@shikijs/themes/dist"))
+    .find(existsSync);
+  assert.ok(dir, "shiki themes not found; has the dependency moved?");
+
+  const known = new Set(
+    readdirSync(dir)
+      .filter((f) => f.endsWith(".mjs") && !f.endsWith(".d.mts"))
+      .map((f) => f.replace(/\.mjs$/, "")),
+  );
+
+  for (const [name, preset] of Object.entries(PRESETS)) {
+    const ids =
+      typeof preset.shiki === "string"
+        ? [preset.shiki]
+        : [preset.shiki.light, preset.shiki.dark];
+    for (const id of ids) {
+      assert.ok(
+        known.has(id),
+        `${name} asks for "${id}", which shiki does not have`,
+      );
+    }
+  }
 });

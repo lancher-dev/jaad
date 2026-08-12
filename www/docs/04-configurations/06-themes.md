@@ -10,16 +10,23 @@ One word sets the site chrome, the rendered markdown and the code block colours 
 jaad({ title: "My Project", theme: "dracula" });
 ```
 
-| Name       | Notes                                  |
-| ---------- | -------------------------------------- |
-| `default`  | Paper light, GitHub dark. The default. |
-| `dracula`  | Dark in both modes                     |
-| `nord`     | Dark in both modes                     |
-| `one-dark` | Dark in both modes                     |
+| Name             | Light         | Dark         |
+| ---------------- | ------------- | ------------ |
+| `default`        | Paper         | GitHub Dark  |
+| `catppuccin`     | Latte         | Mocha        |
+| `gruvbox`        | Gruvbox Light | Gruvbox Dark |
+| `rose-pine`      | Dawn          | Rosé Pine    |
+| `rose-pine-moon` | Dawn          | Moon         |
+| `dracula`        | Dracula       | Dracula      |
+| `nord`           | Nord          | Nord         |
+| `one-dark`       | One Dark      | One Dark     |
+| `tokyo-night`    | Tokyo Night   | Tokyo Night  |
 
 An unknown name stops the build and lists the ones that exist, so a typo never falls back silently.
 
-Everything except `default` is a dark palette applied in **both** modes: the toggle still works, but the colours do not change. To keep a light mode as well, set the theme's values yourself under `html.dark` only.
+`catppuccin`, `gruvbox` and the two `rose-pine` variants have an official light palette, so the toggle changes the colours. `dracula`, `nord`, `one-dark` and `tokyo-night` have no official light counterpart and stay dark in both modes.
+
+Palettes come from each project's own reference, and the code block theme is paired with them, so the chrome, the prose and the code all match.
 
 ## How it works
 

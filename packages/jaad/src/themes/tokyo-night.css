@@ -1,0 +1,19 @@
+/* Tokyo Night. A dark theme: it applies in both modes. */
+
+:root,
+html.dark {
+  --color-background: #1a1b26;
+  --color-surface: #16161e;
+  --color-foreground: #a9b1d6;
+  --color-foreground-bright: #c0caf5;
+  --color-primary: #7aa2f7;
+
+  --color-error: #f7768e;
+  --color-warning: #e0af68;
+  --color-info: #7dcfff;
+  --color-success: #9ece6a;
+
+  --jaamd-border-strong: #565f89;
+  --jaamd-color-primary-light: #7dcfff;
+  --jaamd-em-fg: #bb9af7;
+}

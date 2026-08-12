@@ -1,0 +1,31 @@
+/* Catppuccin. Latte in light, Mocha in dark. */
+
+:root {
+  --color-background: #eff1f5;
+  --color-surface: #ccd0da;
+  --color-foreground: #4c4f69;
+  --color-foreground-bright: #4c4f69;
+  --color-primary: #1e66f5;
+
+  --color-error: #d20f39;
+  --color-warning: #df8e1d;
+  --color-info: #1e66f5;
+  --color-success: #40a02b;
+
+  --jaamd-em-fg: #8839ef;
+}
+
+html.dark {
+  --color-background: #1e1e2e;
+  --color-surface: #313244;
+  --color-foreground: #cdd6f4;
+  --color-foreground-bright: #cdd6f4;
+  --color-primary: #89b4fa;
+
+  --color-error: #f38ba8;
+  --color-warning: #f9e2af;
+  --color-info: #89b4fa;
+  --color-success: #a6e3a1;
+
+  --jaamd-em-fg: #cba6f7;
+}

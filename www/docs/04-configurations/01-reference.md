@@ -121,8 +121,8 @@ A name sets the chrome, the markdown and the code colours together:
 jaad({ title: "My Project", theme: "dracula" });
 ```
 
-Bundled: `default`, `dracula`, `nord`, `one-dark`. An unknown name stops the build and lists
-the ones that exist.
+Bundled: `default`, `catppuccin`, `gruvbox`, `rose-pine`, `rose-pine-moon`, `dracula`, `nord`,
+`one-dark`, `tokyo-night`. An unknown name stops the build and lists the ones that exist.
 
 An object is a [Shiki](https://shiki.style/themes) pair instead, leaving the colours to the
 CSS tokens:
