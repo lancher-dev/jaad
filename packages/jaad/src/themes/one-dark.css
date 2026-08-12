@@ -1,0 +1,23 @@
+/* One Dark. A dark theme: it applies in both modes. */
+
+:root,
+html.dark {
+  --color-background: #282c34;
+  --color-surface: #2c313c;
+  --color-foreground: #abb2bf;
+  --color-foreground-bright: #e6e6e6;
+  --color-primary: #61afef;
+
+  --color-error: #e06c75;
+  --color-warning: #e5c07b;
+  --color-info: #61afef;
+  --color-success: #98c379;
+
+  /* Palette colours that are not tints of the background. */
+  --jaamd-surface-2: #2c313c;
+  --jaamd-border: #2c313c;
+  --jaamd-border-strong: #3e4451;
+  --jaamd-tabs-header-bg: #21252b;
+  --jaamd-color-primary-light: #56b6c2;
+  --jaamd-em-fg: #c678dd;
+}

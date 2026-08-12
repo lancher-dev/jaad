@@ -9,6 +9,7 @@ import { join } from "node:path";
 
 import { resolveConfig, type JaadUserConfig } from "./src/config.ts";
 import { jaadVirtualPlugin } from "./src/virtual.ts";
+import { PRESETS } from "./src/themes/index.ts";
 
 const route = (file: string) =>
   new URL(`./src/routes/${file}`, import.meta.url).pathname;
@@ -23,13 +24,22 @@ export default function jaad(options: JaadUserConfig): AstroIntegration[] {
   const userCssPath = join(process.cwd(), "src", "jaad.css");
   const userCss = existsSync(userCssPath) ? userCssPath : null;
 
+  const presetCss =
+    typeof config.theme === "string" ? PRESETS[config.theme].css : null;
+  const themeCss = presetCss
+    ? new URL(`./src/themes/${presetCss}`, import.meta.url).pathname
+    : null;
+
   const core: AstroIntegration = {
     name: "jaad",
     hooks: {
       "astro:config:setup": ({ updateConfig, injectRoute, addWatchFile }) => {
         updateConfig({
           vite: {
-            plugins: [tailwindcss(), jaadVirtualPlugin(config, userCss)],
+            plugins: [
+              tailwindcss(),
+              jaadVirtualPlugin(config, userCss, themeCss),
+            ],
             // Without this the package's .astro sources are treated as
             // pre-bundled externals and never reach the Astro compiler.
             ssr: { noExternal: ["jaad"] },
@@ -98,7 +108,7 @@ export default function jaad(options: JaadUserConfig): AstroIntegration[] {
     },
   };
 
-  return [jaamd({ theme: config.theme }), sitemap(), core];
+  return [jaamd({ theme: config.shiki }), sitemap(), core];
 }
 
 export { defineJaadConfig } from "./src/config.ts";

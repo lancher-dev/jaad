@@ -2,6 +2,7 @@ import { z } from "astro/zod";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { inferRepo, inferDescription, editBaseFrom } from "./infer.ts";
+import { PRESETS, PRESET_NAMES, isPreset } from "./themes/index.ts";
 
 export const jaadConfigSchema = z.object({
   title: z.string(),
@@ -54,8 +55,13 @@ export const jaadConfigSchema = z.object({
   ogImage: z.union([z.string(), z.literal(false)]).default("/og-image.png"),
 
   theme: z
-    .union([z.string(), z.object({ light: z.string(), dark: z.string() })])
-    .default({ light: "github-light", dark: "github-dark" }),
+    .union([
+      z.string().refine(isPreset, {
+        message: `unknown theme; available: ${PRESET_NAMES.join(", ")}`,
+      }),
+      z.object({ light: z.string(), dark: z.string() }),
+    ])
+    .default("default"),
 });
 
 export type JaadUserConfig = z.input<typeof jaadConfigSchema>;
@@ -64,6 +70,8 @@ export type JaadConfig = z.output<typeof jaadConfigSchema>;
 /** What the components actually read: the user's options plus whatever the
  *  repository could tell us. Inferred fields are null when unavailable. */
 export interface JaadResolvedConfig extends JaadConfig {
+  /** What jaamd gets for code blocks. */
+  shiki: string | { light: string; dark: string };
   repoUrl: string | null;
   editBase: string | null;
   favicon: string | null;
@@ -90,6 +98,10 @@ export function resolveConfig(
     description: config.description ?? inferDescription(cwd) ?? undefined,
     repoUrl: repo?.url ?? null,
     favicon: findFavicon(cwd),
+    shiki:
+      typeof config.theme === "string"
+        ? PRESETS[config.theme].shiki
+        : config.theme,
     editBase:
       config.editLink === true
         ? repo
