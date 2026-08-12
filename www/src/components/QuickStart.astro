@@ -12,8 +12,8 @@ const steps = [
   },
   {
     label: "Point it at your markdown",
-    code: `// astro.config.mjs
-integrations: [jaad({ title: "My Project" })]`,
+    code: `// jaad.config.ts
+export default defineJaadConfig({ title: "My Project" })`,
   },
   {
     label: "Write",

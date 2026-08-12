@@ -6,8 +6,8 @@ Dark mode is built in and needs no configuration. The switcher in the header tog
 
 One word sets the site chrome, the rendered markdown and the code block colours together:
 
-```js
-jaad({ title: "My Project", theme: "dracula" });
+```ts
+defineJaadConfig({ title: "My Project", theme: "dracula" });
 ```
 
 | Name             | Light         | Dark         |
@@ -38,8 +38,8 @@ A theme is a short list of seed values. Surfaces, borders, muted text and alert 
 
 To change syntax highlighting without touching the colours, pass a [Shiki](https://shiki.style/themes) pair instead of a name:
 
-```js
-jaad({
+```ts
+defineJaadConfig({
   title: "My Project",
   theme: { light: "github-light", dark: "github-dark" },
 });

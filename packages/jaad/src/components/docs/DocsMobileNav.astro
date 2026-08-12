@@ -9,6 +9,7 @@ import {
 } from "../../utils/docs";
 import type { DocsNavItem } from "../../@types/docs";
 import ScrollToTop from "../ScrollToTop.astro";
+import config from "virtual:jaad/config";
 
 interface Props {
   currentSlug: string;
@@ -20,7 +21,8 @@ const { currentSlug, entry } = Astro.props;
 const docsCollection = await getDocsPages();
 const sortedPages = sortDocPages(docsCollection);
 
-const navItems = buildDocNavItems(sortedPages, currentSlug);
+const base = config.routeBase.replace(/\/$/, "");
+const navItems = buildDocNavItems(sortedPages, currentSlug, base);
 
 const pagesWithoutChapter = navItems.filter((item) => !item.chapter);
 const pagesWithChapter = navItems.filter(

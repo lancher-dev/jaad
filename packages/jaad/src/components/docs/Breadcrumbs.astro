@@ -1,5 +1,6 @@
 ---
 import { formatChapterTitle } from "../../utils/docs";
+import config from "virtual:jaad/config";
 
 interface Props {
   chapter?: string;
@@ -14,7 +15,9 @@ const chapterTitle = formatChapterTitle(chapter);
   aria-label="Breadcrumb"
   class="text-foreground-muted mb-4 flex items-center gap-1.5 text-xs"
 >
-  <a href="/docs" class="hover:text-foreground-bright no-underline">Docs</a>
+  <a href={config.routeBase} class="hover:text-foreground-bright no-underline"
+    >Docs</a
+  >
   {
     chapterTitle && (
       <>

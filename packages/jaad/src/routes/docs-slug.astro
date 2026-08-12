@@ -14,6 +14,7 @@ import DocsMobileNav from "../components/docs/DocsMobileNav.astro";
 import DocsPageNav from "../components/docs/DocsPageNav.astro";
 import Breadcrumbs from "../components/docs/Breadcrumbs.astro";
 import PageActions from "../components/docs/PageActions.astro";
+import config from "virtual:jaad/config";
 
 export async function getStaticPaths() {
   const docsCollection = await getDocsPages();
@@ -52,7 +53,7 @@ const { id, title, chapter, isFirstPage } = Astro.props;
 
 const docPage = await getEntry("docsPages", id);
 if (!docPage) {
-  return Astro.redirect("/docs");
+  return Astro.redirect(config.routeBase);
 }
 
 const { Content } = await render(docPage);

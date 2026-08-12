@@ -9,22 +9,23 @@ npm run preview    # serves ./dist locally
 
 ## Before you deploy
 
-Set `site` in `astro.config.mjs` to the final URL. Canonical links, the sitemap and social card images are all built from it, and without it they are omitted.
+Set `site` in `jaad.config.ts` to the final URL. Canonical links, the sitemap and social card images are all built from it, and without it they are omitted.
 
-```js
-export default defineConfig({
+```ts
+// jaad.config.ts
+export default defineJaadConfig({
   site: "https://docs.example.dev",
-  integrations: [jaad({ title: "My Project" })],
+  title: "My Project",
 });
 ```
 
 If the site is served from a subpath rather than a domain root, set `base` too:
 
-```js
-export default defineConfig({
+```ts
+export default defineJaadConfig({
   site: "https://me.github.io",
   base: "/my-repo",
-  integrations: [jaad({ title: "My Project" })],
+  title: "My Project",
 });
 ```
 

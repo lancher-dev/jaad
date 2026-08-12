@@ -9,15 +9,19 @@ An Astro integration that turns a folder of markdown into a documentation site. 
 npm install jaad
 ```
 
+```ts
+// jaad.config.ts
+import { defineJaadConfig } from "jaad";
+
+export default defineJaadConfig({
+  site: "https://example.dev",
+  title: "My Project",
+});
+```
+
 ```js
 // astro.config.mjs
-import { defineConfig } from "astro/config";
-import jaad from "jaad";
-
-export default defineConfig({
-  site: "https://example.dev",
-  integrations: [jaad({ title: "My Project" })],
-});
+export { default } from "jaad/site";
 ```
 
 ```ts

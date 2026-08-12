@@ -6,6 +6,7 @@ import {
   getCleanSlug,
   extractTitleFromMarkdown,
 } from "../../utils/docs";
+import config from "virtual:jaad/config";
 
 interface Props {
   id: string;
@@ -42,8 +43,9 @@ const nextPage =
     ? navigationItems[currentIndex + 1]
     : null;
 
-const previousUrl = previousPage ? `/docs/${previousPage.slug}` : null;
-const nextUrl = nextPage ? `/docs/${nextPage.slug}` : null;
+const base = config.routeBase.replace(/\/$/, "");
+const previousUrl = previousPage ? `${base}/${previousPage.slug}` : null;
+const nextUrl = nextPage ? `${base}/${nextPage.slug}` : null;
 ---
 
 {

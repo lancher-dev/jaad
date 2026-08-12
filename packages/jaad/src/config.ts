@@ -9,6 +9,9 @@ export const jaadConfigSchema = z.object({
   description: z.string().optional(),
   lang: z.string().default("en"),
   logo: z.string().optional(),
+  site: z.string().optional(),
+  base: z.string().optional(),
+  astro: z.record(z.string(), z.unknown()).optional(),
 
   docsDir: z.string().default("./docs"),
   routeBase: z.string().default("/docs"),
@@ -39,7 +42,6 @@ export const jaadConfigSchema = z.object({
     .optional(),
 
   editLink: z.union([z.boolean(), z.string()]).default(true),
-  lastUpdated: z.boolean().default(true),
 
   head: z
     .array(

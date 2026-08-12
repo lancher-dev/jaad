@@ -33,17 +33,21 @@ yarn add jaad
 
 ## Wire it up
 
-Two files, and neither of them is long.
+Three files. You only ever open the first.
+
+```ts
+// jaad.config.ts
+import { defineJaadConfig } from "jaad";
+
+export default defineJaadConfig({
+  site: "https://example.dev",
+  title: "My Project",
+});
+```
 
 ```js
 // astro.config.mjs
-import { defineConfig } from "astro/config";
-import jaad from "jaad";
-
-export default defineConfig({
-  site: "https://example.dev",
-  integrations: [jaad({ title: "My Project" })],
-});
+export { default } from "jaad/site";
 ```
 
 ```ts
@@ -53,8 +57,10 @@ export { collections } from "jaad/content";
 
 `title` is the only required option. Everything else has a default, and several things are worked out from the repository itself. See [Configuration](/docs/configurations/reference).
 
+The other two files are boilerplate. `astro.config.mjs` hands over to JAAD, which reads `jaad.config.ts` for you, and `src/content.config.ts` tells Astro where the markdown lives. Neither needs to change again.
+
 > [!IMPORTANT]
-> Set `site` in `astro.config.mjs`. Without it Astro cannot build absolute URLs, so canonical links and social card images are left out.
+> Set `site`. Without it Astro cannot build absolute URLs, so canonical links and social card images are left out.
 
 ## Write something
 
@@ -72,8 +78,8 @@ Numbers set the order and are stripped from the URL. Folders become chapters. Th
 
 If your markdown already lives somewhere else, point `docsDir` at it instead of moving it:
 
-```js
-jaad({ title: "My Project", docsDir: "./documentation" });
+```ts
+defineJaadConfig({ title: "My Project", docsDir: "./documentation" });
 ```
 
 ## Run it
@@ -98,4 +104,4 @@ The site starts at `http://localhost:4321`, with the documentation at `/docs`. S
 
 ## What you did not have to do
 
-No sidebar configuration. No frontmatter. No moving files into `src/content/`. No component wiring. That is the whole point: if you already have a folder of markdown, you are three lines away from a site.
+No sidebar configuration. No frontmatter. No moving files into `src/content/`. No Astro concepts to learn. That is the whole point: if you already have a folder of markdown, one file stands between you and a site.

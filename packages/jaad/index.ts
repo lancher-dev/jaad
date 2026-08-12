@@ -1,5 +1,5 @@
 import type { AstroIntegration } from "astro";
-import { fontProviders } from "astro/config";
+import { defineConfig, fontProviders } from "astro/config";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 import jaamd from "jaamd";
@@ -109,6 +109,26 @@ export default function jaad(options: JaadUserConfig): AstroIntegration[] {
   };
 
   return [jaamd({ theme: config.shiki }), sitemap(), core];
+}
+
+/**
+ * The whole Astro config for a JAAD site, so a project never has to know what
+ * an integration is. `site` and `base` are forwarded; `astro` is merged in for
+ * anything else, with its integrations appended rather than replacing ours.
+ */
+export function defineJaadSite(options: JaadUserConfig) {
+  const { site, base, astro, ...jaadOptions } = options;
+  const extra = (astro ?? {}) as Record<string, unknown>;
+  const extraIntegrations = Array.isArray(extra.integrations)
+    ? extra.integrations
+    : [];
+
+  return defineConfig({
+    ...(site ? { site } : {}),
+    ...(base ? { base } : {}),
+    ...extra,
+    integrations: [...jaad(jaadOptions), ...extraIntegrations],
+  });
 }
 
 export { defineJaadConfig } from "./src/config.ts";

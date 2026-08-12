@@ -108,6 +108,7 @@ test("frontmatter title beats the h1, which beats the slug", () => {
       { id: "03-c-page", body: "no heading" },
     ],
     "",
+    "/docs",
   );
   assert.equal(a.title, "From Frontmatter");
   assert.equal(b.title, "From Body");
@@ -177,4 +178,24 @@ test("a long description is cut at a word boundary", () => {
 
 test("no description when there is nothing but the title", () => {
   assert.equal(extractDescription("# Only", "Only"), null);
+});
+
+test("nav links are built under the configured base", () => {
+  const pages = [{ id: "01-intro" }, { id: "02-guides/01-setup" }];
+
+  assert.deepEqual(
+    buildDocNavItems(pages, "", "/docs").map((i) => i.href),
+    ["/docs/intro", "/docs/guides/setup"],
+  );
+
+  // routeBase "/" is normalised to "" by the caller, so links stay single-slashed.
+  assert.deepEqual(
+    buildDocNavItems(pages, "", "").map((i) => i.href),
+    ["/intro", "/guides/setup"],
+  );
+
+  assert.deepEqual(
+    buildDocNavItems(pages, "", "/manual").map((i) => i.href),
+    ["/manual/intro", "/manual/guides/setup"],
+  );
 });

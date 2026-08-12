@@ -1,28 +1,33 @@
 # Configuration
 
-Every option passed to `jaad()` in `astro.config.mjs`. Only `title` is required.
+Everything lives in `jaad.config.ts`. Only `title` is required.
 
-```js
-import jaad from "jaad";
+```ts
+import { defineJaadConfig } from "jaad";
 
-export default defineConfig({
+export default defineJaadConfig({
   site: "https://example.dev",
-  integrations: [
-    jaad({
-      title: "My Project",
-    }),
-  ],
+  title: "My Project",
 });
 ```
 
+## Site
+
+| Option | Type     | Default | Notes                                                             |
+| ------ | -------- | ------- | ----------------------------------------------------------------- |
+| `site` | `string` | none    | Public URL. Needed for canonical links, sitemap and social cards. |
+| `base` | `string` | none    | Subpath, when the site is not served from a domain root.          |
+
+Both are handed to Astro for you.
+
 ## Identity
 
-| Option        | Type     | Default        | Notes                                               |
-| ------------- | -------- | -------------- | --------------------------------------------------- |
-| `title`       | `string` | none           | **Required.** Site name, browser tab, social cards. |
-| `description` | `string` | `package.json` | Falls back to your `package.json` description.      |
-| `lang`        | `string` | `"en"`         | Sets `<html lang>` and `og:locale`.                 |
-| `logo`        | `string` | none           | Image path shown instead of the title text.         |
+| Option        | Type     | Default        | Notes                                                       |
+| ------------- | -------- | -------------- | ----------------------------------------------------------- |
+| `title`       | `string` | none           | **Required.** Site name, browser tab, social cards.         |
+| `description` | `string` | `package.json` | Falls back to your `package.json` description.              |
+| `lang`        | `string` | `"en"`         | Sets `<html lang>` and `og:locale`.                         |
+| `logo`        | `string` | none           | Public URL such as `/logo.svg`, shown instead of the title. |
 
 ## Content
 
@@ -35,8 +40,8 @@ export default defineConfig({
 
 `nav` are text links; `social` are icons.
 
-```js
-jaad({
+```ts
+defineJaadConfig({
   title: "My Project",
   nav: [{ label: "API", href: "https://api.example.dev" }],
   social: {
@@ -59,9 +64,10 @@ Bundled forges: `github`, `gitlab`, `codeberg`, `gitea`, `forgejo`, `bitbucket`,
 
 ## Footer
 
-```js
-jaad({ title: "…", footer: "© 2026 Me" });
-jaad({
+```ts
+defineJaadConfig({ title: "…", footer: "© 2026 Me" });
+
+defineJaadConfig({
   title: "…",
   footer: { message: "MIT Licensed", copyright: "© 2026 Me" },
 });
@@ -71,17 +77,16 @@ A "Built with JAAD" credit is always present; `footer` adds to it.
 
 ## Repository
 
-| Option        | Type                | Default | Notes                                                                           |
-| ------------- | ------------------- | ------- | ------------------------------------------------------------------------------- |
-| `editLink`    | `boolean \| string` | `true`  | `true` derives it from the git remote. Pass a URL to override, `false` to hide. |
-| `lastUpdated` | `boolean`           | `true`  | Reserved; not yet implemented.                                                  |
+| Option     | Type                | Default | Notes                                                                           |
+| ---------- | ------------------- | ------- | ------------------------------------------------------------------------------- |
+| `editLink` | `boolean \| string` | `true`  | `true` derives it from the git remote. Pass a URL to override, `false` to hide. |
 
 With `editLink: true` the base URL comes from `git remote get-url origin`, the current branch, and `docsDir` resolved from the **repository** root, so a site living in a subdirectory still links correctly. When there is no repository, no remote, or the remote cannot be parsed, the link is simply omitted rather than pointing somewhere wrong.
 
 To override, pass a URL. `:path` is replaced with the file, or appended if absent:
 
-```js
-jaad({
+```ts
+defineJaadConfig({
   title: "…",
   editLink: "https://git.example.dev/me/repo/edit/main/docs/:path",
 });
@@ -96,8 +101,8 @@ jaad({
 
 `head` is the escape hatch for analytics, verification tags and preconnects, and it is data rather than a component, so it does not break when JAAD changes.
 
-```js
-jaad({
+```ts
+defineJaadConfig({
   title: "…",
   head: [
     { tag: "meta", attrs: { name: "google-site-verification", content: "…" } },
@@ -117,8 +122,8 @@ jaad({
 
 A name sets the chrome, the markdown and the code colours together:
 
-```js
-jaad({ title: "My Project", theme: "dracula" });
+```ts
+defineJaadConfig({ title: "My Project", theme: "dracula" });
 ```
 
 Bundled: `default`, `catppuccin`, `gruvbox`, `rose-pine`, `rose-pine-moon`, `dracula`, `nord`,
@@ -127,8 +132,11 @@ Bundled: `default`, `catppuccin`, `gruvbox`, `rose-pine`, `rose-pine-moon`, `dra
 An object is a [Shiki](https://shiki.style/themes) pair instead, leaving the colours to the
 CSS tokens:
 
-```js
-jaad({ title: "…", theme: { light: "github-light", dark: "github-dark" } });
+```ts
+defineJaadConfig({
+  title: "…",
+  theme: { light: "github-light", dark: "github-dark" },
+});
 ```
 
 See [Themes](/docs/configurations/themes) for writing your own.
@@ -147,24 +155,32 @@ These have no option because they are read from the project:
 | Sitemap                      | Generated when `site` is set           |
 | `llms.txt`, raw `.md` routes | Always on                              |
 
-## Keeping options in their own file
+## Extending Astro
 
-If the people editing the documentation are not the people maintaining the build, a separate file keeps them out of `astro.config.mjs`:
+Most projects never need this. When you do, `astro` takes any Astro option and is merged into
+the generated config. Integrations you add are appended to JAAD's, not replacing them.
 
 ```ts
-// jaad.config.ts
-import { defineJaadConfig } from "jaad";
-
-export default defineJaadConfig({
+defineJaadConfig({
   title: "My Project",
+  astro: {
+    build: { format: "file" },
+    integrations: [mdx()],
+  },
 });
 ```
 
+For full control, replace `astro.config.mjs` with your own. The one-line version is only a
+re-export, and `jaad()` is still exported as an ordinary Astro integration:
+
 ```js
 // astro.config.mjs
-import jaadConfig from "./jaad.config";
+import { defineConfig } from "astro/config";
+import jaad from "jaad";
+import config from "./jaad.config";
 
 export default defineConfig({
-  integrations: [jaad(jaadConfig)],
+  site: config.site,
+  integrations: [jaad(config)],
 });
 ```

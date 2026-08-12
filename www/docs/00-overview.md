@@ -28,12 +28,13 @@ Being built on Astro means you get everything Astro provides for free: fast stat
 
 Almost nothing. A working site needs the site URL and a title:
 
-```js
-import jaad from "jaad";
+```ts
+// jaad.config.ts
+import { defineJaadConfig } from "jaad";
 
-export default defineConfig({
+export default defineJaadConfig({
   site: "https://your-domain.com",
-  integrations: [jaad({ title: "My Project" })],
+  title: "My Project",
 });
 ```
 

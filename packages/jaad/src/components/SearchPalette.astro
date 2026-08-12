@@ -1,13 +1,16 @@
 ---
+import config from "virtual:jaad/config";
+
 interface Props {
   /** Whether this page is part of the docs, where search is available. */
   inDocs?: boolean;
 }
 
 const { inDocs = false } = Astro.props;
+const base = config.routeBase.replace(/\/$/, "");
 ---
 
-<jaad-search data-in-docs={inDocs ? "" : null}>
+<jaad-search data-in-docs={inDocs ? "" : null} data-base={base}>
   <button
     data-trigger-desktop
     hidden={!inDocs}
@@ -259,7 +262,7 @@ const { inDocs = false } = Astro.props;
 
     #go(slug: string) {
       this.#setOpen(false);
-      navigate(`/docs/${slug}`);
+      navigate(`${this.dataset.base ?? ""}/${slug}`);
     }
 
     #select(i: number) {

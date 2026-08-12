@@ -169,10 +169,11 @@ export function extractHeadingsFromMarkdown(markdown: string): DocsHeadings[] {
  *
  * @param sortedPages - Pages already sorted by sortDocPages()
  * @param currentSlug - The clean slug of the currently-viewed page
+ * @param base - Where the docs are mounted, without a trailing slash
  */
 export function buildDocNavItems<
   T extends { id: string; body?: string; data?: { title?: string } },
->(sortedPages: T[], currentSlug: string): DocsNavItem[] {
+>(sortedPages: T[], currentSlug: string, base = ""): DocsNavItem[] {
   return sortedPages.map((page) => {
     const parsed = parseDocCollectionId(page.id);
     const cleanSlug = getCleanSlug(page.id);
@@ -185,7 +186,7 @@ export function buildDocNavItems<
       title,
       chapter: parsed.chapter,
       primaryOrder: parsed.orderChapter ?? parsed.order,
-      href: `/docs/${cleanSlug}`,
+      href: `${base}/${cleanSlug}`,
       isActive: currentSlug === cleanSlug,
     };
   });

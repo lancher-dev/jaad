@@ -21,6 +21,7 @@ export const GET: APIRoute = async ({ site }) => {
   const sortedPages = sortDocPages(docsCollection);
 
   const base = site ? site.href.replace(/\/$/, "") : "";
+  const routeBase = config.routeBase.replace(/\/$/, "");
 
   interface Row {
     title: string;
@@ -54,7 +55,7 @@ export const GET: APIRoute = async ({ site }) => {
   }
 
   const toLine = (row: Row): string =>
-    `- [${row.title}](${base}/docs/${row.slug}.md)${row.description ? `: ${row.description}` : ""}`;
+    `- [${row.title}](${base}${routeBase}/${row.slug}.md)${row.description ? `: ${row.description}` : ""}`;
 
   const sections: string[] = [];
   if (standalone.length > 0) {

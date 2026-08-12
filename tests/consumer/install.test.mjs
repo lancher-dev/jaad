@@ -59,6 +59,17 @@ test(
       "nested chapter page missing",
     );
 
+    const home = readFileSync(join(dist, "docs/index.html"), "utf8");
+
+    // site reaches Astro through the wrapper, so urls are absolute.
+    assert.match(home, /<link rel="canonical" href="https:\/\/example\.dev/);
+    assert.match(home, /<img src="\/logo\.svg"/, "logo not rendered");
+    assert.match(
+      home,
+      /<meta name="consumer-probe" content="ok"/,
+      "head entry not injected",
+    );
+
     const css = walk(dist)
       .filter((f) => f.endsWith(".css") || f.endsWith(".html"))
       .map((f) => readFileSync(f, "utf8"))
@@ -102,5 +113,42 @@ test(
       readFileSync(join(dist, "search-index.json"), "utf8"),
     );
     assert.equal(index.length, 2);
+
+    // routeBase moves the routes; every internal link has to follow, which is
+    // what silently broke before.
+    writeFileSync(
+      join(project, "jaad.config.ts"),
+      `import { defineJaadConfig } from "jaad";
+export default defineJaadConfig({
+  site: "https://example.dev",
+  title: "Consumer Test",
+  routeBase: "/",
+});
+`,
+    );
+    run("npx", ["astro", "build"], project);
+
+    const rebased = walk(dist)
+      .filter((f) => f.endsWith(".html"))
+      .map((f) => f.slice(dist.length));
+    assert.ok(
+      rebased.includes("/getting-started/index.html"),
+      "pages not remounted",
+    );
+    assert.ok(rebased.includes("/guides/deep-dive/index.html"));
+
+    const remounted = readFileSync(
+      join(dist, "getting-started/index.html"),
+      "utf8",
+    );
+    assert.match(
+      remounted,
+      /href="\/guides\/deep-dive"/,
+      "sidebar still points at the old base",
+    );
+    assert.ok(
+      !/href="\/docs\//.test(remounted),
+      "a link still points under /docs after remounting",
+    );
   },
 );

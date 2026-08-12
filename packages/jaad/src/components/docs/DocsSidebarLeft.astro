@@ -6,6 +6,7 @@ import {
   buildDocNavItems,
 } from "../../utils/docs";
 import type { DocsNavItem } from "../../@types/docs";
+import config from "virtual:jaad/config";
 
 interface Props {
   currentSlug: string;
@@ -16,7 +17,8 @@ const { currentSlug } = Astro.props;
 const docsCollection = await getDocsPages();
 const sortedPages = sortDocPages(docsCollection);
 
-const navItems = buildDocNavItems(sortedPages, currentSlug);
+const base = config.routeBase.replace(/\/$/, "");
+const navItems = buildDocNavItems(sortedPages, currentSlug, base);
 
 // Build interleaved sections: standalone root items + chapter groups, each with a sort order
 type StandaloneSection = {
