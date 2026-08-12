@@ -1,0 +1,84 @@
+---
+import { Font } from "astro:assets";
+import config from "virtual:jaad/config";
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+const canonical = Astro.url.href;
+
+// Open Graph rejects relative paths, so these have to be absolute.
+const ogImage =
+  config.ogImage === false
+    ? null
+    : Astro.site
+      ? new URL(config.ogImage, Astro.site).href
+      : null;
+---
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width" />
+<meta name="description" content={description} />
+<title>{title}</title>
+<link rel="canonical" href={canonical} />
+
+{config.favicon && <link rel="icon" href={config.favicon} />}
+
+<Font cssVariable="--font-inter" preload />
+<Font cssVariable="--font-merriweather" preload />
+
+<meta property="og:url" content={canonical} />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content={config.title} />
+<meta property="og:locale" content={config.lang} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+{ogImage && <meta property="og:image" content={ogImage} />}
+
+<meta
+  name="twitter:card"
+  content={ogImage ? "summary_large_image" : "summary"}
+/>
+<meta property="twitter:domain" content={Astro.url.hostname} />
+<meta property="twitter:url" content={canonical} />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+{ogImage && <meta name="twitter:image" content={ogImage} />}
+
+<meta name="generator" content={Astro.generator} />
+
+{
+  config.head.map((tag) => {
+    const Tag = tag.tag as keyof HTMLElementTagNameMap;
+    return <Tag {...tag.attrs} set:html={tag.content ?? ""} />;
+  })
+}
+
+<script is:inline>
+  (function () {
+    function isDark() {
+      var t = localStorage.getItem("theme");
+      return (
+        t === "dark" ||
+        (!t && matchMedia("(prefers-color-scheme: dark)").matches)
+      );
+    }
+    function applyTheme(root) {
+      if (isDark()) {
+        root.classList.add("dark");
+      } else {
+        root.classList.remove("dark");
+      }
+    }
+    applyTheme(document.documentElement);
+    document.addEventListener("astro:before-swap", function (e) {
+      applyTheme(e.newDocument.documentElement);
+    });
+    document.addEventListener("astro:after-swap", function () {
+      applyTheme(document.documentElement);
+    });
+  })();
+</script>

@@ -1,0 +1,124 @@
+---
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import Head from "../components/Head.astro";
+import DocsSidebarLeft from "../components/docs/DocsSidebarLeft.astro";
+import TableOfContents from "../components/docs/TableOfContents.astro";
+import {
+  extractHeadingsFromMarkdown,
+  extractDescription,
+  extractTitleFromMarkdown,
+} from "../utils/docs.ts";
+import type { CollectionEntry } from "astro:content";
+import { ClientRouter } from "astro:transitions";
+import config from "virtual:jaad/config";
+
+import "../styles/global.css";
+import "../styles/docs.css";
+import "../styles/jaamd.css";
+import "jaamd/styles.css";
+import "virtual:jaad/user.css";
+
+interface Props {
+  title?: string;
+  currentSlug?: string;
+  entry?: CollectionEntry<"docsPages">;
+}
+
+const { title, currentSlug = "", entry } = Astro.props;
+
+const pageTitle = title ? `${title} | ${config.title}` : config.title;
+const headings = entry ? extractHeadingsFromMarkdown(entry.body || "") : [];
+
+// Fall back to the page's own h1: without it the first paragraph of the
+// stripped body *is* the heading, and it becomes the meta description.
+const entryTitle =
+  title ?? (entry ? extractTitleFromMarkdown(entry.body || "") : null) ?? "";
+
+const pageDescription =
+  entry?.data.description ??
+  (entry ? extractDescription(entry.body || "", entryTitle) : null) ??
+  config.description ??
+  config.title;
+---
+
+<!doctype html>
+<html lang={config.lang}>
+  <head>
+    <Head title={pageTitle} description={pageDescription} />
+    <ClientRouter />
+  </head>
+  <body
+    data-docs
+    class="bg-background text-foreground flex min-h-screen flex-col text-[14px] leading-[1.6]"
+  >
+    <Header inDocs />
+
+    <div class="docs-container relative">
+      <DocsSidebarLeft currentSlug={currentSlug} />
+
+      <div class="docs-main lg:mr-64 lg:ml-64">
+        <slot />
+      </div>
+
+      <TableOfContents headings={headings} />
+    </div>
+
+    <Footer />
+
+    <script>
+      import { navigate } from "astro:transitions/client";
+
+      /** Prev/next are identified by their `rel`, not by their icon markup. */
+      function getPageLinks(): {
+        prev: HTMLAnchorElement | null;
+        next: HTMLAnchorElement | null;
+      } {
+        const nav = document.querySelector('nav[aria-label="Page navigation"]');
+        if (!nav) return { prev: null, next: null };
+        return {
+          prev: nav.querySelector<HTMLAnchorElement>('a[rel~="prev"][href]'),
+          next: nav.querySelector<HTMLAnchorElement>('a[rel~="next"][href]'),
+        };
+      }
+
+      /** True when the focus sits inside something the arrow keys should
+       *  scroll instead, such as a wide table or code block. */
+      function inHorizontallyScrollable(el: Element | null): boolean {
+        for (let node = el; node && node !== document.body;) {
+          if (node instanceof HTMLElement) {
+            const overflowX = getComputedStyle(node).overflowX;
+            if (
+              (overflowX === "auto" || overflowX === "scroll") &&
+              node.scrollWidth > node.clientWidth
+            )
+              return true;
+          }
+          node = node.parentElement;
+        }
+        return false;
+      }
+
+      function onKey(e: KeyboardEvent) {
+        // Leave modified chords alone, notably the browser's back/forward.
+        if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+        if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+
+        const active = document.activeElement as HTMLElement | null;
+        const tag = active?.tagName;
+        if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+        if (active?.isContentEditable) return;
+        if (inHorizontallyScrollable(active)) return;
+
+        const { prev, next } = getPageLinks();
+        const target = e.key === "ArrowLeft" ? prev : next;
+        if (!target) return;
+        e.preventDefault();
+        navigate(target.href);
+      }
+
+      // This module runs once and `document` survives View Transitions.
+      document.addEventListener("keydown", onKey);
+    </script>
+  </body>
+</html>

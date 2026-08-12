@@ -1,0 +1,22 @@
+---
+import config from "virtual:jaad/config";
+
+const footer =
+  typeof config.footer === "string"
+    ? { message: undefined, copyright: config.footer }
+    : config.footer || {};
+---
+
+<footer
+  class="border-border-dark mt-4 w-full border-t pt-2"
+  aria-labelledby="footer-heading"
+>
+  <h2 class="sr-only" id="footer-heading">Site footer</h2>
+  <p
+    class="text-foreground-muted mb-1 text-center text-[0.95rem] leading-[1.6] italic"
+  >
+    {footer.message && <span>{footer.message} · </span>}
+    {footer.copyright && <span>{footer.copyright} · </span>}
+    Built with <a href="https://jaad.lancher.dev" rel="noopener">JAAD</a>.
+  </p>
+</footer>

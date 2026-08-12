@@ -1,0 +1,44 @@
+{
+  "name": "jaad",
+  "version": "0.1.0",
+  "description": "Turn a folder of markdown into a documentation site. An Astro integration.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Kasui92 <info@lucapattocchio.dev>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lancher-dev/jaad"
+  },
+  "keywords": [
+    "astro-integration",
+    "astro",
+    "withastro",
+    "documentation",
+    "docs",
+    "markdown"
+  ],
+  "exports": {
+    ".": "./index.ts",
+    "./content": "./src/content.ts",
+    "./layouts/Base.astro": "./src/layouts/Base.astro",
+    "./utils": "./src/utils/docs.ts"
+  },
+  "files": [
+    "index.ts",
+    "src",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "astro": ">=7.0.0 <8.0.0"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.3",
+    "@tailwindcss/vite": "^4.3.3",
+    "github-slugger": "^2.0.0",
+    "jaamd": "^0.6.1",
+    "tailwindcss": "^4.3.3"
+  },
+  "scripts": {
+    "check": "astro check"
+  }
+}

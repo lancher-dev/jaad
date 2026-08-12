@@ -1,0 +1,103 @@
+---
+import config from "virtual:jaad/config";
+import { editUrl } from "../../infer.ts";
+
+interface Props {
+  /** Content collection entry id, e.g. "03-markdown/12-inner-html". */
+  id: string;
+  /** URL-safe slug, e.g. "markdown/inner-html". */
+  cleanSlug: string;
+}
+
+const { id, cleanSlug } = Astro.props;
+
+const mdHref = `${config.routeBase.replace(/\/$/, "")}/${cleanSlug}.md`;
+const editHref = config.editBase ? editUrl(config.editBase, `${id}.md`) : null;
+---
+
+<div class="mb-4 flex items-center gap-2 text-xs">
+  <button
+    type="button"
+    data-copy-page
+    data-md-href={mdHref}
+    class="border-border bg-surface hover:bg-surface-hover text-foreground-secondary hover:text-foreground-bright flex cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-1.5 transition-colors"
+  >
+    <svg
+      class="h-3.5 w-3.5 shrink-0"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M16 1H4a2 2 0 00-2 2v14h2V3h12V1zm3 4H8a2 2 0 00-2 2v14a2 2 0 002 2h11a2 2 0 002-2V7a2 2 0 00-2-2z"
+      ></path>
+    </svg>
+    <span data-copy-label>Copy page</span>
+  </button>
+
+  {
+    editHref && (
+      <a
+        href={editHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="border-border bg-surface hover:bg-surface-hover text-foreground-secondary hover:text-foreground-bright flex items-center gap-1.5 rounded-lg border px-3 py-1.5 no-underline transition-colors"
+      >
+        <svg
+          class="h-3.5 w-3.5 shrink-0"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+          />
+        </svg>
+        <span>Edit this page</span>
+      </a>
+    )
+  }
+</div>
+
+<script>
+  function initCopyPageButtons(): void {
+    document
+      .querySelectorAll<HTMLButtonElement>("[data-copy-page]")
+      .forEach((btn) => {
+        if (btn.dataset.copyInit) return;
+        btn.dataset.copyInit = "1";
+
+        const label = btn.querySelector<HTMLElement>("[data-copy-label]");
+
+        btn.addEventListener("click", async () => {
+          const href = btn.dataset.mdHref;
+          if (!href) return;
+          try {
+            const res = await fetch(href);
+            const text = await res.text();
+            await navigator.clipboard.writeText(text);
+            if (label) {
+              const original = label.textContent;
+              label.textContent = "Copied!";
+              setTimeout(() => {
+                label.textContent = original;
+              }, 2000);
+            }
+          } catch {
+            // Network or clipboard unavailable — fail silently.
+          }
+        });
+      });
+  }
+
+  initCopyPageButtons();
+  document.addEventListener("astro:page-load", initCopyPageButtons);
+</script>

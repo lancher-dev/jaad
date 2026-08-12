@@ -1,0 +1,363 @@
+---
+interface Props {
+  /** Whether this page is part of the docs, where search is available. */
+  inDocs?: boolean;
+}
+
+const { inDocs = false } = Astro.props;
+---
+
+<jaad-search data-in-docs={inDocs ? "" : null}>
+  <button
+    data-trigger-desktop
+    hidden={!inDocs}
+    class="border-border bg-surface hover:bg-surface-hover text-foreground-muted hidden cursor-pointer items-center gap-2 rounded-lg border px-3 py-1.5 text-sm transition-colors md:flex"
+    aria-label="Search documentation"
+  >
+    <svg
+      class="h-4 w-4 shrink-0"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+    </svg>
+    <span class="hidden lg:inline">Search docs...</span>
+    <kbd
+      data-shortcut
+      class="bg-background-secondary text-foreground-muted rounded px-1.5 py-0.5 text-xs font-medium"
+      >Ctrl K</kbd
+    >
+  </button>
+
+  <button
+    data-trigger-mobile
+    hidden={!inDocs}
+    class="text-foreground-secondary hover:text-foreground-bright flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg transition-colors md:hidden"
+    aria-label="Search documentation"
+  >
+    <svg
+      class="h-5 w-5"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+    </svg>
+  </button>
+
+  <div
+    data-overlay
+    hidden
+    class="fixed inset-0 z-50 flex items-start justify-center px-4 pt-[15vh]"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Search documentation"
+  >
+    <div data-backdrop class="absolute inset-0 bg-black/60 backdrop-blur-sm">
+    </div>
+
+    <div
+      class="bg-surface border-border relative z-10 w-full max-w-lg overflow-hidden rounded-xl border shadow-2xl"
+    >
+      <div class="border-border flex items-center gap-3 border-b px-4 py-3">
+        <svg
+          class="text-foreground-muted h-5 w-5 shrink-0"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <input
+          data-input
+          type="text"
+          placeholder="Search documentation..."
+          class="text-foreground placeholder-foreground-muted min-w-0 flex-1 bg-transparent text-sm outline-none"
+          autocomplete="off"
+          spellcheck="false"
+          role="combobox"
+          aria-expanded="true"
+          aria-controls="search-results"
+          aria-autocomplete="list"
+          aria-label="Search documentation"
+        />
+        <kbd
+          data-close
+          class="bg-background-secondary text-foreground-muted shrink-0 cursor-pointer rounded px-1.5 py-0.5 text-xs"
+          >ESC</kbd
+        >
+      </div>
+
+      <ul
+        data-results
+        id="search-results"
+        class="max-h-80 overflow-y-auto p-2"
+        role="listbox"
+        aria-label="Search results"
+      >
+      </ul>
+
+      <div
+        class="border-border text-foreground-muted flex items-center gap-4 border-t px-4 py-2 text-xs"
+      >
+        <span>
+          <kbd class="bg-background-secondary rounded px-1 py-0.5">↑↓</kbd> navigate
+        </span>
+        <span>
+          <kbd class="bg-background-secondary rounded px-1 py-0.5">↵</kbd> open
+        </span>
+        <span>
+          <kbd class="bg-background-secondary rounded px-1 py-0.5">esc</kbd> close
+        </span>
+      </div>
+    </div>
+  </div>
+</jaad-search>
+
+<script>
+  import { navigate } from "astro:transitions/client";
+  import {
+    scoreItems,
+    getSnippet,
+    splitOnMatches,
+    type SearchItem,
+  } from "../utils/search.js";
+
+  const INDEX_URL = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/search-index.json`;
+
+  let cache: SearchItem[] | null = null;
+  let request: Promise<SearchItem[]> | null = null;
+
+  function loadIndex(): Promise<SearchItem[]> {
+    if (cache) return Promise.resolve(cache);
+    if (!request) {
+      request = fetch(INDEX_URL)
+        .then((res) => (res.ok ? res.json() : []))
+        .then((data: SearchItem[]) => (cache = data))
+        .catch(() => {
+          // Drop the failed promise so a later attempt can retry.
+          request = null;
+          return [];
+        });
+    }
+    return request;
+  }
+
+  class JaadSearch extends HTMLElement {
+    #overlay!: HTMLElement;
+    #input!: HTMLInputElement;
+    #list!: HTMLUListElement;
+    #results: SearchItem[] = [];
+    #selected = 0;
+    #restoreFocus: HTMLElement | null = null;
+    #previousOverflow = "";
+
+    get #open() {
+      return !this.#overlay.hidden;
+    }
+
+    connectedCallback() {
+      this.#overlay = this.querySelector("[data-overlay]")!;
+      this.#input = this.querySelector("[data-input]")!;
+      this.#list = this.querySelector("[data-results]")!;
+
+      if (/Mac|iPod|iPhone|iPad/.test(navigator.userAgent)) {
+        this.querySelector("[data-shortcut]")!.textContent = "⌘K";
+      }
+
+      for (const sel of ["[data-trigger-desktop]", "[data-trigger-mobile]"]) {
+        const trigger = this.querySelector<HTMLElement>(sel)!;
+        trigger.addEventListener("click", () => this.#setOpen(true));
+        trigger.addEventListener("mouseenter", () => void loadIndex());
+        trigger.addEventListener("focus", () => void loadIndex());
+      }
+
+      this.querySelector("[data-backdrop]")!.addEventListener("click", () =>
+        this.#setOpen(false),
+      );
+      this.querySelector("[data-close]")!.addEventListener("click", () =>
+        this.#setOpen(false),
+      );
+
+      this.#input.addEventListener("input", () => this.#render());
+      this.#input.addEventListener("keydown", (e) => this.#onInputKey(e));
+
+      document.addEventListener("keydown", this.#onGlobalKey);
+      document.addEventListener("astro:after-swap", this.#syncInDocs);
+    }
+
+    disconnectedCallback() {
+      document.removeEventListener("keydown", this.#onGlobalKey);
+      document.removeEventListener("astro:after-swap", this.#syncInDocs);
+    }
+
+    /** The header persists across navigations, so the triggers have to appear
+     *  and disappear as the reader moves in and out of the docs. */
+    #syncInDocs = () => {
+      const inDocs = document.body.hasAttribute("data-docs");
+      this.querySelectorAll<HTMLElement>(
+        "[data-trigger-desktop],[data-trigger-mobile]",
+      ).forEach((el) => (el.hidden = !inDocs));
+      if (!inDocs) this.#setOpen(false);
+    };
+
+    #onGlobalKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+        e.preventDefault();
+        this.#setOpen(!this.#open);
+      } else if (e.key === "Escape" && this.#open) {
+        e.preventDefault();
+        this.#setOpen(false);
+      }
+    };
+
+    #onInputKey(e: KeyboardEvent) {
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        this.#select(Math.min(this.#selected + 1, this.#results.length - 1));
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        this.#select(Math.max(this.#selected - 1, 0));
+      } else if (e.key === "Enter" && this.#results[this.#selected]) {
+        this.#go(this.#results[this.#selected].slug);
+      }
+    }
+
+    #setOpen(open: boolean) {
+      if (open === this.#open) return;
+      this.#overlay.hidden = !open;
+
+      if (open) {
+        this.#restoreFocus = document.activeElement as HTMLElement | null;
+        this.#previousOverflow = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+        requestAnimationFrame(() => this.#input.focus());
+        void loadIndex().then(() => this.#render());
+        this.#render();
+      } else {
+        document.body.style.overflow = this.#previousOverflow;
+        this.#input.value = "";
+        this.#restoreFocus?.focus?.();
+      }
+    }
+
+    #go(slug: string) {
+      this.#setOpen(false);
+      navigate(`/docs/${slug}`);
+    }
+
+    #select(i: number) {
+      this.#selected = i;
+      [...this.#list.children].forEach((li, n) => {
+        const active = n === i;
+        li.setAttribute("aria-selected", String(active));
+        li.classList.toggle("bg-primary/10", active);
+        li.classList.toggle("text-foreground-bright", active);
+        li.classList.toggle("text-foreground", !active);
+        li.classList.toggle("hover:bg-primary/5", !active);
+      });
+      (this.#list.children[i] as HTMLElement | undefined)?.scrollIntoView({
+        block: "nearest",
+      });
+    }
+
+    #marked(text: string, query: string): DocumentFragment {
+      const frag = document.createDocumentFragment();
+      for (const part of splitOnMatches(text, query)) {
+        if (part.match) {
+          const mark = document.createElement("mark");
+          mark.className =
+            "bg-primary/20 text-foreground-bright rounded-sm px-0.5 font-semibold not-italic";
+          mark.textContent = part.text;
+          frag.append(mark);
+        } else {
+          frag.append(document.createTextNode(part.text));
+        }
+      }
+      return frag;
+    }
+
+    #render() {
+      const query = this.#input.value;
+      this.#list.replaceChildren();
+
+      if (!cache) {
+        this.#list.append(this.#message("Loading..."));
+        return;
+      }
+
+      this.#results = scoreItems(cache, query);
+
+      if (this.#results.length === 0) {
+        this.#list.append(this.#message(`No results for “${query}”`));
+        return;
+      }
+
+      this.#results.forEach((item, i) => {
+        const li = document.createElement("li");
+        li.id = `search-option-${i}`;
+        li.setAttribute("role", "option");
+        li.className =
+          "cursor-pointer rounded-lg px-3 py-2.5 text-left transition-colors";
+        li.addEventListener("click", () => this.#go(item.slug));
+        li.addEventListener("mouseenter", () => this.#select(i));
+
+        const head = document.createElement("div");
+        head.className = "flex items-center gap-2";
+        const title = document.createElement("span");
+        title.className = "text-sm font-medium";
+        title.append(this.#marked(item.title, query));
+        head.append(title);
+
+        if (item.chapter) {
+          const badge = document.createElement("span");
+          badge.className =
+            "text-foreground-muted bg-background-secondary rounded px-1.5 py-0.5 text-[0.65rem]";
+          badge.textContent = item.chapter;
+          head.append(badge);
+        }
+        li.append(head);
+
+        const snippet = getSnippet(item.body, query);
+        if (snippet) {
+          const p = document.createElement("p");
+          p.className = "text-foreground-secondary mt-1 line-clamp-1 text-xs";
+          p.append(this.#marked(snippet, query));
+          li.append(p);
+        }
+
+        this.#list.append(li);
+      });
+
+      this.#select(0);
+      this.#input.setAttribute("aria-activedescendant", "search-option-0");
+    }
+
+    #message(text: string): HTMLLIElement {
+      const li = document.createElement("li");
+      li.className = "text-foreground-muted px-3 py-6 text-center text-sm";
+      li.textContent = text;
+      return li;
+    }
+  }
+
+  if (!customElements.get("jaad-search")) {
+    customElements.define("jaad-search", JaadSearch);
+  }
+</script>

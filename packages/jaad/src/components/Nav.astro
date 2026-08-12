@@ -1,0 +1,25 @@
+---
+import config from "virtual:jaad/config";
+---
+
+{
+  config.nav.length > 0 && (
+    <nav class="hidden md:block">
+      <ul class="flex space-x-4">
+        {config.nav.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              class="text-foreground-secondary hover:text-foreground-bright no-underline hover:underline"
+              {...(link.href.startsWith("http")
+                ? { target: "_blank", rel: "noopener noreferrer" }
+                : {})}
+            >
+              {link.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}

@@ -1,0 +1,65 @@
+---
+import config from "virtual:jaad/config";
+import { FORGES, forgeForUrl } from "../forges.ts";
+
+interface Link {
+  href: string;
+  label: string;
+  path?: string;
+  svg?: string;
+}
+
+const links: Link[] = [];
+
+for (const [key, value] of Object.entries(config.social)) {
+  const entry = typeof value === "string" ? { href: value } : value;
+  const forge = FORGES[key];
+  links.push({
+    href: entry.href,
+    label: ("label" in entry && entry.label) || forge?.label || key,
+    path: forge?.path,
+    svg: "svg" in entry ? entry.svg : undefined,
+  });
+}
+
+// The inferred repository, unless the user already listed it.
+if (config.repoUrl && !links.some((l) => l.href === config.repoUrl)) {
+  const forge = forgeForUrl(config.repoUrl);
+  links.push({
+    href: config.repoUrl,
+    label: forge ? FORGES[forge].label : "Repository",
+    path: forge ? FORGES[forge].path : undefined,
+  });
+}
+---
+
+{
+  links.map((link) => (
+    <a
+      href={link.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      title={link.label}
+      aria-label={link.label}
+      class="text-foreground-secondary hover:text-foreground-bright flex h-9 w-9 items-center justify-center rounded-lg no-underline transition-colors"
+    >
+      {link.svg ? (
+        <span
+          class="flex h-5 w-5 items-center justify-center"
+          set:html={link.svg}
+        />
+      ) : link.path ? (
+        <svg
+          class="h-5 w-5"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path d={link.path} />
+        </svg>
+      ) : (
+        <span class="text-xs">{link.label}</span>
+      )}
+    </a>
+  ))
+}
