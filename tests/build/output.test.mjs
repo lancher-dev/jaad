@@ -19,6 +19,17 @@ test("dual-theme code colours reach the built CSS", () => {
   );
 });
 
+// The 404 route used to hardcode the framework's own name, so every consumer
+// advertised JAAD in the title of their error page.
+test("no page title names the framework instead of the site", () => {
+  const offenders = distFiles(".html")
+    .map((f) => [f.split("/dist/")[1], readFileSync(f, "utf8")])
+    .filter(([, html]) => /<title>[^<]*\bJAAD\b[^<]*\bJAAD\b/.test(html))
+    .map(([name]) => name);
+  assert.deepEqual(offenders, []);
+  assert.match(page("404.html"), /<title>404 \| JAAD<\/title>/);
+});
+
 test("no third-party host on the critical path", () => {
   const offenders = distFiles(".html")
     .filter((f) => readFileSync(f, "utf8").includes("nerdfonts.com"))
