@@ -103,3 +103,71 @@ sections.sort((a, b) => a.order - b.order);
     }
   </nav>
 </aside>
+
+<script>
+  const SELECTOR = ".docs-sidebar-left";
+  let scrollTop = 0;
+
+  const sidebar = () => document.querySelector<HTMLElement>(SELECTOR);
+
+  /** Scrolls the sidebar only, never the document, and only when needed. */
+  function revealCurrent() {
+    const el = sidebar();
+    const current = el?.querySelector('[aria-current="page"]');
+    if (!el || !current) return;
+
+    const box = el.getBoundingClientRect();
+    const item = current.getBoundingClientRect();
+    if (item.top >= box.top && item.bottom <= box.bottom) return;
+
+    el.scrollTop += item.top - box.top - (box.height - item.height) / 2;
+  }
+
+  document.addEventListener("astro:before-swap", () => {
+    scrollTop = sidebar()?.scrollTop ?? 0;
+  });
+
+  document.addEventListener("astro:after-swap", () => {
+    const el = sidebar();
+    if (!el) return;
+    el.scrollTop = scrollTop;
+    // A deep link, or a page whose entry sits outside the restored window.
+    revealCurrent();
+  });
+
+  revealCurrent();
+</script>
+
+<script>
+  const SELECTOR = ".docs-sidebar-left";
+  let scrollTop = 0;
+
+  const sidebar = () => document.querySelector<HTMLElement>(SELECTOR);
+
+  /** Scrolls the sidebar only, never the document, and only when needed. */
+  function revealCurrent() {
+    const el = sidebar();
+    const current = el?.querySelector('[aria-current="page"]');
+    if (!el || !current) return;
+
+    const box = el.getBoundingClientRect();
+    const item = current.getBoundingClientRect();
+    if (item.top >= box.top && item.bottom <= box.bottom) return;
+
+    el.scrollTop += item.top - box.top - (box.height - item.height) / 2;
+  }
+
+  document.addEventListener("astro:before-swap", () => {
+    scrollTop = sidebar()?.scrollTop ?? 0;
+  });
+
+  document.addEventListener("astro:after-swap", () => {
+    const el = sidebar();
+    if (!el) return;
+    el.scrollTop = scrollTop;
+    // A deep link, or a page whose entry sits outside the restored window.
+    revealCurrent();
+  });
+
+  revealCurrent();
+</script>
