@@ -70,6 +70,29 @@ test(
       "head entry not injected",
     );
 
+    // Both menus read the same list, so a configured forge is labelled once and
+    // the same way. The mobile one used to print the raw config key.
+    const mobileMenu = home.match(
+      /<jaad-nav-mobile[\s\S]*?<\/jaad-nav-mobile>/,
+    )[0];
+    assert.match(
+      mobileMenu,
+      />GitHub</,
+      "mobile menu does not use forge labels",
+    );
+    assert.equal(
+      (home.match(/https:\/\/github\.com\/example\/consumer/g) ?? []).length,
+      2,
+      "the repository link is not listed exactly once per menu",
+    );
+
+    const notFound = readFileSync(join(dist, "404.html"), "utf8");
+    assert.match(
+      notFound,
+      /<title>404 \| Consumer Test<\/title>/,
+      "the 404 page does not carry the consumer's own title",
+    );
+
     const css = walk(dist)
       .filter((f) => f.endsWith(".css") || f.endsWith(".html"))
       .map((f) => readFileSync(f, "utf8"))

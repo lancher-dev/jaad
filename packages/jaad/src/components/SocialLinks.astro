@@ -1,36 +1,8 @@
 ---
 import config from "virtual:jaad/config";
-import { FORGES, forgeForUrl } from "../forges.ts";
+import { buildSocialLinks } from "../social.ts";
 
-interface Link {
-  href: string;
-  label: string;
-  path?: string;
-  svg?: string;
-}
-
-const links: Link[] = [];
-
-for (const [key, value] of Object.entries(config.social)) {
-  const entry = typeof value === "string" ? { href: value } : value;
-  const forge = FORGES[key];
-  links.push({
-    href: entry.href,
-    label: ("label" in entry && entry.label) || forge?.label || key,
-    path: forge?.path,
-    svg: "svg" in entry ? entry.svg : undefined,
-  });
-}
-
-// The inferred repository, unless the user already listed it.
-if (config.repoUrl && !links.some((l) => l.href === config.repoUrl)) {
-  const forge = forgeForUrl(config.repoUrl);
-  links.push({
-    href: config.repoUrl,
-    label: forge ? FORGES[forge].label : "Repository",
-    path: forge ? FORGES[forge].path : undefined,
-  });
-}
+const links = buildSocialLinks(config);
 ---
 
 {

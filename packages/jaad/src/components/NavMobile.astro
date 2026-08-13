@@ -1,14 +1,8 @@
 ---
 import config from "virtual:jaad/config";
+import { buildSocialLinks } from "../social.ts";
 
-const links = [
-  ...config.nav,
-  ...Object.entries(config.social).map(([key, value]) => ({
-    label: key,
-    href: typeof value === "string" ? value : value.href,
-  })),
-  ...(config.repoUrl ? [{ label: "Repository", href: config.repoUrl }] : []),
-];
+const links = [...config.nav, ...buildSocialLinks(config)];
 ---
 
 <jaad-nav-mobile class="relative md:hidden">
