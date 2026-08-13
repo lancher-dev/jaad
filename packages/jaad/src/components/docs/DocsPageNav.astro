@@ -1,10 +1,6 @@
 ---
 import { getSortedDocsPages } from "../../collection.ts";
-import {
-  parseDocCollectionId,
-  getCleanSlug,
-  extractTitleFromMarkdown,
-} from "../../utils/docs.ts";
+import { buildDocNavItems } from "../../utils/docs.ts";
 import config from "virtual:jaad/config";
 
 interface Props {
@@ -14,45 +10,20 @@ interface Props {
 const { id } = Astro.props;
 
 const sortedPages = await getSortedDocsPages();
+const items = buildDocNavItems(sortedPages, "", config.docsBase);
 
-const navigationItems = sortedPages.map((page) => {
-  const parsed = parseDocCollectionId(page.id);
-  // Priority: frontmatter title → first H1 → slug-derived
-  const title =
-    page.data?.title ??
-    extractTitleFromMarkdown(page.body || "") ??
-    parsed.title;
-
-  return {
-    id: page.id,
-    slug: getCleanSlug(page.id),
-    title,
-    order: parsed.order,
-    orderChapter: parsed.orderChapter,
-    chapter: parsed.chapter,
-  };
-});
-
-const currentIndex = navigationItems.findIndex((item) => item.id === id);
-const previousPage =
-  currentIndex > 0 ? navigationItems[currentIndex - 1] : null;
-const nextPage =
-  currentIndex < navigationItems.length - 1
-    ? navigationItems[currentIndex + 1]
-    : null;
-
-const base = config.docsBase;
-const previousUrl = previousPage ? `${base}/${previousPage.slug}` : null;
-const nextUrl = nextPage ? `${base}/${nextPage.slug}` : null;
+const current = sortedPages.findIndex((page) => page.id === id);
+const previousPage = current > 0 ? items[current - 1] : null;
+const nextPage = current < items.length - 1 ? items[current + 1] : null;
 ---
 
 {
   (previousPage || nextPage) && (
     <nav class="mx-auto max-w-3xl px-4 py-8" aria-label="Page navigation">
       <div class="flex items-center justify-between gap-4">
-        {previousPage && previousUrl && previousPage.title ? (
+        {previousPage && previousPage.title ? (
           <a
-            href={previousUrl}
+            href={previousPage.href}
             rel="prev"
             class="group border-border-dark bg-background-tertiary text-foreground-bright hover:border-primary hover:bg-border-dark hover:text-primary flex max-w-[calc(45%-1rem)] min-w-0 items-center gap-2 rounded-lg border px-4 py-3 no-underline transition-all duration-300"
           >
@@ -78,9 +49,9 @@ const nextUrl = nextPage ? `${base}/${nextPage.slug}` : null;
           <div />
         )}
 
-        {nextPage && nextUrl && nextPage.title ? (
+        {nextPage && nextPage.title ? (
           <a
-            href={nextUrl}
+            href={nextPage.href}
             rel="next"
             class="group border-border-dark bg-background-tertiary text-foreground-bright hover:border-primary hover:bg-border-dark hover:text-primary flex max-w-[calc(45%-1rem)] min-w-0 items-center gap-2 rounded-lg border px-4 py-3 no-underline transition-all duration-300"
           >

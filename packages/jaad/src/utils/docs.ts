@@ -123,20 +123,32 @@ export function extractHeadingsFromMarkdown(markdown: string): DocsHeadings[] {
   return headings;
 }
 
+export interface DocsPageLike {
+  id: string;
+  body?: string;
+  data?: { title?: string };
+}
+
+/** Frontmatter title, then the first H1, then the slug. */
+export function docTitle(page: DocsPageLike): string {
+  return (
+    page.data?.title ??
+    (page.body ? extractTitleFromMarkdown(page.body) : null) ??
+    parseDocCollectionId(page.id).title
+  );
+}
+
 /** `base` is the mount point, without a trailing slash. */
-export function buildDocNavItems<
-  T extends { id: string; body?: string; data?: { title?: string } },
->(sortedPages: T[], currentSlug: string, base = ""): DocsNavItem[] {
+export function buildDocNavItems<T extends DocsPageLike>(
+  sortedPages: T[],
+  currentSlug: string,
+  base = "",
+): DocsNavItem[] {
   return sortedPages.map((page) => {
     const parsed = parseDocCollectionId(page.id);
     const cleanSlug = getCleanSlug(page.id);
-    // Priority: explicit frontmatter title → first H1 in body → slug-derived title
-    const title =
-      page.data?.title ??
-      (page.body ? extractTitleFromMarkdown(page.body) : null) ??
-      parsed.title;
     return {
-      title,
+      title: docTitle(page),
       chapter: parsed.chapter,
       primaryOrder: parsed.orderChapter ?? parsed.order,
       href: `${base}/${cleanSlug}`,
@@ -196,23 +208,15 @@ export function extractDescription(
   return `${truncated.slice(0, lastSpace > 0 ? lastSpace : maxLength)}…`;
 }
 
-export function buildSearchIndex<
-  T extends { id: string; body?: string; data?: { title?: string } },
->(sortedPages: T[]): DocsSearchEntry[] {
-  return sortedPages.map((page) => {
-    const parsed = parseDocCollectionId(page.id);
-    const cleanSlug = getCleanSlug(page.id);
-    const title =
-      page.data?.title ??
-      (page.body ? extractTitleFromMarkdown(page.body) : null) ??
-      parsed.title;
-    return {
-      title,
-      slug: cleanSlug,
-      chapter: formatChapterTitle(parsed.chapter),
-      body: stripMarkdown(page.body || ""),
-    };
-  });
+export function buildSearchIndex<T extends DocsPageLike>(
+  sortedPages: T[],
+): DocsSearchEntry[] {
+  return sortedPages.map((page) => ({
+    title: docTitle(page),
+    slug: getCleanSlug(page.id),
+    chapter: formatChapterTitle(parseDocCollectionId(page.id).chapter),
+    body: stripMarkdown(page.body || ""),
+  }));
 }
 export type NavSection =
   | { type: "page"; order: number; item: DocsNavItem }

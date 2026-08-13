@@ -12,6 +12,7 @@ import {
   extractDescription,
   buildDocNavItems,
   groupNavByChapter,
+  docTitle,
 } from "../../packages/jaad/src/utils/docs.ts";
 
 // ── Numeric prefixes: the ordering convention the whole product rests on ──────
@@ -230,4 +231,16 @@ test("grouping keeps a chapter together even when its pages are apart", () => {
   const sections = groupNavByChapter(items);
   assert.equal(sections.length, 1);
   assert.equal(sections[0].type, "chapter");
+});
+
+// ── One title rule, wherever a page is named ─────────────────────────────────
+
+test("frontmatter wins over the h1, which wins over the slug", () => {
+  const body = "# From the body\n";
+  assert.equal(
+    docTitle({ id: "01-a", body, data: { title: "Explicit" } }),
+    "Explicit",
+  );
+  assert.equal(docTitle({ id: "01-a", body }), "From the body");
+  assert.equal(docTitle({ id: "01-getting-started" }), "Getting Started");
 });
