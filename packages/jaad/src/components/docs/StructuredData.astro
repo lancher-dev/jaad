@@ -10,8 +10,7 @@ interface Props {
 
 const { title, description, chapter } = Astro.props;
 
-// Without `site` there is no absolute URL to point at, and relative ids are
-// worthless to a crawler.
+// Relative ids are worthless to a crawler, so without `site` emit nothing.
 const site = Astro.site;
 const base = site ? config.docsBase : null;
 

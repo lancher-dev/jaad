@@ -20,7 +20,6 @@ export function parseDocCollectionId(
   const parts = id.split("/");
   let slug: string = parts[parts.length - 1];
 
-  // Handle nested structure with chapters
   if (parts.length >= 2) {
     const chapterPart = parts[parts.length - 2];
 
@@ -50,7 +49,7 @@ export function parseDocCollectionId(
   return { order, orderChapter, chapter, slug, title };
 }
 
-/** Sorts by chapter, then by file order within it. Root pages sort by their own
+/** Chapter first, then file order within it. Root pages sort by their own
  *  number, so they interleave with chapters. Returns a new array. */
 export function sortDocPages<T extends { id: string }>(pages: T[]): T[] {
   return pages
@@ -218,6 +217,7 @@ export function buildSearchIndex<T extends DocsPageLike>(
     body: stripMarkdown(page.body || ""),
   }));
 }
+
 export type NavSection =
   | { type: "page"; order: number; item: DocsNavItem }
   | { type: "chapter"; order: number; chapter: string; items: DocsNavItem[] };

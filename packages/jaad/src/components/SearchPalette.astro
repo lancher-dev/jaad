@@ -212,8 +212,7 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
       document.removeEventListener("astro:after-swap", this.#syncInDocs);
     }
 
-    /** The header persists across navigations, so the triggers have to appear
-     *  and disappear as the reader moves in and out of the docs. */
+    /** The header persists across navigations; the triggers must not. */
     #syncInDocs = () => {
       const inDocs = document.body.hasAttribute("data-docs");
       this.querySelectorAll<HTMLElement>(

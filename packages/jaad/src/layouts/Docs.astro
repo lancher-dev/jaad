@@ -90,8 +90,7 @@ const pageDescription =
         };
       }
 
-      /** True when the focus sits inside something the arrow keys should
-       *  scroll instead, such as a wide table or code block. */
+      /** A wide table or code block: the arrow keys should scroll it instead. */
       function inHorizontallyScrollable(el: Element | null): boolean {
         for (let node = el; node && node !== document.body;) {
           if (node instanceof HTMLElement) {

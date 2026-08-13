@@ -51,11 +51,8 @@ export function inferRepo(cwd: string = process.cwd()): RepoInfo | null {
   };
 }
 
-/**
- * Base URL for "edit this page", ending in a slash. The docs directory is
- * resolved against the repository root, not the Astro project, so a site living
- * in a subdirectory still links correctly.
- */
+/** Ends in a slash. `docsDir` resolves against the repository root, not the
+ *  Astro project, so a site in a subdirectory still links correctly. */
 export function editBaseFrom(repo: RepoInfo, docsDir: string): string {
   const dir = docsDir.replace(/^\.\//, "").replace(/\/$/, "");
   const path = `${repo.prefix}${dir}`.replace(/^\/+/, "");
