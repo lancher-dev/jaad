@@ -26,13 +26,13 @@ An unknown name stops the build and lists the ones that exist, so a typo never f
 
 `catppuccin`, `gruvbox` and the two `rose-pine` variants have an official light palette, so the toggle changes the colours. `dracula`, `nord`, `one-dark` and `tokyo-night` have no official light counterpart and stay dark in both modes.
 
-Palettes come from each project's own reference, and the code block theme is paired with them, so the chrome, the prose and the code all match.
+Palettes come from each project's own reference, paired with the matching code theme.
 
 ## How it works
 
 A `dark` class on `<html>` drives the theme. A small inline script in `<head>` reads the stored preference, or falls back to `prefers-color-scheme`, and applies the class before the first paint, so there is no flash of the wrong theme.
 
-A theme is a short list of seed values. Surfaces, borders, muted text and alert backgrounds are computed from them with `color-mix()`, which is why the chrome and the markdown never drift apart.
+A theme sets a handful of seed values; everything else derives from them. See [Styles](/docs/configurations/styles) for the token model.
 
 ## Code blocks only
 
@@ -84,6 +84,3 @@ html.dark {
 ```
 
 The bundled themes do exactly this, and only where the palette demands it.
-
-> [!NOTE]
-> The derived values use `color-mix()`, supported in Chrome and Edge 111+, Safari 16.2+ and Firefox 113+. On older browsers those colours do not apply.

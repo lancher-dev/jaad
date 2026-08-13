@@ -79,7 +79,7 @@ jobs:
 
 Netlify, Vercel, Cloudflare Pages and the like need no workflow: build command `npm run build`, publish directory `dist`.
 
-For a plain web server, copy `dist/` behind any static host. There is no runtime, no server and no database.
+For a plain web server, copy `dist/` behind any static host.
 
 ## What gets built
 

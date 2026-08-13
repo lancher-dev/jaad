@@ -26,11 +26,9 @@ On desktop, the header shows a compact search bar with the keyboard shortcut hin
 
 ## Scale
 
-The index is one file holding the stripped text of every page, so it grows with the corpus:
-roughly 1.2 kB per page, about 31 kB for 25 pages. It is fetched once and cached for the
-session.
+The index holds the stripped text of every page: roughly 1.2 kB per page, 31 kB for 25. It is
+fetched once and cached for the session.
 
-That is comfortable for the sites JAAD targets. Past a few hundred pages the single fetch
-becomes noticeable, and at that point a dedicated search index is the right answer rather
-than a bigger JSON. Truncating page bodies is not: it silently drops matches deep in long
-pages, which is where search earns its keep.
+Past a few hundred pages that single fetch becomes noticeable, and a dedicated search index is
+the answer. Truncating page bodies is not: it drops matches deep in long pages, which is where
+search earns its keep.

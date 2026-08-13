@@ -57,7 +57,7 @@ export { collections } from "jaad/content";
 
 `title` is the only required option. Everything else has a default, and several things are worked out from the repository itself. See [Configuration](/docs/configurations/reference).
 
-The other two files are boilerplate. `astro.config.mjs` hands over to JAAD, which reads `jaad.config.ts` for you, and `src/content.config.ts` tells Astro where the markdown lives. Neither needs to change again.
+The other two are boilerplate: `astro.config.mjs` hands over to JAAD, `src/content.config.ts` tells Astro where the markdown lives. Neither needs to change again.
 
 > [!IMPORTANT]
 > Set `site`. Without it Astro cannot build absolute URLs, so canonical links and social card images are left out.
@@ -101,7 +101,3 @@ yarn dev
 :::
 
 The site starts at `http://localhost:4321`, with the documentation at `/docs`. Saving a markdown file reloads the browser.
-
-## What you did not have to do
-
-No sidebar configuration. No frontmatter. No moving files into `src/content/`. No Astro concepts to learn. That is the whole point: if you already have a folder of markdown, one file stands between you and a site.

@@ -58,7 +58,7 @@ defineJaadConfig({
 });
 ```
 
-Bundled forges: `github`, `gitlab`, `codeberg`, `gitea`, `forgejo`, `bitbucket`, `sourcehut`. They are bundled because they are what the repository link can be inferred from. JAAD is not trying to be an icon library. Any other key works as long as you pass an `svg`.
+Bundled forges: `github`, `gitlab`, `codeberg`, `gitea`, `forgejo`, `bitbucket`, `sourcehut`. These are the forges the repository link can be inferred from. Any other key works as long as you pass an `svg`.
 
 **You usually do not need `social` at all.** If the project has a git remote, the repository link and its icon are worked out from it.
 
@@ -99,7 +99,7 @@ defineJaadConfig({
 | `head`    | `HeadTag[]`       | `[]`              | Extra tags in `<head>`.                       |
 | `ogImage` | `string \| false` | `"/og-image.png"` | Resolved against `site` into an absolute URL. |
 
-`head` is the escape hatch for analytics, verification tags and preconnects, and it is data rather than a component, so it does not break when JAAD changes.
+For analytics, verification tags and preconnects.
 
 ```ts
 defineJaadConfig({

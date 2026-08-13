@@ -19,7 +19,7 @@ html.dark {
 }
 ```
 
-That is the whole mechanism. No build step, no configuration, and it applies to both the site chrome and the rendered markdown.
+No build step, no option. It applies to both the site chrome and the rendered markdown.
 
 ## The tokens that matter
 
