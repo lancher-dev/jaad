@@ -12,3 +12,7 @@ docs/
 ```
 
 The first `# Heading` in each file becomes the page title. `##` and `###` headings appear automatically in the table of contents.
+
+## The opening page
+
+Whichever file sorts first is what `/docs` shows. Name it `01-home.md` and its browser title becomes the site name alone, instead of `Home | My Project`. Any other name is titled like every other page.
