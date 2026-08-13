@@ -13,7 +13,7 @@ const { title, description, chapter } = Astro.props;
 // Without `site` there is no absolute URL to point at, and relative ids are
 // worthless to a crawler.
 const site = Astro.site;
-const base = site ? config.routeBase.replace(/\/$/, "") : null;
+const base = site ? config.docsBase : null;
 
 const crumbs = base
   ? [

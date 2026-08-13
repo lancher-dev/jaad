@@ -15,8 +15,9 @@ const chapterTitle = formatChapterTitle(chapter);
   aria-label="Breadcrumb"
   class="text-foreground-muted mb-4 flex items-center gap-1.5 text-xs"
 >
-  <a href={config.routeBase} class="hover:text-foreground-bright no-underline"
-    >Docs</a
+  <a
+    href={config.docsBase || "/"}
+    class="hover:text-foreground-bright no-underline">Docs</a
   >
   {
     chapterTitle && (

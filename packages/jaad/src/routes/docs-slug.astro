@@ -50,7 +50,7 @@ const { id, title, chapter, isFirstPage } = Astro.props;
 
 const docPage = await getEntry("docsPages", id);
 if (!docPage) {
-  return Astro.redirect(config.routeBase);
+  return Astro.redirect(config.docsBase || "/");
 }
 
 const { Content } = await render(docPage);

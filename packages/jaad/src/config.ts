@@ -72,6 +72,8 @@ export type JaadConfig = z.output<typeof jaadConfigSchema>;
 /** What the components actually read: the user's options plus whatever the
  *  repository could tell us. Inferred fields are null when unavailable. */
 export interface JaadResolvedConfig extends JaadConfig {
+  /** Where the docs are mounted, without a trailing slash. Empty at the root. */
+  docsBase: string;
   /** What jaamd gets for code blocks. */
   shiki: string | { light: string; dark: string };
   repoUrl: string | null;
@@ -100,6 +102,7 @@ export function resolveConfig(
     description: config.description ?? inferDescription(cwd) ?? undefined,
     repoUrl: repo?.url ?? null,
     favicon: findFavicon(cwd),
+    docsBase: config.routeBase.replace(/\/$/, ""),
     shiki:
       typeof config.theme === "string"
         ? PRESETS[config.theme].shiki

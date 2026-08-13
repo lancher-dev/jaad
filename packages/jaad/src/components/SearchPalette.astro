@@ -7,7 +7,7 @@ interface Props {
 }
 
 const { inDocs = false } = Astro.props;
-const base = config.routeBase.replace(/\/$/, "");
+const base = config.docsBase;
 ---
 
 <jaad-search data-in-docs={inDocs ? "" : null} data-base={base}>

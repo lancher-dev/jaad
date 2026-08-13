@@ -11,7 +11,7 @@ interface Props {
 
 const { id, cleanSlug } = Astro.props;
 
-const mdHref = `${config.routeBase.replace(/\/$/, "")}/${cleanSlug}.md`;
+const mdHref = `${config.docsBase}/${cleanSlug}.md`;
 const editHref = config.editBase ? editUrl(config.editBase, `${id}.md`) : null;
 ---
 

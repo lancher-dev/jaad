@@ -9,17 +9,11 @@ import {
 } from "../utils/docs.ts";
 import config from "virtual:jaad/config";
 
-/**
- * llms.txt — a plain-text index of every docs page, linking to its raw
- * markdown source rather than the rendered HTML. Follows the emerging
- * llms.txt convention (https://llmstxt.org) so tools and language models can
- * discover and fetch the site's content without scraping HTML.
- */
+/** Plain-text index of every page, per the llms.txt convention. */
 export const GET: APIRoute = async ({ site }) => {
   const sortedPages = await getSortedDocsPages();
 
   const base = site ? site.href.replace(/\/$/, "") : "";
-  const routeBase = config.routeBase.replace(/\/$/, "");
 
   interface Row {
     title: string;
@@ -53,7 +47,7 @@ export const GET: APIRoute = async ({ site }) => {
   }
 
   const toLine = (row: Row): string =>
-    `- [${row.title}](${base}${routeBase}/${row.slug}.md)${row.description ? `: ${row.description}` : ""}`;
+    `- [${row.title}](${base}${config.docsBase}/${row.slug}.md)${row.description ? `: ${row.description}` : ""}`;
 
   const sections: string[] = [];
   if (standalone.length > 0) {

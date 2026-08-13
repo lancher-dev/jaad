@@ -17,7 +17,7 @@ const route = (file: string) =>
 /** Astro flattens nested arrays in `integrations`, so this returns the whole set. */
 export default function jaad(options: JaadUserConfig): AstroIntegration[] {
   const config = resolveConfig(options);
-  const base = config.routeBase.replace(/\/$/, "");
+  const docsBase = config.docsBase;
 
   // Convention: a project-level stylesheet, loaded after the package's own so
   // it can override the tokens.
@@ -63,17 +63,17 @@ export default function jaad(options: JaadUserConfig): AstroIntegration[] {
         });
 
         injectRoute({
-          pattern: `${base}`,
+          pattern: `${docsBase}`,
           entrypoint: route("docs-index.astro"),
           prerender: true,
         });
         injectRoute({
-          pattern: `${base}/[...slug]`,
+          pattern: `${docsBase}/[...slug]`,
           entrypoint: route("docs-slug.astro"),
           prerender: true,
         });
         injectRoute({
-          pattern: `${base}/[...slug].md`,
+          pattern: `${docsBase}/[...slug].md`,
           entrypoint: route("docs-slug.md.ts"),
           prerender: true,
         });

@@ -41,7 +41,7 @@ const nextPage =
     ? navigationItems[currentIndex + 1]
     : null;
 
-const base = config.routeBase.replace(/\/$/, "");
+const base = config.docsBase;
 const previousUrl = previousPage ? `${base}/${previousPage.slug}` : null;
 const nextUrl = nextPage ? `${base}/${nextPage.slug}` : null;
 ---
