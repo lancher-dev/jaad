@@ -120,11 +120,44 @@ function resolveEditBase(
   return editBaseFrom(repo, docsDir);
 }
 
+const OPTIONS = Object.keys(jaadConfigSchema.shape);
+const FORWARDED = ["site", "base", "astro"];
+
+/** Zod strips what it does not know, so a misspelt option would do nothing at
+ *  all. Both messages are read in a terminal, not parsed. */
+function parseConfig(options: JaadUserConfig): JaadConfig {
+  const known = new Set([...OPTIONS, ...FORWARDED]);
+  const unknown = Object.keys(options).filter((key) => !known.has(key));
+
+  if (unknown.length > 0) {
+    const named = unknown.map((key) => {
+      const close = OPTIONS.find((o) => o.toLowerCase() === key.toLowerCase());
+      return close ? `${key} (did you mean ${close}?)` : key;
+    });
+    throw new Error(
+      `jaad: unknown option${unknown.length > 1 ? "s" : ""} ${named.join(", ")}\n` +
+        `  available: ${OPTIONS.join(", ")}`,
+    );
+  }
+
+  const parsed = jaadConfigSchema.safeParse(options);
+  if (parsed.success) return parsed.data;
+
+  throw new Error(
+    "jaad: invalid configuration\n" +
+      parsed.error.issues
+        .map(
+          (issue) => `  ${issue.path.join(".") || "config"}: ${issue.message}`,
+        )
+        .join("\n"),
+  );
+}
+
 export function resolveConfig(
   options: JaadUserConfig,
   cwd: string = process.cwd(),
 ): JaadResolvedConfig {
-  const config = jaadConfigSchema.parse(options);
+  const config = parseConfig(options);
   const repo = inferRepo(cwd);
 
   return {

@@ -22,6 +22,38 @@ test("a missing title is rejected rather than defaulted", () => {
   assert.throws(() => resolveConfig({} as never, "/"));
 });
 
+// ── What the terminal says when the config is wrong ──────────────────────────
+
+test("a misspelt option is an error naming the real one", () => {
+  assert.throws(
+    () => bare({ routebase: "/manual" }),
+    (error: Error) => {
+      assert.match(error.message, /unknown option routebase/);
+      assert.match(error.message, /did you mean routeBase\?/);
+      return true;
+    },
+  );
+});
+
+test("an option that does not exist lists the ones that do", () => {
+  assert.throws(
+    () => bare({ sidebar: [] }),
+    /unknown option sidebar[\s\S]*available: title/,
+  );
+});
+
+test("every problem is reported at once, one per line", () => {
+  assert.throws(
+    () => resolveConfig({ title: 1, logo: "./x.svg" } as never, "/"),
+    (error: Error) => {
+      assert.match(error.message, /^jaad: invalid configuration\n/);
+      assert.match(error.message, /\n {2}title: /);
+      assert.match(error.message, /\n {2}logo: /);
+      return true;
+    },
+  );
+});
+
 test("an explicit edit link is used verbatim", () => {
   assert.equal(
     bare({ editLink: "https://git.example.dev/r/edit/main/docs/:path" })
