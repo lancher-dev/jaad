@@ -4,6 +4,8 @@ import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 import jaamd from "jaamd";
 
+import { existsSync } from "node:fs";
+
 import {
   resolveConfig,
   resolveStylesheets,
@@ -32,7 +34,12 @@ export default function jaad(options: JaadUserConfig): AstroIntegration[] {
   const core: AstroIntegration = {
     name: "jaad",
     hooks: {
-      "astro:config:setup": ({ updateConfig, injectRoute, addWatchFile }) => {
+      "astro:config:setup": ({
+        updateConfig,
+        injectRoute,
+        addWatchFile,
+        logger,
+      }) => {
         updateConfig({
           vite: {
             plugins: [
@@ -69,7 +76,14 @@ export default function jaad(options: JaadUserConfig): AstroIntegration[] {
           });
         }
 
-        addWatchFile(new URL(config.docsDir, `file://${process.cwd()}/`));
+        const docsDir = new URL(config.docsDir, `file://${process.cwd()}/`);
+        if (!existsSync(docsDir)) {
+          logger.warn(
+            `${config.docsDir} does not exist, so the site has no pages. ` +
+              "Create it, or point docsDir at your markdown.",
+          );
+        }
+        addWatchFile(docsDir);
       },
 
       "astro:config:done": ({ injectTypes }) => {
@@ -87,11 +101,8 @@ export default function jaad(options: JaadUserConfig): AstroIntegration[] {
   return [jaamd({ theme: config.shiki }), sitemap(), core];
 }
 
-/**
- * The whole Astro config for a JAAD site, so a project never has to know what
- * an integration is. `site` and `base` are forwarded; `astro` is merged in for
- * anything else, with its integrations appended rather than replacing ours.
- */
+/** The whole Astro config for a JAAD site. `astro` is merged in, with its
+ *  integrations appended rather than replacing ours. */
 export function defineJaadSite(options: JaadUserConfig) {
   const { site, base, astro, ...jaadOptions } = options;
   const extra = (astro ?? {}) as Record<string, unknown>;
