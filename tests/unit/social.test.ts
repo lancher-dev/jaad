@@ -47,8 +47,6 @@ test("the inferred repository is appended when it is not already listed", () => 
   );
 });
 
-// The mobile menu used to list the repository twice: once from `social`, once
-// from the git remote.
 test("the inferred repository is not repeated when the user listed it", () => {
   const links = buildSocialLinks(
     config({

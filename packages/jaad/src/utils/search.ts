@@ -14,8 +14,7 @@ interface Folded {
   body: string;
 }
 
-/** Lowercased once per item, not once per keystroke: the bodies are the bulk
- *  of the index and every keystroke rescores all of them. */
+/** Lowercased once per item, not once per keystroke. */
 const folded = new WeakMap<SearchItem, Folded>();
 
 function fold(item: SearchItem): Folded {

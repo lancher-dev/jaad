@@ -20,15 +20,11 @@ test("every utility used by the package ships in the built CSS", () => {
   );
 });
 
-/**
- * An unlayered rule beats every Tailwind utility whatever its specificity, so
- * one on a bare element silently overrides markup in the consumer's own pages.
- */
+// An unlayered rule beats every Tailwind utility, including the consumer's own.
 test("the package styles no bare element outside a cascade layer", () => {
   const css = allCss();
 
-  // Everything inside a layer is overridable; keyframe steps only look like
-  // element selectors.
+  // Layered rules are overridable; keyframe steps only look like selectors.
   const spans = [];
   for (const m of css.matchAll(/@(?:layer|keyframes)\s+[a-zA-Z-]+\s*\{/g)) {
     let depth = 0;

@@ -70,8 +70,7 @@ test(
       "head entry not injected",
     );
 
-    // Both menus read the same list, so a configured forge is labelled once and
-    // the same way. The mobile one used to print the raw config key.
+    // The mobile menu used to print the raw config key and repeat the repo.
     const mobileMenu = home.match(
       /<jaad-nav-mobile[\s\S]*?<\/jaad-nav-mobile>/,
     )[0];

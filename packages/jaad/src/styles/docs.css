@@ -62,8 +62,8 @@ html {
   background: rgb(from var(--color-primary) r g b / 0.4);
 }
 
-/* A mask, not a background image: the colour comes from the token, so the arrow
-   follows every theme. Override --jaad-select-arrow to change the shape. */
+/* A mask, so the colour comes from the token and follows the theme.
+   Override --jaad-select-arrow for a different shape. */
 .docs-select {
   position: relative;
 }
