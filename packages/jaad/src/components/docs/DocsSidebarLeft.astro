@@ -1,7 +1,10 @@
 ---
 import { getSortedDocsPages } from "../../collection.ts";
-import { formatChapterTitle, buildDocNavItems } from "../../utils/docs.ts";
-import type { DocsNavItem } from "../../@types/docs.ts";
+import {
+  formatChapterTitle,
+  buildDocNavItems,
+  groupNavByChapter,
+} from "../../utils/docs.ts";
 import config from "virtual:jaad/config";
 
 interface Props {
@@ -12,45 +15,10 @@ const { currentSlug } = Astro.props;
 
 const sortedPages = await getSortedDocsPages();
 
-const base = config.routeBase.replace(/\/$/, "");
+const base = config.docsBase;
 const navItems = buildDocNavItems(sortedPages, currentSlug, base);
 
-// Build interleaved sections: standalone root items + chapter groups, each with a sort order
-type StandaloneSection = {
-  type: "standalone";
-  order: number;
-  item: DocsNavItem;
-};
-type ChapterSection = {
-  type: "chapter";
-  order: number;
-  chapter: string;
-  items: DocsNavItem[];
-};
-type Section = StandaloneSection | ChapterSection;
-
-const chapterMap = new Map<string, ChapterSection>();
-const sections: Section[] = [];
-
-for (const item of navItems) {
-  if (!item.chapter) {
-    sections.push({ type: "standalone", order: item.primaryOrder, item });
-  } else {
-    if (!chapterMap.has(item.chapter)) {
-      const sec: ChapterSection = {
-        type: "chapter",
-        order: item.primaryOrder,
-        chapter: item.chapter,
-        items: [],
-      };
-      chapterMap.set(item.chapter, sec);
-      sections.push(sec);
-    }
-    chapterMap.get(item.chapter)!.items.push(item);
-  }
-}
-
-sections.sort((a, b) => a.order - b.order);
+const sections = groupNavByChapter(navItems);
 ---
 
 <aside
@@ -59,7 +27,7 @@ sections.sort((a, b) => a.order - b.order);
   <nav aria-label="Documentation navigation">
     {
       sections.map((section, i) =>
-        section.type === "standalone" ? (
+        section.type === "page" ? (
           <div class:list={["mb-0.5", i > 0 && "mt-0.5"]}>
             <a
               href={section.item.href}
@@ -103,40 +71,6 @@ sections.sort((a, b) => a.order - b.order);
     }
   </nav>
 </aside>
-
-<script>
-  const SELECTOR = ".docs-sidebar-left";
-  let scrollTop = 0;
-
-  const sidebar = () => document.querySelector<HTMLElement>(SELECTOR);
-
-  /** Scrolls the sidebar only, never the document, and only when needed. */
-  function revealCurrent() {
-    const el = sidebar();
-    const current = el?.querySelector('[aria-current="page"]');
-    if (!el || !current) return;
-
-    const box = el.getBoundingClientRect();
-    const item = current.getBoundingClientRect();
-    if (item.top >= box.top && item.bottom <= box.bottom) return;
-
-    el.scrollTop += item.top - box.top - (box.height - item.height) / 2;
-  }
-
-  document.addEventListener("astro:before-swap", () => {
-    scrollTop = sidebar()?.scrollTop ?? 0;
-  });
-
-  document.addEventListener("astro:after-swap", () => {
-    const el = sidebar();
-    if (!el) return;
-    el.scrollTop = scrollTop;
-    // A deep link, or a page whose entry sits outside the restored window.
-    revealCurrent();
-  });
-
-  revealCurrent();
-</script>
 
 <script>
   const SELECTOR = ".docs-sidebar-left";

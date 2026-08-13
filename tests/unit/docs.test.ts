@@ -11,6 +11,7 @@ import {
   stripMarkdown,
   extractDescription,
   buildDocNavItems,
+  groupNavByChapter,
 } from "../../packages/jaad/src/utils/docs.ts";
 
 // ── Numeric prefixes: the ordering convention the whole product rests on ──────
@@ -198,4 +199,35 @@ test("nav links are built under the configured base", () => {
     buildDocNavItems(pages, "", "/manual").map((i) => i.href),
     ["/manual/intro", "/manual/guides/setup"],
   );
+});
+
+test("root pages and chapters interleave by number", () => {
+  const items = buildDocNavItems(
+    [
+      { id: "01-intro" },
+      { id: "02-guides/01-setup" },
+      { id: "02-guides/02-deep" },
+      { id: "03-changelog" },
+    ],
+    "",
+    "/docs",
+  );
+
+  assert.deepEqual(
+    groupNavByChapter(items).map((s) =>
+      s.type === "page" ? s.item.title : `${s.chapter}(${s.items.length})`,
+    ),
+    ["Intro", "guides(2)", "Changelog"],
+  );
+});
+
+test("grouping keeps a chapter together even when its pages are apart", () => {
+  const items = buildDocNavItems(
+    [{ id: "02-a/01-x" }, { id: "02-a/02-y" }],
+    "",
+    "/docs",
+  );
+  const sections = groupNavByChapter(items);
+  assert.equal(sections.length, 1);
+  assert.equal(sections[0].type, "chapter");
 });

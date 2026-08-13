@@ -214,3 +214,34 @@ export function buildSearchIndex<
     };
   });
 }
+export type NavSection =
+  | { type: "page"; order: number; item: DocsNavItem }
+  | { type: "chapter"; order: number; chapter: string; items: DocsNavItem[] };
+
+/** Root pages and chapters interleaved by their number. */
+export function groupNavByChapter(items: DocsNavItem[]): NavSection[] {
+  const chapters = new Map<string, Extract<NavSection, { type: "chapter" }>>();
+  const sections: NavSection[] = [];
+
+  for (const item of items) {
+    if (!item.chapter) {
+      sections.push({ type: "page", order: item.primaryOrder, item });
+      continue;
+    }
+
+    let chapter = chapters.get(item.chapter);
+    if (!chapter) {
+      chapter = {
+        type: "chapter",
+        order: item.primaryOrder,
+        chapter: item.chapter,
+        items: [],
+      };
+      chapters.set(item.chapter, chapter);
+      sections.push(chapter);
+    }
+    chapter.items.push(item);
+  }
+
+  return sections.sort((a, b) => a.order - b.order);
+}
