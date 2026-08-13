@@ -1,17 +1,7 @@
 ---
 import { render } from "astro:content";
 import { getSortedDocsPages } from "../collection.ts";
-import MarkdownContent from "jaamd/components";
-import {
-  getCleanSlug,
-  parseDocCollectionId,
-  extractTitleFromMarkdown,
-} from "../utils/docs.ts";
-import DocsLayout from "../layouts/Docs.astro";
-import DocsMobileNav from "../components/docs/DocsMobileNav.astro";
-import DocsPageNav from "../components/docs/DocsPageNav.astro";
-import Breadcrumbs from "../components/docs/Breadcrumbs.astro";
-import PageActions from "../components/docs/PageActions.astro";
+import DocsPage from "../components/docs/DocsPage.astro";
 
 const sortedPages = await getSortedDocsPages();
 
@@ -21,40 +11,8 @@ if (!firstPage) {
 }
 
 const { Content } = await render(firstPage);
-
-const currentSlug = getCleanSlug(firstPage.id);
-
-const parsed = parseDocCollectionId(firstPage.id);
-const title =
-  firstPage.data?.title ??
-  extractTitleFromMarkdown(firstPage.body || "") ??
-  parsed.title;
 ---
 
-<DocsLayout
-  currentSlug={currentSlug}
-  chapter={parsed.chapter}
-  entry={firstPage}
->
-  <main
-    role="main"
-    aria-label="Main content"
-    class="mx-4 my-8 flex-1 px-0 py-0 md:my-16 md:px-8 lg:mb-32 lg:px-16"
-  >
-    <DocsMobileNav currentSlug={currentSlug} entry={firstPage} />
-
-    <article>
-      <Breadcrumbs chapter={parsed.chapter} title={title} />
-      <PageActions id={firstPage.id} cleanSlug={currentSlug} />
-
-      <MarkdownContent
-        id="content"
-        class="w-full leading-relaxed wrap-break-word"
-      >
-        <Content />
-      </MarkdownContent>
-    </article>
-
-    <DocsPageNav id={firstPage.id} />
-  </main>
-</DocsLayout>
+<DocsPage entry={firstPage}>
+  <Content />
+</DocsPage>

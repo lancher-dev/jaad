@@ -28,11 +28,7 @@ const pageDescription = description ?? config.description ?? config.title;
     class="bg-background text-foreground flex min-h-screen flex-col text-[14px] leading-[1.6]"
   >
     <Header />
-    <main
-      role="main"
-      aria-label="Main content"
-      class="mx-0 my-16 flex-1 px-8 py-0 lg:px-16"
-    >
+    <main class="mx-0 my-16 flex-1 px-8 py-0 lg:px-16">
       <slot />
     </main>
     <Footer />

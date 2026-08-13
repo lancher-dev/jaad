@@ -1,0 +1,51 @@
+---
+import MarkdownContent from "jaamd/components";
+import {
+  getCleanSlug,
+  parseDocCollectionId,
+  docTitle,
+} from "../../utils/docs.ts";
+import type { DocsEntry } from "../../@types/docs.ts";
+import DocsLayout from "../../layouts/Docs.astro";
+import DocsMobileNav from "./DocsMobileNav.astro";
+import DocsPageNav from "./DocsPageNav.astro";
+import Breadcrumbs from "./Breadcrumbs.astro";
+import PageActions from "./PageActions.astro";
+
+interface Props {
+  entry: DocsEntry;
+  /** Left out on the opening page, whose title is the site name alone. */
+  headTitle?: string;
+}
+
+const { entry, headTitle } = Astro.props;
+
+const cleanSlug = getCleanSlug(entry.id);
+const { chapter } = parseDocCollectionId(entry.id);
+const title = docTitle(entry);
+---
+
+<DocsLayout
+  title={headTitle}
+  currentSlug={cleanSlug}
+  chapter={chapter}
+  entry={entry}
+>
+  <main class="mx-4 my-8 flex-1 px-0 py-0 md:my-16 md:px-8 lg:mb-32 lg:px-16">
+    <DocsMobileNav currentSlug={cleanSlug} entry={entry} />
+
+    <article>
+      <Breadcrumbs chapter={chapter} title={title} />
+      <PageActions id={entry.id} cleanSlug={cleanSlug} />
+
+      <MarkdownContent
+        id="content"
+        class="w-full leading-relaxed wrap-break-word"
+      >
+        <slot />
+      </MarkdownContent>
+    </article>
+
+    <DocsPageNav id={entry.id} />
+  </main>
+</DocsLayout>
