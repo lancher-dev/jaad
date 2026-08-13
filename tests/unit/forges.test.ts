@@ -9,6 +9,18 @@ test("the bundled set covers the forges the git inference can meet", () => {
   }
 });
 
+// A malformed path draws nothing and fails silently in the browser.
+test("every icon path is made of real svg commands", () => {
+  for (const [name, forge] of Object.entries(FORGES)) {
+    const commands = forge.path.match(/[a-zA-Z]/g) ?? [];
+    const illegal = [...new Set(commands)].filter(
+      (c) => !"MmZzLlHhVvCcSsQqTtAa".includes(c),
+    );
+    assert.deepEqual(illegal, [], `${name} uses ${illegal.join(",")}`);
+    assert.doesNotMatch(forge.path, /[Zz]\s*[Zz]/, `${name} closes twice`);
+  }
+});
+
 test("a repository url is matched to its forge", () => {
   assert.equal(forgeForUrl("https://github.com/o/r"), "github");
   assert.equal(forgeForUrl("https://gitlab.com/group/sub/r"), "gitlab");
