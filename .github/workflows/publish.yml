@@ -27,6 +27,16 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      # npm publishes what package.json says, not what the tag says.
+      - name: Tag matches the package version
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          version="$(node -p 'require("./packages/jaad/package.json").version')"
+          if [ "$tag" != "$version" ]; then
+            echo "tag $GITHUB_REF_NAME does not match jaad@$version" >&2
+            exit 1
+          fi
+
       - name: Type check
         run: pnpm check
 
