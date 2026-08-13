@@ -33,18 +33,14 @@
   }
 }
 
-/* Smooth scrolling for anchor links */
 html {
-  scroll-behavior: smooth;
   scroll-padding-top: 8rem;
 }
 
-/* Ensure headings have proper IDs for TOC */
 .markdown-content h2[id] {
   scroll-margin-top: 8rem;
 }
 
-/* Sidebar scrollbars */
 .docs-sidebar-left::-webkit-scrollbar,
 .docs-sidebar-right::-webkit-scrollbar {
   width: 6px;
@@ -66,19 +62,31 @@ html {
   background: rgb(from var(--color-primary) r g b / 0.4);
 }
 
-/* Mobile navigation select styling */
-/* CSS variables do not work inside data: URIs, so the whole SVG is the token.
-   Override --jaad-select-arrow with a URL-encoded colour to restyle it.
- */
+/* A mask, not a background image: the colour comes from the token, so the arrow
+   follows every theme. Override --jaad-select-arrow to change the shape. */
+.docs-select {
+  position: relative;
+}
+
+.docs-select::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 0.75rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  transform: translateY(-50%);
+  pointer-events: none;
+  background-color: var(--color-foreground);
+  mask: var(
+      --jaad-select-arrow,
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' viewBox='0 0 20 20'%3E%3Cpath d='M6 8l4 4 4-4'/%3E%3C/svg%3E")
+    )
+    center / contain no-repeat;
+}
+
 .docs-mobile-nav select {
   appearance: none;
-  background-image: var(
-    --jaad-select-arrow,
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%232d2d2d' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E")
-  );
-  background-position: right 0.5rem center;
-  background-repeat: no-repeat;
-  background-size: 1.5em 1.5em;
   padding-right: 2.5rem;
 }
 
@@ -93,11 +101,6 @@ html {
   color: var(--color-foreground);
   background: var(--color-surface);
   padding: 0.5rem;
-}
-
-/* Dark mode: lighter arrow for mobile nav selects */
-html.dark .docs-mobile-nav select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23c9d1d9' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
 }
 
 /* Hidden until initToc() has pruned it, otherwise stale items flash. */

@@ -28,8 +28,7 @@ const headings = extractHeadingsFromMarkdown(entry.body || "");
 ---
 
 <div class="docs-mobile-nav mb-8 space-y-4 lg:hidden">
-  <!-- Page selector -->
-  <div class="w-full">
+  <div class="docs-select w-full">
     <label for="page-select" class="sr-only">Select page</label>
     <select
       id="page-select"
@@ -59,7 +58,7 @@ const headings = extractHeadingsFromMarkdown(entry.body || "");
 
   {
     headings.length > 0 && (
-      <div id="section-select-wrapper" class="w-full">
+      <div id="section-select-wrapper" class="docs-select w-full">
         <label for="section-select" class="sr-only">
           Jump to section
         </label>
@@ -69,8 +68,8 @@ const headings = extractHeadingsFromMarkdown(entry.body || "");
         >
           <option value="">Jump to section...</option>
           {headings.map((heading) => {
-            const isH3 = heading.depth === 3;
-            const prefix = isH3 ? "\u00A0\u00A0\u00A0\u00A0" : "";
+            const prefix =
+              heading.depth === 3 ? "\u00A0\u00A0\u00A0\u00A0" : "";
             return (
               <option value={`#${heading.slug}`}>
                 {prefix}
