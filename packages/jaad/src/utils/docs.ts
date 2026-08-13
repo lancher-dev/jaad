@@ -9,11 +9,6 @@ import type {
 /** Matches a numeric order prefix, e.g. "01-" or "123-" */
 const NUMBERED_PREFIX_RE = /^(\d+)-(.+)$/;
 
-/**
- * Parse a doc collection ID into its components
- * @param id - The doc ID (e.g., "01-introduction" or "01-chapter/02-section")
- * @param isNumbered - Whether the file has numbered prefix (default: true)
- */
 export function parseDocCollectionId(
   id: string,
   isNumbered: boolean = true,
@@ -71,11 +66,7 @@ export function sortDocPages<T extends { id: string }>(pages: T[]): T[] {
     .map((entry) => entry.page);
 }
 
-/**
- * Convert a raw collection ID into a URL-safe slug by stripping numeric prefixes
- * from every path segment (e.g., "01-chapter/02-section" → "chapter/section").
- * Centralises the repeated `id.split("/").map(p => p.replace(/^\d+-/, "")).join("/")` pattern.
- */
+/** "01-chapter/02-section" → "chapter/section" */
 export function getCleanSlug(id: string): string {
   return id
     .split("/")
@@ -83,13 +74,7 @@ export function getCleanSlug(id: string): string {
     .join("/");
 }
 
-/**
- * Convert a hyphen/underscore-separated slug into a human-readable title.
- * Preserves special characters (e.g. "&", "+") between separators and
- * decodes any percent-encoded sequences (e.g. "%26" → "&").
- * @example slugToTitle("images-&-videos") // "Images & Videos"
- * @example slugToTitle("detail_%26_summary") // "Detail & Summary"
- */
+/** Decodes percent-escapes, so "detail_%26_summary" → "Detail & Summary". */
 export function slugToTitle(slug: string): string {
   return slug
     .split(/[-_]+/)
@@ -97,31 +82,17 @@ export function slugToTitle(slug: string): string {
     .join(" ");
 }
 
-/**
- * Format a chapter slug into a human-readable title.
- * @param chapter - The chapter slug (e.g., "getting-started")
- * @returns Formatted chapter title (e.g., "Getting Started"), or null if falsy.
- */
 export function formatChapterTitle(chapter: string | undefined): string | null {
   if (!chapter) return null;
   return slugToTitle(chapter);
 }
 
-/**
- * Generate a URL-safe slug from heading text.
- * Centralised function used by the TOC and heading-ID generation.
- */
 export function generateHeadingSlug(text: string): string {
   return githubSlug(text);
 }
 
-/**
- * Extract the first H1 heading from raw markdown content and return it as
- * the page title. This is the authoritative title source because Astro's glob
- * loader silently strips special characters (e.g. "&") from filenames,
- * making slug-derived titles lossy.
- * Returns null if no H1 is found (caller should fall back to slugToTitle).
- */
+/** The authoritative title: Astro's glob loader strips special characters from
+ *  filenames, so a slug-derived title is lossy. */
 export function extractTitleFromMarkdown(body: string): string | null {
   for (const line of body.split("\n")) {
     const match = line.match(/^#\s+(.+)$/);
@@ -130,11 +101,7 @@ export function extractTitleFromMarkdown(body: string): string | null {
   return null;
 }
 
-/**
- * Extract h2/h3 headings from raw markdown content.
- * Fenced code blocks (``` or ~~~) are skipped so that headings written as
- * examples inside code samples never appear in the table of contents.
- */
+/** Skips fenced blocks, so headings written as code samples stay out of the TOC. */
 export function extractHeadingsFromMarkdown(markdown: string): DocsHeadings[] {
   const headings: DocsHeadings[] = [];
   let insideFence = false;
@@ -156,15 +123,7 @@ export function extractHeadingsFromMarkdown(markdown: string): DocsHeadings[] {
   return headings;
 }
 
-/**
- * Build the nav-item list consumed by sidebar and mobile-nav components.
- * Extracted here to avoid duplicating the parseDocCollectionId + getCleanSlug
- * pattern across every component that renders navigation.
- *
- * @param sortedPages - Pages already sorted by sortDocPages()
- * @param currentSlug - The clean slug of the currently-viewed page
- * @param base - Where the docs are mounted, without a trailing slash
- */
+/** `base` is the mount point, without a trailing slash. */
 export function buildDocNavItems<
   T extends { id: string; body?: string; data?: { title?: string } },
 >(sortedPages: T[], currentSlug: string, base = ""): DocsNavItem[] {
@@ -214,11 +173,7 @@ export function stripMarkdown(text: string): string {
     .trim();
 }
 
-/**
- * Derive a short excerpt from a page's markdown body, suitable for
- * <meta description> and social-card tags when the page has no explicit
- * frontmatter description.
- */
+/** Excerpt for <meta description>, when the page has no explicit one. */
 export function extractDescription(
   body: string,
   title: string,
@@ -241,10 +196,6 @@ export function extractDescription(
   return `${truncated.slice(0, lastSpace > 0 ? lastSpace : maxLength)}…`;
 }
 
-/**
- * Build a search index from sorted doc pages.
- * Used at build time to generate the static data embedded in every docs page.
- */
 export function buildSearchIndex<
   T extends { id: string; body?: string; data?: { title?: string } },
 >(sortedPages: T[]): DocsSearchEntry[] {

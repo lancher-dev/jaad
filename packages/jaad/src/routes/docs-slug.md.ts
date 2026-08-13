@@ -3,12 +3,7 @@ import { getEntry } from "astro:content";
 import { getSortedDocsPages } from "../collection.ts";
 import { getCleanSlug } from "../utils/docs.ts";
 
-/**
- * Raw markdown source for every docs page, served alongside the HTML route at
- * the same slug with a `.md` extension (e.g. /docs/markdown/tables.md).
- * Lets readers — and tools that consume markdown directly, such as LLMs —
- * fetch the source without stripping it back out of rendered HTML.
- */
+/** Raw markdown at the page's own url plus `.md`, for readers and for LLMs. */
 export const getStaticPaths: GetStaticPaths = async () => {
   const sortedPages = await getSortedDocsPages();
 
