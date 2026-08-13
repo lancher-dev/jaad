@@ -8,6 +8,29 @@ export interface SearchItem {
 const MAX_RESULTS = 10;
 const EMPTY_QUERY_RESULTS = 8;
 
+interface Folded {
+  title: string;
+  chapter: string;
+  body: string;
+}
+
+/** Lowercased once per item, not once per keystroke: the bodies are the bulk
+ *  of the index and every keystroke rescores all of them. */
+const folded = new WeakMap<SearchItem, Folded>();
+
+function fold(item: SearchItem): Folded {
+  let f = folded.get(item);
+  if (!f) {
+    f = {
+      title: item.title.toLowerCase(),
+      chapter: item.chapter?.toLowerCase() ?? "",
+      body: item.body.toLowerCase(),
+    };
+    folded.set(item, f);
+  }
+  return f;
+}
+
 /** Rank by where the query appears: title beats chapter beats body. */
 export function scoreItems(index: SearchItem[], query: string): SearchItem[] {
   const q = query.trim().toLowerCase();
@@ -15,11 +38,12 @@ export function scoreItems(index: SearchItem[], query: string): SearchItem[] {
 
   return index
     .map((item) => {
+      const f = fold(item);
       let score = 0;
-      if (item.title.toLowerCase().includes(q)) score += 10;
-      if (item.title.toLowerCase().startsWith(q)) score += 5;
-      if (item.chapter?.toLowerCase().includes(q)) score += 3;
-      if (item.body.toLowerCase().includes(q)) score += 1;
+      if (f.title.includes(q)) score += 10;
+      if (f.title.startsWith(q)) score += 5;
+      if (f.chapter.includes(q)) score += 3;
+      if (f.body.includes(q)) score += 1;
       return { item, score };
     })
     .filter((s) => s.score > 0)
