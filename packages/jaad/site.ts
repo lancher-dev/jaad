@@ -14,7 +14,9 @@ if (!file) {
   );
 }
 
-const loaded = (await import(pathToFileURL(file).href)) as {
+// The path is only known at runtime, which is the point: Vite cannot analyse it
+// and would warn on every dev server and every build.
+const loaded = (await import(/* @vite-ignore */ pathToFileURL(file).href)) as {
   default: JaadUserConfig;
 };
 
