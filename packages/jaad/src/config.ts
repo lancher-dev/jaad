@@ -1,7 +1,12 @@
 import { z } from "astro/zod";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import { inferRepo, inferDescription, editBaseFrom } from "./infer.ts";
+import {
+  inferRepo,
+  inferDescription,
+  editBaseFrom,
+  type RepoInfo,
+} from "./infer.ts";
 import { PRESETS, PRESET_NAMES, isPreset } from "./themes/index.ts";
 
 export const jaadConfigSchema = z.object({
@@ -90,12 +95,6 @@ export interface JaadResolvedConfig extends JaadConfig {
   favicon: string | null;
 }
 
-/** Empty at the root, otherwise one leading slash and no trailing one. */
-function mountPoint(routeBase: string): string {
-  const trimmed = routeBase.replace(/^\/+/, "").replace(/\/+$/, "");
-  return trimmed ? `/${trimmed}` : "";
-}
-
 const FAVICONS = ["favicon.svg", "favicon.ico", "favicon.png"];
 
 function findFavicon(cwd: string): string | null {
@@ -103,6 +102,22 @@ function findFavicon(cwd: string): string | null {
     if (existsSync(join(cwd, "public", name))) return `/${name}`;
   }
   return null;
+}
+
+/** Empty at the root, otherwise one leading slash and no trailing one. */
+function mountPoint(routeBase: string): string {
+  const trimmed = routeBase.replace(/^\/+/, "").replace(/\/+$/, "");
+  return trimmed ? `/${trimmed}` : "";
+}
+
+function resolveEditBase(
+  editLink: JaadConfig["editLink"],
+  repo: RepoInfo | null,
+  docsDir: string,
+): string | null {
+  if (typeof editLink === "string") return editLink;
+  if (editLink === false || !repo) return null;
+  return editBaseFrom(repo, docsDir);
 }
 
 export function resolveConfig(
@@ -122,14 +137,24 @@ export function resolveConfig(
       typeof config.theme === "string"
         ? PRESETS[config.theme].shiki
         : config.theme,
-    editBase:
-      config.editLink === true
-        ? repo
-          ? editBaseFrom(repo, config.docsDir)
-          : null
-        : typeof config.editLink === "string"
-          ? config.editLink
-          : null,
+    editBase: resolveEditBase(config.editLink, repo, config.docsDir),
+  };
+}
+
+/** Absolute paths, kept off the resolved config, which gets serialised. */
+export function resolveStylesheets(
+  config: JaadConfig,
+  cwd: string = process.cwd(),
+): { user: string | null; theme: string | null } {
+  const userCss = join(cwd, "src", "jaad.css");
+  const preset =
+    typeof config.theme === "string" ? PRESETS[config.theme].css : null;
+
+  return {
+    user: existsSync(userCss) ? userCss : null,
+    theme: preset
+      ? new URL(`./themes/${preset}`, import.meta.url).pathname
+      : null,
   };
 }
 

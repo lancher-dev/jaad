@@ -4,12 +4,12 @@ import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 import jaamd from "jaamd";
 
-import { existsSync } from "node:fs";
-import { join } from "node:path";
-
-import { resolveConfig, type JaadUserConfig } from "./src/config.ts";
+import {
+  resolveConfig,
+  resolveStylesheets,
+  type JaadUserConfig,
+} from "./src/config.ts";
 import { jaadVirtualPlugin } from "./src/virtual.ts";
-import { PRESETS } from "./src/themes/index.ts";
 
 const route = (file: string) =>
   new URL(`./src/routes/${file}`, import.meta.url).pathname;
@@ -17,18 +17,17 @@ const route = (file: string) =>
 /** Astro flattens nested arrays in `integrations`, so this returns the whole set. */
 export default function jaad(options: JaadUserConfig): AstroIntegration[] {
   const config = resolveConfig(options);
+  const css = resolveStylesheets(config);
   const docsBase = config.docsBase;
 
-  // Convention: a project-level stylesheet, loaded after the package's own so
-  // it can override the tokens.
-  const userCssPath = join(process.cwd(), "src", "jaad.css");
-  const userCss = existsSync(userCssPath) ? userCssPath : null;
-
-  const presetCss =
-    typeof config.theme === "string" ? PRESETS[config.theme].css : null;
-  const themeCss = presetCss
-    ? new URL(`./src/themes/${presetCss}`, import.meta.url).pathname
-    : null;
+  const routes: [pattern: string, entrypoint: string][] = [
+    [docsBase, "docs-index.astro"],
+    [`${docsBase}/[...slug]`, "docs-slug.astro"],
+    [`${docsBase}/[...slug].md`, "docs-slug.md.ts"],
+    ["/search-index.json", "search-index.json.ts"],
+    ["/llms.txt", "llms.txt.ts"],
+    ["/404", "404.astro"],
+  ];
 
   const core: AstroIntegration = {
     name: "jaad",
@@ -38,7 +37,7 @@ export default function jaad(options: JaadUserConfig): AstroIntegration[] {
           vite: {
             plugins: [
               tailwindcss(),
-              jaadVirtualPlugin(config, userCss, themeCss),
+              jaadVirtualPlugin(config, css.user, css.theme),
             ],
             // Without this the package's .astro sources are treated as
             // pre-bundled externals and never reach the Astro compiler.
@@ -62,36 +61,13 @@ export default function jaad(options: JaadUserConfig): AstroIntegration[] {
           ],
         });
 
-        injectRoute({
-          pattern: `${docsBase}`,
-          entrypoint: route("docs-index.astro"),
-          prerender: true,
-        });
-        injectRoute({
-          pattern: `${docsBase}/[...slug]`,
-          entrypoint: route("docs-slug.astro"),
-          prerender: true,
-        });
-        injectRoute({
-          pattern: `${docsBase}/[...slug].md`,
-          entrypoint: route("docs-slug.md.ts"),
-          prerender: true,
-        });
-        injectRoute({
-          pattern: "/search-index.json",
-          entrypoint: route("search-index.json.ts"),
-          prerender: true,
-        });
-        injectRoute({
-          pattern: "/llms.txt",
-          entrypoint: route("llms.txt.ts"),
-          prerender: true,
-        });
-        injectRoute({
-          pattern: "/404",
-          entrypoint: route("404.astro"),
-          prerender: true,
-        });
+        for (const [pattern, entrypoint] of routes) {
+          injectRoute({
+            pattern,
+            entrypoint: route(entrypoint),
+            prerender: true,
+          });
+        }
 
         addWatchFile(new URL(config.docsDir, `file://${process.cwd()}/`));
       },
