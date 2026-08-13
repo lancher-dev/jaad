@@ -85,3 +85,26 @@ test("astro's own options never reach the resolved config", () => {
   );
   assert.doesNotThrow(() => JSON.stringify(config));
 });
+
+// ── The mount point, which every internal link is built from ─────────────────
+
+test("the mount point gets one leading slash and no trailing one", () => {
+  const at = (routeBase: string) => bare({ routeBase }).docsBase;
+  assert.equal(at("/docs"), "/docs");
+  assert.equal(at("docs"), "/docs", "a missing slash made every link relative");
+  assert.equal(at("/docs/"), "/docs");
+  assert.equal(at("/manual/guide"), "/manual/guide");
+});
+
+test("the root mount point is empty, so links stay single-slashed", () => {
+  assert.equal(bare({ routeBase: "/" }).docsBase, "");
+});
+
+test("a logo has to be a public url, not a source path", () => {
+  assert.equal(bare({ logo: "/logo.svg" }).logo, "/logo.svg");
+  assert.equal(
+    bare({ logo: "https://cdn.dev/l.svg" }).logo,
+    "https://cdn.dev/l.svg",
+  );
+  assert.throws(() => bare({ logo: "./src/logo.svg" }), /public url/);
+});

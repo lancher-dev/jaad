@@ -8,7 +8,12 @@ export const jaadConfigSchema = z.object({
   title: z.string(),
   description: z.string().optional(),
   lang: z.string().default("en"),
-  logo: z.string().optional(),
+  logo: z
+    .string()
+    .refine((v) => v.startsWith("/") || /^https?:\/\//.test(v), {
+      message: 'logo must be a public url, such as "/logo.svg"',
+    })
+    .optional(),
 
   docsDir: z.string().default("./docs"),
   routeBase: z.string().default("/docs"),
@@ -85,6 +90,12 @@ export interface JaadResolvedConfig extends JaadConfig {
   favicon: string | null;
 }
 
+/** Empty at the root, otherwise one leading slash and no trailing one. */
+function mountPoint(routeBase: string): string {
+  const trimmed = routeBase.replace(/^\/+/, "").replace(/\/+$/, "");
+  return trimmed ? `/${trimmed}` : "";
+}
+
 const FAVICONS = ["favicon.svg", "favicon.ico", "favicon.png"];
 
 function findFavicon(cwd: string): string | null {
@@ -106,7 +117,7 @@ export function resolveConfig(
     description: config.description ?? inferDescription(cwd) ?? undefined,
     repoUrl: repo?.url ?? null,
     favicon: findFavicon(cwd),
-    docsBase: config.routeBase.replace(/\/$/, ""),
+    docsBase: mountPoint(config.routeBase),
     shiki:
       typeof config.theme === "string"
         ? PRESETS[config.theme].shiki

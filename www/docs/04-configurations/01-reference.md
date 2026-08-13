@@ -22,19 +22,19 @@ Both are handed to Astro for you.
 
 ## Identity
 
-| Option        | Type     | Default        | Notes                                                       |
-| ------------- | -------- | -------------- | ----------------------------------------------------------- |
-| `title`       | `string` | none           | **Required.** Site name, browser tab, social cards.         |
-| `description` | `string` | `package.json` | Falls back to your `package.json` description.              |
-| `lang`        | `string` | `"en"`         | Sets `<html lang>` and `og:locale`.                         |
-| `logo`        | `string` | none           | Public URL such as `/logo.svg`, shown instead of the title. |
+| Option        | Type     | Default        | Notes                                                                                       |
+| ------------- | -------- | -------------- | ------------------------------------------------------------------------------------------- |
+| `title`       | `string` | none           | **Required.** Site name, browser tab, social cards.                                         |
+| `description` | `string` | `package.json` | Falls back to your `package.json` description.                                              |
+| `lang`        | `string` | `"en"`         | Sets `<html lang>` and `og:locale`.                                                         |
+| `logo`        | `string` | none           | Public URL such as `/logo.svg`, shown instead of the title. A source path is a build error. |
 
 ## Content
 
-| Option      | Type     | Default    | Notes                                                               |
-| ----------- | -------- | ---------- | ------------------------------------------------------------------- |
-| `docsDir`   | `string` | `"./docs"` | Folder to read markdown from.                                       |
-| `routeBase` | `string` | `"/docs"`  | Where the documentation is mounted. Use `"/"` for a docs-only site. |
+| Option      | Type     | Default    | Notes                                                                                                                             |
+| ----------- | -------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `docsDir`   | `string` | `"./docs"` | Folder to read markdown from.                                                                                                     |
+| `routeBase` | `string` | `"/docs"`  | Where the documentation is mounted. Use `"/"` for a docs-only site. Slashes are normalised, so `"docs"` and `"/docs/"` both work. |
 
 ## Links
 
