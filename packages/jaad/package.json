@@ -5,10 +5,13 @@
   "type": "module",
   "license": "MIT",
   "author": "Kasui92 <info@lucapattocchio.dev>",
+  "homepage": "https://jaad.lancher.dev",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lancher-dev/jaad"
+    "url": "git+https://github.com/lancher-dev/jaad.git",
+    "directory": "packages/jaad"
   },
+  "bugs": "https://github.com/lancher-dev/jaad/issues",
   "keywords": [
     "astro-integration",
     "astro",
@@ -30,6 +33,9 @@
     "README.md",
     "LICENSE"
   ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "peerDependencies": {
     "astro": ">=7.0.0 <8.0.0"
   },

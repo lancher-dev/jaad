@@ -56,4 +56,4 @@ Early. The API may change between minor versions while the shape settles.
 
 ## License
 
-jaad is released under the [MIT License](/LICENSE).
+jaad is released under the [MIT License](./LICENSE).

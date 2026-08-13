@@ -29,7 +29,7 @@ yarn add jaad
 :::
 
 > [!NOTE]
-> Node.js 18 or higher is required, along with Astro 7. JAAD declares Astro as a peer dependency, so it uses the copy already in your project.
+> Node.js 22.12 or higher is required, along with Astro 7. JAAD declares Astro as a peer dependency, so it uses the copy already in your project.
 
 ## Wire it up
 
