@@ -9,9 +9,6 @@ export const jaadConfigSchema = z.object({
   description: z.string().optional(),
   lang: z.string().default("en"),
   logo: z.string().optional(),
-  site: z.string().optional(),
-  base: z.string().optional(),
-  astro: z.record(z.string(), z.unknown()).optional(),
 
   docsDir: z.string().default("./docs"),
   routeBase: z.string().default("/docs"),
@@ -66,8 +63,15 @@ export const jaadConfigSchema = z.object({
     .default("default"),
 });
 
-export type JaadUserConfig = z.input<typeof jaadConfigSchema>;
 export type JaadConfig = z.output<typeof jaadConfigSchema>;
+
+/** Out of the schema on purpose, so `parse` strips them: the resolved config
+ *  is serialised, and an Astro integration is not serialisable. */
+export type JaadUserConfig = z.input<typeof jaadConfigSchema> & {
+  site?: string;
+  base?: string;
+  astro?: Record<string, unknown>;
+};
 
 /** What the components actually read: the user's options plus whatever the
  *  repository could tell us. Inferred fields are null when unavailable. */

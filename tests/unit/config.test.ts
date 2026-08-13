@@ -67,3 +67,21 @@ test("defineJaadConfig hands back exactly what it was given", () => {
   const options = { title: "X" };
   assert.equal(defineJaadConfig(options), options);
 });
+
+// A back-reference in an integration used to throw during serialisation.
+test("astro's own options never reach the resolved config", () => {
+  const integration = { name: "x", hooks: {} } as Record<string, unknown>;
+  integration.self = integration;
+
+  const config = bare({
+    site: "https://a.dev",
+    base: "/x",
+    astro: { integrations: [integration] },
+  });
+
+  assert.deepEqual(
+    Object.keys(config).filter((k) => ["site", "base", "astro"].includes(k)),
+    [],
+  );
+  assert.doesNotThrow(() => JSON.stringify(config));
+});
