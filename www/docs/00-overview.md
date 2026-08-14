@@ -30,7 +30,7 @@ Almost nothing. A working site needs the site URL and a title:
 
 ```ts
 // jaad.config.ts
-import { defineJaadConfig } from "jaad";
+import { defineJaadConfig } from "@lancher-dev/jaad";
 
 export default defineJaadConfig({
   site: "https://your-domain.com",

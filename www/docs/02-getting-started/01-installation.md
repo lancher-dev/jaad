@@ -11,19 +11,19 @@ Start from an empty Astro project, or an existing one.
 ```bash npm
 npm create astro@latest my-docs -- --template minimal --no-install --no-git
 cd my-docs
-npm install jaad
+npm install @lancher-dev/jaad
 ```
 
 ```bash pnpm
 pnpm create astro@latest my-docs --template minimal --no-install --no-git
 cd my-docs
-pnpm add jaad
+pnpm add @lancher-dev/jaad
 ```
 
 ```bash yarn
 yarn create astro my-docs --template minimal --no-install --no-git
 cd my-docs
-yarn add jaad
+yarn add @lancher-dev/jaad
 ```
 
 :::
@@ -37,7 +37,7 @@ Three files. You only ever open the first.
 
 ```ts
 // jaad.config.ts
-import { defineJaadConfig } from "jaad";
+import { defineJaadConfig } from "@lancher-dev/jaad";
 
 export default defineJaadConfig({
   site: "https://example.dev",
@@ -47,12 +47,12 @@ export default defineJaadConfig({
 
 ```js
 // astro.config.mjs
-export { default } from "jaad/site";
+export { default } from "@lancher-dev/jaad/site";
 ```
 
 ```ts
 // src/content.config.ts
-export { collections } from "jaad/content";
+export { collections } from "@lancher-dev/jaad/content";
 ```
 
 `title` is the only required option. Everything else has a default, and several things are worked out from the repository itself. See [Configuration](/docs/configurations/reference).

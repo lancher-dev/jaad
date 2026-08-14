@@ -48,7 +48,7 @@ export default function jaad(options: JaadUserConfig): AstroIntegration[] {
             ],
             // Without this the package's .astro sources are treated as
             // pre-bundled externals and never reach the Astro compiler.
-            ssr: { noExternal: ["jaad"] },
+            ssr: { noExternal: ["@lancher-dev/jaad"] },
           },
           fonts: [
             {
@@ -90,7 +90,7 @@ export default function jaad(options: JaadUserConfig): AstroIntegration[] {
         injectTypes({
           filename: "jaad.d.ts",
           content: `declare module "virtual:jaad/config" {
-  const config: import("jaad").JaadResolvedConfig;
+  const config: import("@lancher-dev/jaad").JaadResolvedConfig;
   export default config;
 }`,
         });

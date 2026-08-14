@@ -6,12 +6,12 @@ An Astro integration that turns a folder of markdown into a documentation site. 
 ## Install
 
 ```bash
-npm install jaad
+npm install @lancher-dev/jaad
 ```
 
 ```ts
 // jaad.config.ts
-import { defineJaadConfig } from "jaad";
+import { defineJaadConfig } from "@lancher-dev/jaad";
 
 export default defineJaadConfig({
   site: "https://example.dev",
@@ -21,12 +21,12 @@ export default defineJaadConfig({
 
 ```js
 // astro.config.mjs
-export { default } from "jaad/site";
+export { default } from "@lancher-dev/jaad/site";
 ```
 
 ```ts
 // src/content.config.ts
-export { collections } from "jaad/content";
+export { collections } from "@lancher-dev/jaad/content";
 ```
 
 Then write markdown in `docs/`:

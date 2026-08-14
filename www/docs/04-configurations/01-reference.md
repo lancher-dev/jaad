@@ -3,7 +3,7 @@
 Everything lives in `jaad.config.ts`. Only `title` is required.
 
 ```ts
-import { defineJaadConfig } from "jaad";
+import { defineJaadConfig } from "@lancher-dev/jaad";
 
 export default defineJaadConfig({
   site: "https://example.dev",
@@ -176,7 +176,7 @@ re-export, and `jaad()` is still exported as an ordinary Astro integration:
 ```js
 // astro.config.mjs
 import { defineConfig } from "astro/config";
-import jaad from "jaad";
+import jaad from "@lancher-dev/jaad";
 import config from "./jaad.config";
 
 export default defineConfig({

@@ -1,5 +1,5 @@
 {
-  "name": "jaad",
+  "name": "@lancher-dev/jaad",
   "version": "0.1.0",
   "description": "Turn a folder of markdown into a documentation site. An Astro integration.",
   "type": "module",
@@ -48,5 +48,8 @@
   },
   "scripts": {
     "check": "astro check"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

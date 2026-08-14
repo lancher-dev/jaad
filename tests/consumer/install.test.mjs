@@ -37,7 +37,10 @@ test(
           name: "consumer-test",
           private: true,
           type: "module",
-          dependencies: { astro: "^7.2.0", jaad: join(tmpdir(), tarball) },
+          dependencies: {
+            astro: "^7.2.0",
+            "@lancher-dev/jaad": join(tmpdir(), tarball),
+          },
         },
         null,
         2,
@@ -128,7 +131,7 @@ test(
     // what silently broke before.
     writeFileSync(
       join(project, "jaad.config.ts"),
-      `import { defineJaadConfig } from "jaad";
+      `import { defineJaadConfig } from "@lancher-dev/jaad";
 export default defineJaadConfig({
   site: "https://example.dev",
   title: "Consumer Test",
