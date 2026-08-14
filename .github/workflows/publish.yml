@@ -1,9 +1,11 @@
 name: Publish to npm
 
+# `v*` releases jaad, `create-v*` releases the scaffolder
 on:
   push:
     tags:
       - "v*"
+      - "create-v*"
 
 permissions:
   id-token: write
@@ -28,14 +30,24 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       # npm publishes what package.json says, not what the tag says.
-      - name: Tag matches the package version
+      - name: Resolve the package and check the tag against its version
+        id: target
         run: |
-          tag="${GITHUB_REF_NAME#v}"
-          version="$(node -p 'require("./packages/jaad/package.json").version')"
+          case "$GITHUB_REF_NAME" in
+            create-v*) dir=packages/create-jaad; tag="${GITHUB_REF_NAME#create-v}" ;;
+            v*)        dir=packages/jaad;        tag="${GITHUB_REF_NAME#v}" ;;
+            *) echo "unrecognised tag $GITHUB_REF_NAME" >&2; exit 1 ;;
+          esac
+
+          name="$(node -p "require('./$dir/package.json').name")"
+          version="$(node -p "require('./$dir/package.json').version")"
           if [ "$tag" != "$version" ]; then
-            echo "tag $GITHUB_REF_NAME does not match jaad@$version" >&2
+            echo "tag $GITHUB_REF_NAME does not match $name@$version" >&2
             exit 1
           fi
+
+          echo "dir=$dir" >> "$GITHUB_OUTPUT"
+          echo "releasing $name@$version"
 
       - name: Type check
         run: pnpm check
@@ -54,5 +66,5 @@ jobs:
         run: pnpm test:consumer
 
       - name: Publish
-        working-directory: packages/jaad
+        working-directory: ${{ steps.target.outputs.dir }}
         run: npm publish --provenance --access public
