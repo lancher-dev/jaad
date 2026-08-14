@@ -4,12 +4,17 @@ import js from "@eslint/js";
 import prettierConfig from "eslint-config-prettier";
 import eslintPluginAstro from "eslint-plugin-astro";
 import { defineConfig } from "eslint/config";
+import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default defineConfig([
   { ignores: ["**/dist/**", "**/.astro/**", "tests/consumer/fixture/**"] },
 
-  { files: ["**/*.{js,mjs,cjs}"], extends: [js.configs.recommended] },
+  {
+    files: ["**/*.{js,mjs,cjs}"],
+    extends: [js.configs.recommended],
+    languageOptions: { globals: globals.node },
+  },
 
   eslintPluginAstro.configs.recommended,
 
