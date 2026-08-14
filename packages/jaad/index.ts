@@ -84,23 +84,28 @@ export default function jaad(options: JaadUserConfig): AstroIntegration[] {
     },
   };
 
-  return [jaamd({ theme: config.shiki }), sitemap(), core];
+  // Without `site` the sitemap integration can only warn and skip.
+  return [
+    jaamd({ theme: config.shiki }),
+    ...(options.site ? [sitemap()] : []),
+    core,
+  ];
 }
 
 /** The whole Astro config for a JAAD site. `astro` is merged in, with its
  *  integrations appended rather than replacing ours. */
 export function defineJaadSite(options: JaadUserConfig) {
-  const { site, base, astro, ...jaadOptions } = options;
-  const extra = (astro ?? {}) as Record<string, unknown>;
+  const { site, base, astro } = options;
+  const extra = astro ?? {};
   const extraIntegrations = Array.isArray(extra.integrations)
-    ? extra.integrations
+    ? (extra.integrations as AstroIntegration[])
     : [];
 
   return defineConfig({
     ...(site ? { site } : {}),
     ...(base ? { base } : {}),
     ...extra,
-    integrations: [...jaad(jaadOptions), ...extraIntegrations],
+    integrations: [...jaad(options), ...extraIntegrations],
   });
 }
 
