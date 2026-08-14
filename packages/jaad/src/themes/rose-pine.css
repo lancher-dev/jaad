@@ -1,0 +1,33 @@
+/* Rosé Pine. Dawn in light, main in dark. */
+
+:root {
+  --color-background: #faf4ed;
+  --color-surface: #fffaf3;
+  --color-foreground: #575279;
+  --color-foreground-bright: #575279;
+  --color-primary: #286983;
+
+  --color-error: #b4637a;
+  --color-warning: #ea9d34;
+  --color-info: #56949f;
+  --color-success: #286983;
+
+  --jaamd-border-strong: #9893a5;
+  --jaamd-em-fg: #907aa9;
+}
+
+html.dark {
+  --color-background: #191724;
+  --color-surface: #1f1d2e;
+  --color-foreground: #e0def4;
+  --color-foreground-bright: #e0def4;
+  --color-primary: #9ccfd8;
+
+  --color-error: #eb6f92;
+  --color-warning: #f6c177;
+  --color-info: #31748f;
+  --color-success: #9ccfd8;
+
+  --jaamd-border-strong: #6e6a86;
+  --jaamd-em-fg: #c4a7e7;
+}

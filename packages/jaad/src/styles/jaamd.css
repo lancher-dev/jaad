@@ -1,0 +1,21 @@
+/* Bridge to JAAMD. */
+
+:root {
+  --jaamd-font-sans: var(--font-sans), sans-serif;
+  --jaamd-font-serif: var(--font-serif), Georgia, serif;
+  --jaamd-font-mono: var(--font-mono), monospace;
+  --jaamd-font-size: 1.125rem;
+  --jaamd-line-height: 1.6;
+
+  --jaamd-bg: var(--color-background);
+  --jaamd-color-fg: var(--color-foreground);
+  --jaamd-color-fg-bright: var(--color-foreground-bright);
+  --jaamd-color-primary: var(--color-primary);
+  --jaamd-color-success: var(--color-success);
+
+  --jaamd-alert-note-color: var(--color-info);
+  --jaamd-alert-tip-color: var(--color-success);
+  --jaamd-alert-important-color: var(--color-primary);
+  --jaamd-alert-warning-color: var(--color-warning);
+  --jaamd-alert-caution-color: var(--color-error);
+}

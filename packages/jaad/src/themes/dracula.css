@@ -1,0 +1,23 @@
+/* Dracula. A dark theme: it applies in both modes. */
+
+:root,
+html.dark {
+  --color-background: #282a36;
+  --color-surface: #44475a;
+  --color-foreground: #f8f8f2;
+  --color-foreground-bright: #ffffff;
+  --color-primary: #bd93f9;
+
+  --color-error: #ff5555;
+  --color-warning: #f1fa8c;
+  --color-info: #8be9fd;
+  --color-success: #50fa7b;
+
+  /* Palette colours that are not tints of the background. */
+  --jaamd-surface-2: #44475a;
+  --jaamd-border: #44475a;
+  --jaamd-border-strong: #6272a4;
+  --jaamd-tabs-header-bg: #21222c;
+  --jaamd-color-primary-light: #ff79c6;
+  --jaamd-em-fg: #8be9fd;
+}

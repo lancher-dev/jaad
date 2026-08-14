@@ -1,0 +1,37 @@
+---
+import config from "virtual:jaad/config";
+import { buildSocialLinks } from "../social.ts";
+
+const links = buildSocialLinks(config);
+---
+
+{
+  links.map((link) => (
+    <a
+      href={link.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      title={link.label}
+      aria-label={link.label}
+      class="text-foreground-secondary hover:text-foreground-bright flex h-9 w-9 items-center justify-center rounded-lg no-underline transition-colors"
+    >
+      {link.svg ? (
+        <span
+          class="flex h-5 w-5 items-center justify-center"
+          set:html={link.svg}
+        />
+      ) : link.path ? (
+        <svg
+          class="h-5 w-5"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path d={link.path} />
+        </svg>
+      ) : (
+        <span class="text-xs">{link.label}</span>
+      )}
+    </a>
+  ))
+}

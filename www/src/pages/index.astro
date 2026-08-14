@@ -1,0 +1,84 @@
+---
+import Layout from "jaad/layouts/Base.astro";
+import Hero from "@/components/Hero.astro";
+import StructurePreview from "@/components/StructurePreview.astro";
+import QuickStart from "@/components/QuickStart.astro";
+---
+
+<Layout>
+  <Hero />
+
+  <section aria-labelledby="intro-heading" class="mx-auto max-w-2xl">
+    <h2 class="sr-only" id="intro-heading">Introduction</h2>
+    <div class="text-foreground mt-6 space-y-8 text-center">
+      <p class="text-[1.15rem] leading-relaxed font-light">
+        Write markdown. Get docs.
+      </p>
+
+      <p class="text-foreground-secondary text-base leading-relaxed">
+        An Astro integration that turns a folder of markdown into a
+        documentation site. Point it at the files you already have and it works
+        out the navigation, the table of contents and the reading experience.
+      </p>
+
+      <div class="mt-12 flex justify-center gap-6">
+        <a
+          href="/docs"
+          class="bg-primary text-background hover:bg-primary-dark rounded-sm px-8 py-3 font-medium no-underline transition-colors"
+        >
+          Read the docs
+        </a>
+        <a
+          href="https://www.npmjs.com/package/jaad"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="border-border text-foreground-secondary hover:text-foreground-bright hover:border-border-dark rounded-sm border px-8 py-3 font-medium no-underline transition-colors"
+        >
+          View on npm
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <QuickStart />
+
+  <StructurePreview />
+
+  <section class="border-border/50 mx-auto max-w-4xl border-t pt-16 pb-8">
+    <dl class="grid grid-cols-1 gap-10 sm:grid-cols-3">
+      <div class="text-center">
+        <dt
+          class="text-foreground-bright mb-2 font-serif text-base font-semibold italic"
+        >
+          Markdown-first
+        </dt>
+        <dd class="text-foreground-secondary text-sm leading-relaxed">
+          Write plain markdown files. No frontmatter required, no special syntax
+          to learn.
+        </dd>
+      </div>
+      <div class="text-center">
+        <dt
+          class="text-foreground-bright mb-2 font-serif text-base font-semibold italic"
+        >
+          Fully static
+        </dt>
+        <dd class="text-foreground-secondary text-sm leading-relaxed">
+          Builds to pure HTML with no UI framework shipped. No server, no
+          runtime. Deploy anywhere.
+        </dd>
+      </div>
+      <div class="text-center">
+        <dt
+          class="text-foreground-bright mb-2 font-serif text-base font-semibold italic"
+        >
+          Yours to restyle
+        </dt>
+        <dd class="text-foreground-secondary text-sm leading-relaxed">
+          Colours, fonts and surfaces are CSS custom properties. One file
+          overrides any of them.
+        </dd>
+      </div>
+    </dl>
+  </section>
+</Layout>

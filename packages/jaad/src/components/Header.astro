@@ -1,0 +1,41 @@
+---
+import Nav from "./Nav.astro";
+import SocialLinks from "./SocialLinks.astro";
+import NavMobile from "./NavMobile.astro";
+import ThemeSwitcher from "./ThemeSwitcher.astro";
+import SearchPalette from "./SearchPalette.astro";
+import config from "virtual:jaad/config";
+
+interface Props {
+  /** Whether this page is part of the docs, where search is available. */
+  inDocs?: boolean;
+}
+
+const { inDocs = false } = Astro.props;
+---
+
+<header class="mx-auto w-full max-w-200" transition:persist>
+  <div class="container mx-auto p-4">
+    <div class="flex items-center gap-4">
+      <span class="text-foreground-bright font-brand text-xl">
+        <a href="/" title="Home" class="text-primary no-underline">
+          {
+            config.logo ? (
+              <img src={config.logo} alt={config.title} class="h-7" />
+            ) : (
+              config.title
+            )
+          }
+        </a>
+      </span>
+
+      <div class="ml-auto flex items-center gap-2">
+        <SearchPalette inDocs={inDocs} />
+        <Nav />
+        <SocialLinks />
+        <ThemeSwitcher />
+        <NavMobile />
+      </div>
+    </div>
+  </div>
+</header>

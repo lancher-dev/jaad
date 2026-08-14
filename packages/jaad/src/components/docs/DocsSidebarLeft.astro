@@ -1,0 +1,107 @@
+---
+import { getSortedDocsPages } from "../../collection.ts";
+import {
+  formatChapterTitle,
+  buildDocNavItems,
+  groupNavByChapter,
+} from "../../utils/docs.ts";
+import config from "virtual:jaad/config";
+
+interface Props {
+  currentSlug: string;
+}
+
+const { currentSlug } = Astro.props;
+
+const sortedPages = await getSortedDocsPages();
+
+const base = config.docsBase;
+const navItems = buildDocNavItems(sortedPages, currentSlug, base);
+
+const sections = groupNavByChapter(navItems);
+---
+
+<aside
+  class="docs-sidebar-left fixed top-0 left-0 hidden h-screen w-64 overflow-y-auto px-6 py-8 pt-24 lg:block"
+>
+  <nav aria-label="Documentation navigation">
+    {
+      sections.map((section, i) =>
+        section.type === "page" ? (
+          <div class:list={["mb-0.5", i > 0 && "mt-0.5"]}>
+            <a
+              href={section.item.href}
+              class:list={[
+                "block rounded px-3 py-1.5 text-sm no-underline transition-colors",
+                section.item.isActive
+                  ? "bg-primary/10 text-primary font-semibold"
+                  : "text-foreground hover:bg-primary/10 hover:text-primary",
+              ]}
+              aria-current={section.item.isActive ? "page" : undefined}
+            >
+              {section.item.title}
+            </a>
+          </div>
+        ) : (
+          <div class="mt-5 mb-5">
+            <h3 class="text-primary/50 mb-1 px-3 text-[0.825rem] font-semibold tracking-widest uppercase">
+              {formatChapterTitle(section.chapter)}
+            </h3>
+            <ul class="border-border/40 ml-3 space-y-0.5 border-l pl-0">
+              {section.items.map((item) => (
+                <li>
+                  <a
+                    href={item.href}
+                    class:list={[
+                      "block rounded-r px-3 py-1.5 text-sm no-underline transition-colors",
+                      item.isActive
+                        ? "border-primary bg-primary/10 text-primary -ml-px border-l-2 pl-2.75 font-semibold"
+                        : "text-foreground hover:bg-primary/10 hover:text-primary",
+                    ]}
+                    aria-current={item.isActive ? "page" : undefined}
+                  >
+                    {item.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ),
+      )
+    }
+  </nav>
+</aside>
+
+<script>
+  const SELECTOR = ".docs-sidebar-left";
+  let scrollTop = 0;
+
+  const sidebar = () => document.querySelector<HTMLElement>(SELECTOR);
+
+  /** Scrolls the sidebar only, never the document, and only when needed. */
+  function revealCurrent() {
+    const el = sidebar();
+    const current = el?.querySelector('[aria-current="page"]');
+    if (!el || !current) return;
+
+    const box = el.getBoundingClientRect();
+    const item = current.getBoundingClientRect();
+    if (item.top >= box.top && item.bottom <= box.bottom) return;
+
+    el.scrollTop += item.top - box.top - (box.height - item.height) / 2;
+  }
+
+  document.addEventListener("astro:before-swap", () => {
+    scrollTop = sidebar()?.scrollTop ?? 0;
+  });
+
+  document.addEventListener("astro:after-swap", () => {
+    const el = sidebar();
+    if (!el) return;
+    el.scrollTop = scrollTop;
+    // A deep link, or a page whose entry sits outside the restored window.
+    revealCurrent();
+  });
+
+  revealCurrent();
+</script>

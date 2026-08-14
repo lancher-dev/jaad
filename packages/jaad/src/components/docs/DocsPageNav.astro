@@ -1,0 +1,82 @@
+---
+import { getSortedDocsPages } from "../../collection.ts";
+import { buildDocNavItems } from "../../utils/docs.ts";
+import config from "virtual:jaad/config";
+
+interface Props {
+  id: string;
+}
+
+const { id } = Astro.props;
+
+const sortedPages = await getSortedDocsPages();
+const items = buildDocNavItems(sortedPages, "", config.docsBase);
+
+const current = sortedPages.findIndex((page) => page.id === id);
+const previousPage = current > 0 ? items[current - 1] : null;
+const nextPage = current < items.length - 1 ? items[current + 1] : null;
+---
+
+{
+  (previousPage || nextPage) && (
+    <nav class="mx-auto max-w-3xl px-4 py-8" aria-label="Page navigation">
+      <div class="flex items-center justify-between gap-4">
+        {previousPage && previousPage.title ? (
+          <a
+            href={previousPage.href}
+            rel="prev"
+            class="group border-border-dark bg-background-tertiary text-foreground-bright hover:border-primary hover:bg-border-dark hover:text-primary flex max-w-[calc(45%-1rem)] min-w-0 items-center gap-2 rounded-lg border px-4 py-3 no-underline transition-all duration-300"
+          >
+            <svg
+              class="h-4 w-4 shrink-0 transition-transform group-hover:-translate-x-1"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+            <span class="overflow-hidden font-medium text-ellipsis whitespace-nowrap">
+              {previousPage.title}
+            </span>
+          </a>
+        ) : (
+          <div />
+        )}
+
+        {nextPage && nextPage.title ? (
+          <a
+            href={nextPage.href}
+            rel="next"
+            class="group border-border-dark bg-background-tertiary text-foreground-bright hover:border-primary hover:bg-border-dark hover:text-primary flex max-w-[calc(45%-1rem)] min-w-0 items-center gap-2 rounded-lg border px-4 py-3 no-underline transition-all duration-300"
+          >
+            <span class="overflow-hidden font-medium text-ellipsis whitespace-nowrap">
+              {nextPage.title}
+            </span>
+            <svg
+              class="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-1"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </a>
+        ) : (
+          <div />
+        )}
+      </div>
+    </nav>
+  )
+}

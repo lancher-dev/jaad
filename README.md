@@ -1,42 +1,43 @@
-<h1 align="center" class="b">
-  <br>
-  JAAD
-</h1>
-<p align="center" class="b">
-  <b>Just Another Astro Docs</b> - Write markdown. Get docs.
-</p>
-<br>
-<br>
+<h1 align="center">JAAD</h1>
+<p align="center"><b>Just Another Astro Docs</b>. Write markdown. Get docs.</p>
 
-JAAD transforms markdown files into clean, navigable documentation with automatic sidebar generation and table of contents.
-
-## Quick Start
+An Astro integration that turns a folder of markdown into a documentation site.
 
 ```bash
-# Install dependencies
+npm install jaad
+```
+
+```ts
+// jaad.config.ts
+import { defineJaadConfig } from "jaad";
+
+export default defineJaadConfig({
+  site: "https://example.dev",
+  title: "My Project",
+});
+```
+
+Documentation: [jaad.lancher.dev](https://jaad.lancher.dev)
+
+## This repository
+
+| Path            | What                                           |
+| --------------- | ---------------------------------------------- |
+| `packages/jaad` | The published package                          |
+| `www`           | The documentation site, built with the package |
+| `tests`         | Unit, build output and consumer install suites |
+
+```bash
 pnpm install
-
-# Start development server
-pnpm dev
-
-# Build for production
-pnpm build
+pnpm dev             # run the site
+pnpm test            # unit tests
+pnpm build           # build the site
+pnpm test:build      # assertions on the built output
+pnpm test:consumer   # install the packed tarball into a throwaway project
+pnpm check           # typecheck both workspaces
 ```
 
-## How It Works
-
-Place markdown files in `docs/` with numbered prefixes. Files like `01-getting-started.md` become `/docs/getting-started` with the number controlling sidebar order. The framework handles navigation, TOC extraction, and responsive layouts automatically.
-
-## Structure
-
-```
-docs/
-  01-page.md              → /docs/page
-  02-chapter/
-    01-section.md         → /docs/chapter/section
-```
-
-Folders create chapters. Numbers control order. Everything else is automatic.
+The `template` tag marks the last state of JAAD as a repository you cloned, before it became a package.
 
 ## License
 

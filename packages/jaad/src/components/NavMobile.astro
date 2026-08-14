@@ -1,0 +1,109 @@
+---
+import config from "virtual:jaad/config";
+import { buildSocialLinks } from "../social.ts";
+
+const links = [...config.nav, ...buildSocialLinks(config)];
+---
+
+<jaad-nav-mobile class="relative md:hidden">
+  <button
+    class="text-foreground-secondary hover:text-foreground-bright flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg transition-colors"
+    aria-label="Toggle mobile menu"
+    aria-expanded="false"
+  >
+    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path
+        data-icon-open
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M4 6h16M4 12h16M4 18h16"></path>
+      <path
+        data-icon-close
+        class="hidden"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M6 18L18 6M6 6l12 12"></path>
+    </svg>
+  </button>
+
+  <div
+    data-menu
+    hidden
+    class="bg-surface border-border absolute top-full right-0 z-40 mt-2 w-44 overflow-hidden rounded-xl border shadow-lg"
+  >
+    <nav class="p-2">
+      <ul class="flex flex-col gap-1">
+        {
+          links.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class="text-foreground-secondary hover:text-foreground-bright hover:bg-primary/5 block rounded-lg px-3 py-2 text-sm no-underline transition-colors"
+                {...(link.href.startsWith("http")
+                  ? { target: "_blank", rel: "noopener noreferrer" }
+                  : {})}
+              >
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</jaad-nav-mobile>
+
+<script>
+  class JaadNavMobile extends HTMLElement {
+    #button!: HTMLButtonElement;
+    #menu!: HTMLElement;
+
+    #onPointer = (e: PointerEvent) => {
+      if (!this.contains(e.target as Node)) this.#setOpen(false);
+    };
+    #onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") this.#setOpen(false);
+    };
+
+    #setOpen(open: boolean) {
+      this.#menu.hidden = !open;
+      this.#button.setAttribute("aria-expanded", String(open));
+      this.querySelector("[data-icon-open]")?.classList.toggle("hidden", open);
+      this.querySelector("[data-icon-close]")?.classList.toggle(
+        "hidden",
+        !open,
+      );
+
+      if (open) {
+        document.addEventListener("pointerdown", this.#onPointer);
+        document.addEventListener("keydown", this.#onKey);
+      } else {
+        document.removeEventListener("pointerdown", this.#onPointer);
+        document.removeEventListener("keydown", this.#onKey);
+      }
+    }
+
+    connectedCallback() {
+      this.#button = this.querySelector("button")!;
+      this.#menu = this.querySelector("[data-menu]")!;
+
+      this.#button.addEventListener("click", () => {
+        this.#setOpen(Boolean(this.#menu.hidden));
+      });
+      this.#menu.addEventListener("click", (e) => {
+        if ((e.target as HTMLElement).closest("a")) this.#setOpen(false);
+      });
+    }
+
+    disconnectedCallback() {
+      document.removeEventListener("pointerdown", this.#onPointer);
+      document.removeEventListener("keydown", this.#onKey);
+    }
+  }
+
+  if (!customElements.get("jaad-nav-mobile")) {
+    customElements.define("jaad-nav-mobile", JaadNavMobile);
+  }
+</script>

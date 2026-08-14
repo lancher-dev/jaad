@@ -1,0 +1,33 @@
+---
+import { getEntry, render } from "astro:content";
+import { getSortedDocsPages } from "../collection.ts";
+import { getCleanSlug, parseDocCollectionId, docTitle } from "../utils/docs.ts";
+import DocsPage from "../components/docs/DocsPage.astro";
+import config from "virtual:jaad/config";
+
+export async function getStaticPaths() {
+  const sortedPages = await getSortedDocsPages();
+
+  return sortedPages.map((page) => ({
+    params: { slug: getCleanSlug(page.id) },
+    props: { id: page.id },
+  }));
+}
+
+const { id } = Astro.props;
+
+const docPage = await getEntry("docsPages", id);
+if (!docPage) {
+  return Astro.redirect(config.docsBase || "/");
+}
+
+const { Content } = await render(docPage);
+
+// `01-home.md` opens the docs, so its title is the site name alone.
+const parsed = parseDocCollectionId(id);
+const isOpening = parsed.order === 1 && parsed.slug.toLowerCase() === "home";
+---
+
+<DocsPage entry={docPage} headTitle={isOpening ? undefined : docTitle(docPage)}>
+  <Content />
+</DocsPage>

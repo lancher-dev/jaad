@@ -1,0 +1,220 @@
+@import "tailwindcss";
+
+/* Relative to this file, so it follows the package wherever it is installed. */
+@source "../";
+
+@theme {
+  /* Seeds */
+
+  --color-background: #faf8f5;
+  --color-surface: #ffffff;
+  --color-foreground: #3a3a3a;
+  --color-foreground-bright: #1a1a1a;
+  --color-primary: #2d2d2d;
+
+  --color-error: #c45959;
+  --color-warning: #d4a259;
+  --color-info: #5988c4;
+  --color-success: #5a9c7e;
+
+  /* Derived */
+
+  --color-background-secondary: color-mix(
+    in oklab,
+    var(--color-foreground) 2%,
+    var(--color-background)
+  );
+  --color-background-tertiary: color-mix(
+    in oklab,
+    var(--color-foreground) 6%,
+    var(--color-background)
+  );
+  --color-surface-hover: color-mix(
+    in oklab,
+    var(--color-foreground) 5%,
+    var(--color-background)
+  );
+
+  --color-border-light: color-mix(
+    in oklab,
+    var(--color-foreground) 11%,
+    var(--color-background)
+  );
+  --color-border: color-mix(
+    in oklab,
+    var(--color-foreground) 17%,
+    var(--color-background)
+  );
+  --color-border-dark: color-mix(
+    in oklab,
+    var(--color-foreground) 25%,
+    var(--color-background)
+  );
+
+  --color-foreground-muted: color-mix(
+    in oklab,
+    var(--color-foreground) 55%,
+    var(--color-background)
+  );
+  --color-foreground-secondary: color-mix(
+    in oklab,
+    var(--color-foreground) 72%,
+    var(--color-background)
+  );
+
+  --color-primary-dark: var(--color-foreground-bright);
+  --color-primary-light: color-mix(
+    in oklab,
+    var(--color-primary) 83%,
+    var(--color-background)
+  );
+
+  /* Fonts */
+  --font-sans:
+    var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-serif: var(--font-merriweather), Georgia, serif;
+  --font-mono:
+    "SF Mono", SF Mono, Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+
+@layer base {
+  html {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    scroll-behavior: smooth;
+    scrollbar-gutter: stable;
+  }
+
+  h1,
+  h2,
+  h3 {
+    color: var(--color-foreground-bright);
+    font-family: var(--font-serif);
+  }
+
+  h2 {
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
+  h3 {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    font-weight: normal;
+  }
+
+  a {
+    @apply text-primary hover:text-primary-dark underline decoration-1 underline-offset-2 transition duration-200 ease-in-out;
+  }
+
+  i {
+    @apply text-primary italic;
+  }
+}
+
+@utility font-brand {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-style: italic;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+/* Dark mode */
+
+html.dark {
+  color-scheme: dark;
+
+  --color-background: #0d1117;
+  --color-surface: #21262d;
+  --color-foreground: #c9d1d9;
+  --color-foreground-bright: #e6edf3;
+  --color-primary: #c9d1d9;
+
+  --color-error: #f85149;
+  --color-warning: #d29922;
+  --color-info: #58a6ff;
+  --color-success: #3fb950;
+
+  --color-background-secondary: color-mix(
+    in oklab,
+    var(--color-foreground) 7%,
+    var(--color-background)
+  );
+  --color-background-tertiary: color-mix(
+    in oklab,
+    var(--color-foreground) 10%,
+    var(--color-background)
+  );
+  --color-surface-hover: color-mix(
+    in oklab,
+    var(--color-foreground) 22%,
+    var(--color-background)
+  );
+
+  --color-border-light: color-mix(
+    in oklab,
+    var(--color-foreground) 13%,
+    var(--color-background)
+  );
+  --color-border: color-mix(
+    in oklab,
+    var(--color-foreground) 22%,
+    var(--color-background)
+  );
+  --color-border-dark: color-mix(
+    in oklab,
+    var(--color-foreground) 36%,
+    var(--color-background)
+  );
+
+  --color-foreground-muted: color-mix(
+    in oklab,
+    var(--color-foreground) 57%,
+    var(--color-background)
+  );
+  --color-foreground-secondary: color-mix(
+    in oklab,
+    var(--color-foreground) 71%,
+    var(--color-background)
+  );
+
+  --color-primary-light: color-mix(
+    in oklab,
+    var(--color-primary) 71%,
+    var(--color-background)
+  );
+}
+
+/* Both icons ship; CSS picks one, so the server-rendered control is correct. */
+.theme-icon-to-light {
+  display: none;
+}
+
+html.dark .theme-icon-to-dark {
+  display: none;
+}
+
+html.dark .theme-icon-to-light {
+  display: block;
+}
+
+/* Reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

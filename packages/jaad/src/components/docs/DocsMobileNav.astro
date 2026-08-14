@@ -1,0 +1,120 @@
+---
+import { getSortedDocsPages } from "../../collection.ts";
+import type { DocsEntry } from "../../@types/docs.ts";
+import {
+  formatChapterTitle,
+  extractHeadingsFromMarkdown,
+  buildDocNavItems,
+  groupNavByChapter,
+} from "../../utils/docs.ts";
+import ScrollToTop from "../ScrollToTop.astro";
+import config from "virtual:jaad/config";
+
+interface Props {
+  currentSlug: string;
+  entry: DocsEntry;
+}
+
+const { currentSlug, entry } = Astro.props;
+
+const sortedPages = await getSortedDocsPages();
+
+const base = config.docsBase;
+const navItems = buildDocNavItems(sortedPages, currentSlug, base);
+
+const sections = groupNavByChapter(navItems);
+
+const headings = extractHeadingsFromMarkdown(entry.body || "");
+---
+
+<div class="docs-mobile-nav mb-8 space-y-4 lg:hidden">
+  <div class="docs-select w-full">
+    <label for="page-select" class="sr-only">Select page</label>
+    <select
+      id="page-select"
+      class="border-primary/20 bg-surface text-foreground focus:border-primary w-full rounded-lg border px-4 py-3 transition-colors focus:outline-none"
+    >
+      {
+        sections.map((section) =>
+          section.type === "page" ? (
+            <option value={section.item.href} selected={section.item.isActive}>
+              {section.item.title}
+            </option>
+          ) : (
+            <optgroup
+              label={formatChapterTitle(section.chapter) || section.chapter}
+            >
+              {section.items.map((page) => (
+                <option value={page.href} selected={page.isActive}>
+                  {page.title}
+                </option>
+              ))}
+            </optgroup>
+          ),
+        )
+      }
+    </select>
+  </div>
+
+  {
+    headings.length > 0 && (
+      <div id="section-select-wrapper" class="docs-select w-full">
+        <label for="section-select" class="sr-only">
+          Jump to section
+        </label>
+        <select
+          id="section-select"
+          class="border-primary/20 bg-surface text-foreground focus:border-primary w-full rounded-lg border px-4 py-3 transition-colors focus:outline-none"
+        >
+          <option value="">Jump to section...</option>
+          {headings.map((heading) => {
+            const prefix =
+              heading.depth === 3 ? "\u00A0\u00A0\u00A0\u00A0" : "";
+            return (
+              <option value={`#${heading.slug}`}>
+                {prefix}
+                {heading.text}
+              </option>
+            );
+          })}
+        </select>
+      </div>
+    )
+  }
+</div>
+
+<ScrollToTop />
+
+<script>
+  import { navigate } from "astro:transitions/client";
+
+  function initMobileNav(): void {
+    const pageSelect =
+      document.querySelector<HTMLSelectElement>("#page-select");
+    const sectionSelect =
+      document.querySelector<HTMLSelectElement>("#section-select");
+
+    if (pageSelect && !pageSelect.dataset.navInit) {
+      pageSelect.dataset.navInit = "1";
+      pageSelect.addEventListener("change", () => {
+        if (pageSelect.value) navigate(pageSelect.value);
+      });
+    }
+
+    if (sectionSelect && !sectionSelect.dataset.navInit) {
+      sectionSelect.dataset.navInit = "1";
+      sectionSelect.addEventListener("change", () => {
+        const target = sectionSelect.value;
+        if (!target) return;
+        document
+          .querySelector(target)
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+        // Reset so picking the same section twice in a row fires again.
+        setTimeout(() => (sectionSelect.value = ""), 500);
+      });
+    }
+  }
+
+  initMobileNav();
+  document.addEventListener("astro:page-load", initMobileNav);
+</script>

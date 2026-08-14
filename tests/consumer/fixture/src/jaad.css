@@ -1,0 +1,4 @@
+/* Overrides jaad tokens. Loaded after the package styles. */
+:root {
+  --color-primary: #3b5bdb;
+}

@@ -1,0 +1,58 @@
+name: Publish to npm
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.34.4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24" # OIDC needs npm >=11.5.1, bundled with Node 24
+          registry-url: "https://registry.npmjs.org"
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # npm publishes what package.json says, not what the tag says.
+      - name: Tag matches the package version
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          version="$(node -p 'require("./packages/jaad/package.json").version')"
+          if [ "$tag" != "$version" ]; then
+            echo "tag $GITHUB_REF_NAME does not match jaad@$version" >&2
+            exit 1
+          fi
+
+      - name: Type check
+        run: pnpm check
+
+      - name: Unit tests
+        run: pnpm test
+
+      - name: Build the site
+        run: pnpm build
+
+      - name: Assertions on the built site
+        run: pnpm test:build
+
+      # The tarball is what gets published, so it is what has to be proven.
+      - name: Consumer install
+        run: pnpm test:consumer
+
+      - name: Publish
+        working-directory: packages/jaad
+        run: npm publish --provenance --access public

@@ -1,0 +1,52 @@
+---
+import config from "virtual:jaad/config";
+import { formatChapterTitle } from "../../utils/docs.ts";
+
+interface Props {
+  title: string;
+  description: string;
+  chapter?: string;
+}
+
+const { title, description, chapter } = Astro.props;
+
+// Relative ids are worthless to a crawler, so without `site` emit nothing.
+const site = Astro.site;
+const base = site ? config.docsBase : null;
+
+const crumbs = base
+  ? [
+      { name: config.title, url: new URL(base || "/", site!).href },
+      ...(chapter ? [{ name: formatChapterTitle(chapter)!, url: null }] : []),
+      { name: title, url: Astro.url.href },
+    ]
+  : [];
+
+const data = base && {
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  headline: title,
+  description,
+  inLanguage: config.lang,
+  isPartOf: { "@type": "WebSite", name: config.title },
+  breadcrumb: {
+    "@type": "BreadcrumbList",
+    itemListElement: crumbs.map((crumb, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: crumb.name,
+      ...(crumb.url ? { item: crumb.url } : {}),
+    })),
+  },
+};
+---
+
+{
+  data && (
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(data)}
+      is:inline
+    />
+  )
+}
