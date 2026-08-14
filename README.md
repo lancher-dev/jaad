@@ -4,13 +4,13 @@
 An Astro integration that turns a folder of markdown into a documentation site.
 
 ```bash
-npm create jaad@latest my-docs
+npm create @lancher-dev/jaad@latest my-docs
 ```
 
 Or add it to a repository that already has a `docs/` folder:
 
 ```bash
-npm create jaad@latest -- --here
+npm create @lancher-dev/jaad@latest -- --here
 ```
 
 By hand:

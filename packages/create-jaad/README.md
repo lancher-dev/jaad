@@ -4,7 +4,7 @@
 ## A new site
 
 ```bash
-npm create jaad@latest my-docs
+npm create @lancher-dev/jaad@latest my-docs
 ```
 
 Writes five files, installs, and leaves you with `npm run dev`.
@@ -21,7 +21,7 @@ my-docs/
 ## A repository you already have
 
 ```bash
-npm create jaad@latest -- --here
+npm create @lancher-dev/jaad@latest -- --here
 ```
 
 Adds the same three JAAD files and the dependencies, and leaves everything else

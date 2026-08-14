@@ -1,5 +1,5 @@
 {
-  "name": "create-jaad",
+  "name": "@lancher-dev/create-jaad",
   "version": "0.1.0",
   "description": "Scaffold a JAAD documentation site, or add one to a repository that already has a docs folder.",
   "type": "module",

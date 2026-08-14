@@ -9,7 +9,7 @@ import { createInterface } from "node:readline/promises";
 const JAAD = "^0.1.1";
 const ASTRO = "^7.2.0";
 
-const HELP = `Usage: npm create jaad@latest [directory] [options]
+const HELP = `Usage: npm create @lancher-dev/jaad@latest [directory] [options]
 
   --here            Add JAAD to the current directory instead of a new one.
   --title <title>   Site title. Defaults to the directory name.

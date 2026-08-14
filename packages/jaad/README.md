@@ -6,7 +6,7 @@ An Astro integration that turns a folder of markdown into a documentation site. 
 ## Install
 
 ```bash
-npm create jaad@latest my-docs
+npm create @lancher-dev/jaad@latest my-docs
 ```
 
 Or by hand:
