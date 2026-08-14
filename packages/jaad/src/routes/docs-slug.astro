@@ -3,7 +3,6 @@ import { getEntry, render } from "astro:content";
 import { getSortedDocsPages } from "../collection.ts";
 import { getCleanSlug, parseDocCollectionId, docTitle } from "../utils/docs.ts";
 import DocsPage from "../components/docs/DocsPage.astro";
-import config from "virtual:jaad/config";
 
 export async function getStaticPaths() {
   const sortedPages = await getSortedDocsPages();
