@@ -44,4 +44,4 @@ Nothing is ever overwritten: a file that exists is reported as kept.
 
 ## License
 
-MIT
+jaad is released under the [MIT License](/LICENSE).
