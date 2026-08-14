@@ -8,7 +8,7 @@
     "dev": "pnpm --filter www dev",
     "build": "pnpm --filter www build",
     "preview": "pnpm --filter www preview",
-    "check": "pnpm -r check",
+    "check": "tsc --noEmit && pnpm -r check",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
     "lint": "eslint .",
@@ -18,6 +18,8 @@
     "test:consumer": "node --test \"tests/consumer/**/*.test.mjs\""
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.2.0",
     "@typescript-eslint/parser": "^8.65.0",
     "eslint": "^10.1.0",
     "eslint-config-prettier": "^10.1.8",
@@ -27,7 +29,8 @@
     "prettier": "3.9.6",
     "prettier-plugin-astro": "0.14.1",
     "prettier-plugin-tailwindcss": "0.8.1",
-    "typescript": "^6"
+    "typescript": "^6",
+    "typescript-eslint": "^8.67.0"
   },
   "lint-staged": {
     "*.{ts,tsx,astro}": [
