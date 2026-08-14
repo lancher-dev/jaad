@@ -68,7 +68,10 @@ export function editUrl(base: string, filePath: string): string {
 
 export function inferDescription(cwd: string = process.cwd()): string | null {
   try {
-    const pkg = JSON.parse(readFileSync(join(cwd, "package.json"), "utf8"));
+    const pkg = JSON.parse(readFileSync(join(cwd, "package.json"), "utf8")) as {
+      description?: unknown;
+    };
+
     return typeof pkg.description === "string" && pkg.description
       ? pkg.description
       : null;

@@ -2,6 +2,7 @@ import type { APIRoute, GetStaticPaths } from "astro";
 import { getEntry } from "astro:content";
 import { getSortedDocsPages } from "../collection.ts";
 import { getCleanSlug } from "../utils/docs.ts";
+import type { DocsEntry } from "../@types/docs.ts";
 
 /** Raw markdown at the page's own url plus `.md`, for readers and for LLMs. */
 export const getStaticPaths: GetStaticPaths = async () => {
@@ -15,7 +16,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const GET: APIRoute = async ({ props }) => {
   const { id } = props as { id: string };
-  const entry = await getEntry("docsPages", id);
+  const entry = (await getEntry("docsPages", id)) as DocsEntry | undefined;
   if (!entry) return new Response("Not found", { status: 404 });
 
   return new Response(entry.body ?? "", {
