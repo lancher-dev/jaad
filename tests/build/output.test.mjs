@@ -29,11 +29,28 @@ test("no page title names the framework instead of the site", () => {
   assert.match(page("404.html"), /<title>404 \| JAAD<\/title>/);
 });
 
+// Fonts are shipped with the package
+const HOSTS = ["nerdfonts.com", "fonts.googleapis.com", "fonts.gstatic.com"];
+
 test("no third-party host on the critical path", () => {
   const offenders = distFiles(".html")
-    .filter((f) => readFileSync(f, "utf8").includes("nerdfonts.com"))
-    .map((f) => f.split("/dist/")[1]);
+    .flatMap((f) => {
+      const html = readFileSync(f, "utf8");
+      return HOSTS.filter((h) => html.includes(h)).map(
+        (h) => `${f.split("/dist/")[1]}: ${h}`,
+      );
+    })
+    .sort();
   assert.deepEqual(offenders, []);
+});
+
+test("the fonts are served from the site itself", () => {
+  const faces = page("index.html").match(/@font-face\{[^}]*\}/g) ?? [];
+  const withFile = faces.filter((f) => f.includes("url("));
+  assert.ok(withFile.length > 0, "no font-face carries a file");
+  for (const face of withFile) {
+    assert.match(face, /url\("?\/[^")]*\.woff2/, "font is not self-hosted");
+  }
 });
 
 test("every docs page carries its search index and llms entry", () => {

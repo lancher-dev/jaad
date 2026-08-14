@@ -1,5 +1,5 @@
 import type { AstroIntegration } from "astro";
-import { defineConfig, fontProviders } from "astro/config";
+import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 import jaamd from "jaamd";
@@ -12,6 +12,7 @@ import {
   type JaadUserConfig,
 } from "./src/config.ts";
 import { jaadVirtualPlugin } from "./src/virtual.ts";
+import { fonts } from "./src/fonts.ts";
 
 const route = (file: string) =>
   new URL(`./src/routes/${file}`, import.meta.url).pathname;
@@ -50,22 +51,7 @@ export default function jaad(options: JaadUserConfig): AstroIntegration[] {
             // pre-bundled externals and never reach the Astro compiler.
             ssr: { noExternal: ["@lancher-dev/jaad"] },
           },
-          fonts: [
-            {
-              provider: fontProviders.google(),
-              name: "Inter",
-              cssVariable: "--font-inter",
-              weights: [400, 500, 600],
-              styles: ["normal"],
-            },
-            {
-              provider: fontProviders.google(),
-              name: "Merriweather",
-              cssVariable: "--font-merriweather",
-              weights: [300, 400, 700],
-              styles: ["normal", "italic"],
-            },
-          ],
+          fonts,
         });
 
         for (const [pattern, entrypoint] of routes) {
