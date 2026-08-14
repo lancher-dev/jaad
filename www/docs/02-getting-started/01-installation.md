@@ -82,6 +82,8 @@ If your markdown already lives somewhere else, point `docsDir` at it instead of 
 defineJaadConfig({ title: "My Project", docsDir: "./documentation" });
 ```
 
+The documentation is mounted at `/docs`. To open it at the site root instead, see [opening the docs at the site root](/docs/configurations/reference#opening-the-docs-at-the-site-root).
+
 ## Run it
 
 :::code-tabs

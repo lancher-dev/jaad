@@ -150,6 +150,14 @@ export default defineJaadConfig({
     );
     assert.ok(rebased.includes("/guides/deep-dive/index.html"));
 
+    // The whole point of routeBase "/": the docs index becomes the site index.
+    assert.ok(rebased.includes("/index.html"), "no index at the new root");
+    assert.match(
+      readFileSync(join(dist, "index.html"), "utf8"),
+      /docs-sidebar-left/,
+      "the root page is not the docs index",
+    );
+
     const remounted = readFileSync(
       join(dist, "getting-started/index.html"),
       "utf8",

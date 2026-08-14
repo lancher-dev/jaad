@@ -36,6 +36,34 @@ Both are handed to Astro for you.
 | `docsDir`   | `string` | `"./docs"` | Folder to read markdown from.                                                                                                     |
 | `routeBase` | `string` | `"/docs"`  | Where the documentation is mounted. Use `"/"` for a docs-only site. Slashes are normalised, so `"docs"` and `"/docs/"` both work. |
 
+### Opening the docs at the site root
+
+Two shapes, depending on whether you want a landing page at all.
+
+**A documentation site and nothing else.** Mount at the root and delete the page
+Astro's template left behind, otherwise it keeps `/` for itself:
+
+```ts
+defineJaadConfig({ title: "My Project", routeBase: "/" });
+```
+
+```bash
+rm src/pages/index.astro
+```
+
+Leave that file in place and Astro warns that `/` is defined twice, then serves
+the template page. The documentation is still built, just not at the root.
+
+**A landing page that leads to the docs.** Keep the default mount and send the
+root to it. No new option: this is the `astro` valve.
+
+```ts
+defineJaadConfig({
+  title: "My Project",
+  astro: { redirects: { "/": "/docs" } },
+});
+```
+
 ## Links
 
 `nav` are text links; `social` are icons.
