@@ -2,7 +2,7 @@ import type { AstroIntegration } from "astro";
 import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
-import jaamd from "jaamd";
+import jaamd from "@lancher-dev/jaamd";
 
 import { existsSync } from "node:fs";
 
