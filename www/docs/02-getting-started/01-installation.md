@@ -2,6 +2,22 @@
 
 JAAD is an [Astro](https://astro.build) integration. You add it to a project, point it at a folder of markdown, and get a documentation site.
 
+## The short way
+
+```bash
+npm create jaad@latest my-docs
+```
+
+That writes every file below for you and installs. If the repository you want to document already has a `docs/` folder, run it there instead:
+
+```bash
+npm create jaad@latest -- --here
+```
+
+It adds JAAD to the project you already have, keeps your `package.json` as it is, and leaves your existing markdown alone.
+
+The rest of this page is the same thing by hand, which is worth reading once so you know what those files do.
+
 ## Add it to a project
 
 Start from an empty Astro project, or an existing one.
