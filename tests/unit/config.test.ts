@@ -22,6 +22,22 @@ test("a missing title is rejected rather than defaulted", () => {
   assert.throws(() => resolveConfig({} as never, "/"));
 });
 
+test("the appearance follows the reader unless it is pinned", () => {
+  assert.equal(bare().appearance, "auto");
+  assert.equal(bare({ appearance: "dark" }).appearance, "dark");
+});
+
+test("an appearance that is not a mode lists the ones that are", () => {
+  assert.throws(
+    () => bare({ appearance: "system" }),
+    (error: Error) => {
+      assert.match(error.message, /\n {2}appearance: /);
+      assert.match(error.message, /auto, light, dark/);
+      return true;
+    },
+  );
+});
+
 // ── What the terminal says when the config is wrong ──────────────────────────
 
 test("a misspelt option is an error naming the real one", () => {

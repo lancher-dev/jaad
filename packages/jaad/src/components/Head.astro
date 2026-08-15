@@ -17,6 +17,30 @@ const ogImage =
     : Astro.site
       ? new URL(config.ogImage, Astro.site).href
       : null;
+
+// Run a script to set the theme class on `<html>` before the page renders
+const themeScript = `(function () {
+  function isDark() {
+    var t = localStorage.getItem("theme");
+    return (
+      t === "dark" || (!t && matchMedia("(prefers-color-scheme: dark)").matches)
+    );
+  }
+  function applyTheme(root) {
+    if (isDark()) {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+  }
+  applyTheme(document.documentElement);
+  document.addEventListener("astro:before-swap", function (e) {
+    applyTheme(e.newDocument.documentElement);
+  });
+  document.addEventListener("astro:after-swap", function () {
+    applyTheme(document.documentElement);
+  });
+})();`;
 ---
 
 <meta charset="UTF-8" />
@@ -57,28 +81,4 @@ const ogImage =
   })
 }
 
-<script is:inline>
-  (function () {
-    function isDark() {
-      var t = localStorage.getItem("theme");
-      return (
-        t === "dark" ||
-        (!t && matchMedia("(prefers-color-scheme: dark)").matches)
-      );
-    }
-    function applyTheme(root) {
-      if (isDark()) {
-        root.classList.add("dark");
-      } else {
-        root.classList.remove("dark");
-      }
-    }
-    applyTheme(document.documentElement);
-    document.addEventListener("astro:before-swap", function (e) {
-      applyTheme(e.newDocument.documentElement);
-    });
-    document.addEventListener("astro:after-swap", function () {
-      applyTheme(document.documentElement);
-    });
-  })();
-</script>
+{config.appearance === "auto" && <script is:inline set:html={themeScript} />}

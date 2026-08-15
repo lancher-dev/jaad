@@ -127,6 +127,9 @@ test(
     );
     assert.equal(index.length, 2);
 
+    assert.match(home, /<jaad-theme-toggle>/, "no theme switcher by default");
+    assert.match(home, /prefers-color-scheme/, "no theme script by default");
+
     // routeBase moves the routes; every internal link has to follow, which is
     // what silently broke before.
     writeFileSync(
@@ -136,6 +139,7 @@ export default defineJaadConfig({
   site: "https://example.dev",
   title: "Consumer Test",
   routeBase: "/",
+  appearance: "dark",
 });
 `,
     );
@@ -171,5 +175,25 @@ export default defineJaadConfig({
       !/href="\/docs\//.test(remounted),
       "a link still points under /docs after remounting",
     );
+
+    const rootPage = readFileSync(join(dist, "index.html"), "utf8");
+    for (const [name, html] of [
+      ["index", rootPage],
+      ["getting-started", remounted],
+    ]) {
+      assert.match(
+        html,
+        /<html lang="en" class="dark"/,
+        `${name} does not carry the pinned appearance`,
+      );
+      assert.ok(
+        !/jaad-theme-toggle/.test(html),
+        `${name} still renders the switcher for a pinned appearance`,
+      );
+      assert.ok(
+        !/prefers-color-scheme/.test(html),
+        `${name} still ships the theme script for a pinned appearance`,
+      );
+    }
   },
 );

@@ -1,6 +1,6 @@
 # Themes
 
-Dark mode is built in and needs no configuration. The switcher in the header toggles it, starting from the reader's system preference.
+Dark mode is built in and needs no configuration. The switcher in the header toggles it, starting from the reader's system preference. If your site is only ever one of the two, [pin it](#fixing-the-appearance) and the switcher goes away.
 
 ## Named themes
 
@@ -33,6 +33,22 @@ Palettes come from each project's own reference, paired with the matching code t
 A `dark` class on `<html>` drives the theme. A small inline script in `<head>` reads the stored preference, or falls back to `prefers-color-scheme`, and applies the class before the first paint, so there is no flash of the wrong theme.
 
 A theme sets a handful of seed values; everything else derives from them. See [Styles](/docs/configurations/styles) for the token model.
+
+## Fixing the appearance
+
+Some sites are one thing only. `appearance` pins them:
+
+```ts
+defineJaadConfig({
+  title: "My Project",
+  theme: "tokyo-night",
+  appearance: "dark",
+});
+```
+
+`"dark"` puts the class on `<html>` at build time and `"light"` leaves it off. Either way the switcher disappears and no theme script is sent: the page is right without JavaScript, and there is no flash to prevent. The default, `"auto"`, is the behaviour described above.
+
+This is what the four dark-only palettes want. `dracula`, `nord`, `one-dark` and `tokyo-night` have no light counterpart, so in light mode their chrome stays dark while the rendered markdown turns light. Pinning the site to `"dark"` settles it. The pairing to avoid is the opposite one — `appearance: "light"` with a palette that has no light mode.
 
 ## Code blocks only
 

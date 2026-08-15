@@ -71,6 +71,12 @@ export const jaadConfigSchema = z.object({
       z.object({ light: z.string(), dark: z.string() }),
     ])
     .default("default"),
+
+  appearance: z
+    .enum(["auto", "light", "dark"], {
+      error: "unknown appearance; available: auto, light, dark",
+    })
+    .default("auto"),
 });
 
 export type JaadConfig = z.output<typeof jaadConfigSchema>;

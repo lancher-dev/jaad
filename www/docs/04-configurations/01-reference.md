@@ -144,9 +144,10 @@ defineJaadConfig({
 
 ## Theme
 
-| Option  | Type                                        | Default     |
-| ------- | ------------------------------------------- | ----------- |
-| `theme` | `string \| { light: string; dark: string }` | `"default"` |
+| Option       | Type                                        | Default     |
+| ------------ | ------------------------------------------- | ----------- |
+| `theme`      | `string \| { light: string; dark: string }` | `"default"` |
+| `appearance` | `"auto" \| "light" \| "dark"`               | `"auto"`    |
 
 A name sets the chrome, the markdown and the code colours together:
 
@@ -165,6 +166,13 @@ defineJaadConfig({
   title: "…",
   theme: { light: "github-light", dark: "github-dark" },
 });
+```
+
+`appearance` decides whether the reader gets a say. `"auto"` follows their system preference
+and shows the switcher; `"light"` or `"dark"` pins the site and removes it.
+
+```ts
+defineJaadConfig({ title: "…", theme: "tokyo-night", appearance: "dark" });
 ```
 
 See [Themes](/docs/configurations/themes) for writing your own.

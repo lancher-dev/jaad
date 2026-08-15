@@ -33,7 +33,7 @@ const { inDocs = false } = Astro.props;
         <SearchPalette inDocs={inDocs} />
         <Nav />
         <SocialLinks />
-        <ThemeSwitcher />
+        {config.appearance === "auto" && <ThemeSwitcher />}
         <NavMobile />
       </div>
     </div>

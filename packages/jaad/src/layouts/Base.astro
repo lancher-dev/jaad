@@ -20,7 +20,10 @@ const pageDescription = description ?? config.description ?? config.title;
 ---
 
 <!doctype html>
-<html lang={config.lang}>
+<html
+  lang={config.lang}
+  class={config.appearance === "dark" ? "dark" : undefined}
+>
   <head>
     <Head title={pageTitle} description={pageDescription} />
   </head>
