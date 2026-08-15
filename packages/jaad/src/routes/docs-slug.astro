@@ -17,7 +17,7 @@ const { id } = Astro.props;
 
 const docPage = await getEntry("docsPages", id);
 if (!docPage) {
-  return Astro.redirect(config.docsBase || "/");
+  return Astro.redirect("/404");
 }
 
 const { Content } = await render(docPage);

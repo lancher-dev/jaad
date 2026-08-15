@@ -9,6 +9,9 @@ interface Props {
 
 const { chapter, title } = Astro.props;
 const chapterTitle = formatChapterTitle(chapter);
+
+const rootLabel =
+  formatChapterTitle(config.docsBase.replace(/^\//, "")) ?? "Docs";
 ---
 
 <nav
@@ -17,7 +20,7 @@ const chapterTitle = formatChapterTitle(chapter);
 >
   <a
     href={config.docsBase || "/"}
-    class="hover:text-foreground-bright no-underline">Docs</a
+    class="hover:text-foreground-bright no-underline">{rootLabel}</a
   >
   {
     chapterTitle && (
