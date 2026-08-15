@@ -34,16 +34,16 @@ test("an explicit label wins over the forge name", () => {
   assert.equal(link.label, "Source");
 });
 
-test("the inferred repository is appended when it is not already listed", () => {
+test("the inferred repository is appended alongside links that are not forges", () => {
   const links = buildSocialLinks(
     config({
-      social: { gitlab: "https://gitlab.com/o/r" },
+      social: { discord: "https://discord.gg/x" },
       repoUrl: "https://github.com/o/r",
     }),
   );
   assert.deepEqual(
     links.map((l) => l.label),
-    ["GitLab", "GitHub"],
+    ["discord", "GitHub"],
   );
 });
 
@@ -55,6 +55,32 @@ test("the inferred repository is not repeated when the user listed it", () => {
     }),
   );
   assert.equal(links.length, 1);
+});
+
+test("naming a forge stops the inference, even at another url", () => {
+  const links = buildSocialLinks(
+    config({
+      social: { github: "https://github.com/o/product" },
+      repoUrl: "https://github.com/o/product.website",
+    }),
+  );
+  assert.deepEqual(
+    links.map((l) => l.href),
+    ["https://github.com/o/product"],
+  );
+});
+
+test("naming one forge stops the inference of another", () => {
+  const links = buildSocialLinks(
+    config({
+      social: { gitlab: "https://gitlab.com/o/r" },
+      repoUrl: "https://github.com/o/r",
+    }),
+  );
+  assert.deepEqual(
+    links.map((l) => l.label),
+    ["GitLab"],
+  );
 });
 
 test("an unrecognised remote still gets a link, without an icon", () => {

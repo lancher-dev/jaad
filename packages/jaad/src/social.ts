@@ -26,7 +26,14 @@ export function buildSocialLinks(config: JaadResolvedConfig): SocialLink[] {
     });
   }
 
-  if (config.repoUrl && !links.some((l) => l.href === config.repoUrl)) {
+  // If the user didn't name a forge, and the repository is known, add it to the list
+  const namedAForge = Object.keys(config.social).some((key) => key in FORGES);
+
+  if (
+    config.repoUrl &&
+    !namedAForge &&
+    !links.some((l) => l.href === config.repoUrl)
+  ) {
     const forge = forgeForUrl(config.repoUrl);
     links.push({
       href: config.repoUrl,

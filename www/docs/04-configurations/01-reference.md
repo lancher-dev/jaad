@@ -90,6 +90,8 @@ Bundled forges: `github`, `gitlab`, `codeberg`, `gitea`, `forgejo`, `bitbucket`,
 
 **You usually do not need `social` at all.** If the project has a git remote, the repository link and its icon are worked out from it.
 
+Naming a forge yourself turns that inference off, so the header shows the repository you chose and not the one the remote happens to point at. This is what a documentation site kept in its own repository needs.
+
 ## Footer
 
 ```ts
