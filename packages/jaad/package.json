@@ -43,7 +43,7 @@
     "@astrojs/sitemap": "^3.7.3",
     "@tailwindcss/vite": "^4.3.3",
     "github-slugger": "^2.0.0",
-    "@lancher-dev/jaamd": "^0.7.0",
+    "@lancher-dev/jaamd": "^0.8.0",
     "tailwindcss": "^4.3.3"
   },
   "scripts": {

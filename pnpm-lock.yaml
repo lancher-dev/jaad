@@ -59,8 +59,8 @@ importers:
         specifier: ^3.7.3
         version: 3.7.3
       '@lancher-dev/jaamd':
-        specifier: ^0.7.0
-        version: 0.7.0(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@26.2.0)(jiti@2.7.0)(yaml@2.9.0))
+        specifier: ^0.8.0
+        version: 0.8.0(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@26.2.0)(jiti@2.7.0)(yaml@2.9.0))
       '@tailwindcss/vite':
         specifier: ^4.3.3
         version: 4.3.3(vite@8.2.1(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))
@@ -708,8 +708,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@lancher-dev/jaamd@0.7.0':
-    resolution: {integrity: sha512-mrLcPssf4fHfUAVDpI2Hh4nKOtBN3lQt4eGQEN4LeHsLvcb/S47DTkyd44GBFWJbZG5p0Bg1/NXGkCneOpgOWA==}
+  '@lancher-dev/jaamd@0.8.0':
+    resolution: {integrity: sha512-/I+lqSwbI4FvP9lMu/ggH0yeY1PamEoXAGfTWhqh7DoM/BTqEbMIUhM2A5UT+Oli/Yl4a8Qvq1ACwWd1CxGdAg==}
     peerDependencies:
       astro: '>=7.0.0 <8.0.0'
 
@@ -3294,7 +3294,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@lancher-dev/jaamd@0.7.0(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@26.2.0)(jiti@2.7.0)(yaml@2.9.0))':
+  '@lancher-dev/jaamd@0.8.0(astro@7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@26.2.0)(jiti@2.7.0)(yaml@2.9.0))':
     dependencies:
       '@astrojs/markdown-remark': 7.2.2
       astro: 7.2.0(@astrojs/markdown-remark@7.2.2)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@26.2.0)(jiti@2.7.0)(yaml@2.9.0)
