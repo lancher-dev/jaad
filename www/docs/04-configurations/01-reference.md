@@ -94,16 +94,30 @@ Naming a forge yourself turns that inference off, so the header shows the reposi
 
 ## Footer
 
+| Option   | Type              | Default   | Notes                                                         |
+| -------- | ----------------- | --------- | ------------------------------------------------------------- |
+| `footer` | `string \| false` | `:credit` | One line of text. Inline HTML is allowed. `false` removes it. |
+
+The footer is one line, and the words in it are yours. Leave it unset and you get the
+"Built with JAAD" credit; write your own and that is what appears instead:
+
 ```ts
 defineJaadConfig({ title: "…", footer: "© 2026 Me" });
 
 defineJaadConfig({
   title: "…",
-  footer: { message: "MIT Licensed", copyright: "© 2026 Me" },
+  footer: 'MIT Licensed · © 2026 Me · <a href="/imprint">Imprint</a>',
 });
 ```
 
-A "Built with JAAD" credit is always present; `footer` adds to it.
+`:credit` stands in for the credit line, wherever you want it, so keeping it does not mean
+pasting our URL into your config:
+
+```ts
+defineJaadConfig({ title: "…", footer: "© 2026 Me · :credit" });
+```
+
+`footer: false` removes the footer altogether.
 
 ## Repository
 

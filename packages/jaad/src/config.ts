@@ -38,14 +38,12 @@ export const jaadConfigSchema = z.object({
     .default({}),
   nav: z.array(z.object({ label: z.string(), href: z.string() })).default([]),
   footer: z
-    .union([
-      z.string(),
-      z.object({
-        message: z.string().optional(),
-        copyright: z.string().optional(),
-      }),
-      z.literal(false),
-    ])
+    .union([z.string(), z.literal(false)], {
+      error:
+        "footer is one line of text, or false to remove it. " +
+        "The message/copyright pair is gone: write them as a single string, " +
+        'e.g. "MIT Licensed · © 2026 Me · :credit".',
+    })
     .optional(),
 
   editLink: z.union([z.boolean(), z.string()]).default(true),

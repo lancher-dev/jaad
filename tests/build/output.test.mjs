@@ -53,6 +53,14 @@ test("the fonts are served from the site itself", () => {
   }
 });
 
+// www sets no `footer`, which is the bare default: the credit on its own.
+test("an unset footer renders the credit, not its placeholder", () => {
+  const footer = page("index.html").match(/<footer[\s\S]*?<\/footer>/)?.[0];
+  assert.ok(footer, "no footer in the built page");
+  assert.match(footer, /jaad\.lancher\.dev/);
+  assert.doesNotMatch(footer, /:credit/, ":credit reached the page unexpanded");
+});
+
 test("every docs page carries its search index and llms entry", () => {
   const index = JSON.parse(page("search-index.json"));
   assert.ok(index.length > 0, "search index is empty");

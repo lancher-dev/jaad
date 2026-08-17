@@ -111,6 +111,38 @@ test("social accepts a bare url or a full entry", () => {
   });
 });
 
+// ── The footer, which is one free line and not a shape ───────────────────────
+
+test("an unset footer stays unset, so the component supplies the credit", () => {
+  assert.equal(bare().footer, undefined);
+});
+
+test("a footer line is taken verbatim, placeholder and all", () => {
+  assert.equal(bare({ footer: "© 2026 Me" }).footer, "© 2026 Me");
+  assert.equal(
+    bare({ footer: "© 2026 Me · :credit" }).footer,
+    "© 2026 Me · :credit",
+  );
+});
+
+// `false` was accepted by the schema but never read, so the footer still rendered.
+test("footer false survives the parse, so the component can act on it", () => {
+  assert.equal(bare({ footer: false }).footer, false);
+});
+
+// The message/copyright pair was dropped; the error has to say where it went.
+test("the old footer object is refused with its replacement spelled out", () => {
+  assert.throws(
+    () => bare({ footer: { message: "MIT", copyright: "© 2026" } }),
+    (error: Error) => {
+      assert.match(error.message, /\n {2}footer: /);
+      assert.match(error.message, /single string/);
+      assert.match(error.message, /:credit/);
+      return true;
+    },
+  );
+});
+
 test("defineJaadConfig hands back exactly what it was given", () => {
   const options = { title: "X" };
   assert.equal(defineJaadConfig(options), options);
