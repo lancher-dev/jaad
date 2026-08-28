@@ -15,8 +15,7 @@ const run = (cmd, args, cwd) =>
   execFileSync(cmd, args, { cwd, encoding: "utf8", stdio: "pipe" });
 
 /**
- * The contents, not a reader: the second build overwrites `dist`, so anything
- * read lazily would come from the wrong one.
+ * Captures the contents of a directory for later assertion.
  */
 function snapshot(dist) {
   const files = walk(dist);
@@ -42,9 +41,6 @@ function snapshot(dist) {
  * Installs the packed tarball into a throwaway project, the way a reader would.
  * Everything that has broken so far — transitive resolution, Tailwind scanning
  * node_modules, .astro files shipped as source — only shows up here.
- *
- * The install and both builds happen once in `before`; every test below reads
- * what was captured, so one failure never hides the rest.
  */
 describe("a project that installed the published tarball", () => {
   let project;

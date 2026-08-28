@@ -23,7 +23,6 @@ function useLocalJaad(project, tarball) {
   writeFileSync(file, JSON.stringify(manifest, null, 2));
 }
 
-/** The package does not change between tests, so pack it once. */
 let tarball;
 const pack = () =>
   (tarball ??= join(
