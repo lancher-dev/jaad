@@ -85,3 +85,27 @@ test("the sidebar follows the numeric prefixes", () => {
     "files inside a chapter must follow their own numbers",
   );
 });
+
+// The header used to be 50rem over 56rem of content, so its right edge fell
+// inside the text it sat above.
+test("the chrome is measured against the content, not against a second number", () => {
+  const css = allCss().replace(/\s+/g, "");
+
+  assert.match(
+    css,
+    /--jaad-chrome-width:var\(--jaad-content-width\)/,
+    "the chrome width is no longer derived from the content width",
+  );
+  assert.match(css, /\.jaad-chrome\{[^}]*max-width:var\(--jaad-chrome-width\)/);
+  assert.match(css, /\.docs-main\{[^}]*max-width:var\(--jaad-content-width\)/);
+  assert.ok(
+    !css.includes("max-width:50rem"),
+    "a hardcoded chrome width is back",
+  );
+
+  assert.match(
+    page("docs/index.html"),
+    /<header[^>]*class="[^"]*jaad-chrome/,
+    "the header does not use the shared measure",
+  );
+});

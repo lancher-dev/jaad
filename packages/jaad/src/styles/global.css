@@ -75,6 +75,18 @@
   --font-serif: var(--font-merriweather), Georgia, serif;
   --font-mono:
     "SF Mono", SF Mono, Consolas, "Liberation Mono", Menlo, Courier, monospace;
+
+  /* Layout */
+  --jaad-content-width: 56rem;
+  --jaad-chrome-width: var(--jaad-content-width);
+  --jaad-sidebar-width: 16rem;
+  --jaad-page-padding: 2rem;
+
+  /* Where a sidebar sits beside centred content. Derived, so moving the
+     content width moves the sidebars with it. */
+  --jaad-sidebar-offset: calc(
+    50% - (var(--jaad-content-width) / 2) - var(--jaad-sidebar-width) - 2rem
+  );
 }
 
 @layer base {
@@ -121,6 +133,37 @@
   font-style: italic;
   letter-spacing: -0.01em;
   line-height: 1;
+}
+
+/* Layout, in a layer so a page's own utilities still win. */
+@layer components {
+  /* Header, footer and docs content share one measure. */
+  .jaad-chrome {
+    width: 100%;
+    max-width: var(--jaad-chrome-width);
+    margin-inline: auto;
+  }
+
+  .jaad-main {
+    flex: 1;
+    margin-block: 4rem;
+    padding-inline: var(--jaad-page-padding);
+  }
+
+  @media (min-width: 1024px) {
+    .jaad-main {
+      padding-inline: calc(var(--jaad-page-padding) * 2);
+    }
+  }
+
+  /* `bare`: the landmark stays, the spacing goes. */
+  .jaad-main-bare {
+    flex: 1;
+  }
+
+  .jaad-sidebar {
+    width: var(--jaad-sidebar-width);
+  }
 }
 
 /* Dark mode */

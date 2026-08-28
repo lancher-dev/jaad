@@ -8,18 +8,18 @@
 
 .docs-main {
   width: 100%;
-  max-width: 56rem;
+  max-width: var(--jaad-content-width);
   position: relative;
 }
 
-/* Position sidebars next to centered content */
+/* Derived from the content, so one token moves the whole layout. */
 @media (min-width: 1024px) {
   .docs-sidebar-left {
-    left: calc(50% - 28rem - 16rem - 2rem);
+    left: var(--jaad-sidebar-offset);
   }
 
   .docs-sidebar-right {
-    right: calc(50% - 28rem - 16rem - 2rem);
+    right: var(--jaad-sidebar-offset);
   }
 
   @media (max-width: 1536px) {
