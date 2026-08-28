@@ -50,6 +50,18 @@ test("the fonts are served from the site itself", () => {
   }
 });
 
+test("the inferred repository is a single icon, with no menu to repeat it", () => {
+  const home = page("index.html");
+  const repo = home.match(/href="(https:\/\/github\.com\/[\w-]+\/[\w-]+)"/)[1];
+
+  assert.equal(
+    home.split(`href="${repo}"`).length - 1,
+    1,
+    "the repository link is listed twice",
+  );
+  assert.doesNotMatch(home, /<jaad-nav-mobile/, "an empty mobile menu shipped");
+});
+
 // www sets no `footer`, which is the bare default: the credit on its own.
 test("an unset footer renders the credit, not its placeholder", () => {
   const footer = page("index.html").match(/<footer[\s\S]*?<\/footer>/)?.[0];

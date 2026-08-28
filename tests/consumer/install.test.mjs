@@ -122,15 +122,26 @@ export default defineJaadConfig({
     );
   });
 
-  test("both menus list the repository once, with its forge label", () => {
+  test("the repository is listed once, and the mobile menu does not repeat it", () => {
     const home = built.read("docs/index.html");
     const menu = home.match(/<jaad-nav-mobile[\s\S]*?<\/jaad-nav-mobile>/)[0];
 
-    assert.match(menu, />GitHub</, "mobile menu does not use forge labels");
+    assert.match(menu, />API</, "the mobile menu lost the nav links");
+    assert.doesNotMatch(menu, /github\.com/, "the mobile menu repeats an icon");
     assert.equal(
-      (home.match(/https:\/\/github\.com\/example\/consumer/g) ?? []).length,
-      2,
-      "the repository link is not listed exactly once per menu",
+      (home.match(/href="https:\/\/github\.com\/example\/consumer"/g) ?? [])
+        .length,
+      1,
+      "the repository link is not listed exactly once",
+    );
+    assert.match(home, /aria-label="GitHub"/, "no forge label on the icon");
+  });
+
+  test("an empty nav renders no mobile menu at all", () => {
+    assert.doesNotMatch(
+      remounted.read("index.html"),
+      /<jaad-nav-mobile/,
+      "the mobile menu is rendered with nothing to put in it",
     );
   });
 
