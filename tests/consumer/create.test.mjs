@@ -23,14 +23,16 @@ function useLocalJaad(project, tarball) {
   writeFileSync(file, JSON.stringify(manifest, null, 2));
 }
 
+/** The package does not change between tests, so pack it once. */
+let tarball;
 const pack = () =>
-  join(
+  (tarball ??= join(
     tmpdir(),
     run("npm", ["pack", "--pack-destination", tmpdir()], PKG)
       .trim()
       .split("\n")
       .pop(),
-  );
+  ));
 
 test(
   "the scaffolder produces a project that builds",
