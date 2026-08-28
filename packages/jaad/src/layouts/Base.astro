@@ -11,9 +11,10 @@ import "virtual:jaad/user.css";
 interface Props {
   title?: string;
   description?: string;
+  bare?: boolean;
 }
 
-const { title, description } = Astro.props;
+const { title, description, bare = false } = Astro.props;
 
 const pageTitle = title ? `${title} | ${config.title}` : config.title;
 const pageDescription = description ?? config.description ?? config.title;
@@ -31,7 +32,7 @@ const pageDescription = description ?? config.description ?? config.title;
     class="bg-background text-foreground flex min-h-screen flex-col text-[14px] leading-[1.6]"
   >
     <Header />
-    <main class="mx-0 my-16 flex-1 px-8 py-0 lg:px-16">
+    <main class={bare ? "jaad-main-bare" : "jaad-main"}>
       <slot />
     </main>
     <Footer />

@@ -88,6 +88,16 @@ test(
       "the repository link is not listed exactly once per menu",
     );
 
+    // A page of the consumer's own, on the exported layout.
+    const custom = readFileSync(join(dist, "about", "index.html"), "utf8");
+    assert.match(custom, /<title>About \| Consumer Test<\/title>/);
+    assert.match(custom, /<header[^>]*class="[^"]*jaad-chrome/, "no chrome");
+    assert.match(
+      custom,
+      /<main class="jaad-main-bare">/,
+      "bare did not drop the page spacing",
+    );
+
     const notFound = readFileSync(join(dist, "404.html"), "utf8");
     assert.match(
       notFound,
@@ -120,6 +130,20 @@ test(
     assert.ok(
       overrideAt > tokenAt,
       "src/jaad.css loaded before the package tokens, so it cannot override them",
+    );
+
+    // Layout widths are tokens too, so one line moves the whole page.
+    const width = css.lastIndexOf("--jaad-content-width:");
+    assert.notEqual(width, -1, "the layout tokens did not ship");
+    assert.match(
+      css.slice(width, width + 40),
+      /--jaad-content-width:\s*71rem/,
+      "the content width override did not win",
+    );
+    assert.ok(
+      css.includes("max-width:var(--jaad-chrome-width)") ||
+        css.includes("max-width: var(--jaad-chrome-width)"),
+      "the chrome does not read the width token",
     );
 
     const index = JSON.parse(
