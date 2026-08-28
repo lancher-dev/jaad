@@ -48,6 +48,29 @@ Six will get you most of the way:
 
 **Fonts**: `--font-sans`, `--font-serif`, `--font-mono`
 
+## Layout
+
+Widths are tokens too, so the same file moves them:
+
+```css
+/* src/jaad.css */
+:root {
+  --jaad-content-width: 64rem;
+  --jaad-sidebar-width: 18rem;
+}
+```
+
+| Token                  | Default           |
+| ---------------------- | ----------------- |
+| `--jaad-content-width` | `56rem`           |
+| `--jaad-chrome-width`  | the content width |
+| `--jaad-sidebar-width` | `16rem`           |
+| `--jaad-page-padding`  | `2rem`            |
+
+Header, footer and the documentation column share one measure, and the sidebars are
+positioned from it, so changing the content width moves everything together. See
+[Custom pages](/docs/configurations/custom-pages) for building your own pages on top.
+
 ## Markdown content
 
 The rendered markdown is styled by [JAAMD](https://github.com/lancher-dev/jaamd), which has its own tokens under the `--jaamd-` prefix. They derive from a handful of seeds, so you rarely touch more than these:
