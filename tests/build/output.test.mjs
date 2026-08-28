@@ -3,11 +3,8 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { page, distFiles, allCss } from "../dist.mjs";
 
-test("jaamd alerts reach the built HTML", () => {
+test("jaamd's remark plugins ran", () => {
   assert.match(page("docs/markdown/alerts/index.html"), /markdown-alert/);
-});
-
-test("jaamd code-tabs reach the built HTML", () => {
   assert.match(page("docs/markdown/code-blocks/index.html"), /code-tabs/);
 });
 

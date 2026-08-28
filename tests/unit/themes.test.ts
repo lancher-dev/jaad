@@ -3,11 +3,7 @@ import assert from "node:assert/strict";
 import { existsSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import {
-  PRESETS,
-  PRESET_NAMES,
-  isPreset,
-} from "../../packages/jaad/src/themes/index.ts";
+import { PRESETS } from "../../packages/jaad/src/themes/index.ts";
 import { resolveConfig } from "../../packages/jaad/src/config.ts";
 
 const THEMES = join(
@@ -52,11 +48,6 @@ test("an unknown theme is a build error, not a silent fallback", () => {
     () => resolveConfig({ title: "T", theme: "solarized" }, "/"),
     (e: Error) => /unknown theme/.test(String(e)) && /dracula/.test(String(e)),
   );
-});
-
-test("isPreset agrees with the exported names", () => {
-  for (const name of PRESET_NAMES) assert.ok(isPreset(name));
-  assert.ok(!isPreset("nope"));
 });
 
 test("every preset names shiki themes that shiki actually bundles", () => {

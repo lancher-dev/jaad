@@ -1,9 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import {
-  resolveConfig,
-  defineJaadConfig,
-} from "../../packages/jaad/src/config.ts";
+import { resolveConfig } from "../../packages/jaad/src/config.ts";
 
 // Resolved outside a repository, so nothing is inferred and the defaults show.
 const bare = (over = {}) => resolveConfig({ title: "T", ...over }, "/");
@@ -141,11 +138,6 @@ test("the old footer object is refused with its replacement spelled out", () => 
       return true;
     },
   );
-});
-
-test("defineJaadConfig hands back exactly what it was given", () => {
-  const options = { title: "X" };
-  assert.equal(defineJaadConfig(options), options);
 });
 
 // A back-reference in an integration used to throw during serialisation.

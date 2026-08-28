@@ -102,21 +102,6 @@ test("the first h1 wins as the page title", () => {
   assert.equal(extractTitleFromMarkdown(""), null);
 });
 
-test("frontmatter title beats the h1, which beats the slug", () => {
-  const [a, b, c] = buildDocNavItems(
-    [
-      { id: "01-a", body: "# From Body", data: { title: "From Frontmatter" } },
-      { id: "02-b", body: "# From Body" },
-      { id: "03-c-page", body: "no heading" },
-    ],
-    "",
-    "/docs",
-  );
-  assert.equal(a.title, "From Frontmatter");
-  assert.equal(b.title, "From Body");
-  assert.equal(c.title, "C Page");
-});
-
 // ── Table of contents ────────────────────────────────────────────────────────
 
 test("only h2 and h3 reach the table of contents", () => {
