@@ -109,3 +109,29 @@ test("the chrome is measured against the content, not against a second number", 
     "the header does not use the shared measure",
   );
 });
+
+test("docs and base pages share one padding token", () => {
+  const css = allCss().replace(/\s+/g, "");
+
+  for (const rule of [".jaad-main", ".docs-page-main"]) {
+    assert.match(
+      css,
+      new RegExp(
+        `\\${rule}\\{[^}]*padding-inline:var\\(--jaad-page-padding\\)`,
+      ),
+      `${rule} does not read the padding token`,
+    );
+  }
+
+  // The page nav takes its width from the main it sits in, not its own number.
+  const nav = page("docs/overview/index.html")
+    .match(/<nav[^>]*>/g)
+    ?.find((tag) => tag.includes('aria-label="Page navigation"'));
+
+  assert.ok(nav, "the page navigation is missing from the built page");
+  assert.doesNotMatch(
+    nav,
+    /max-w-/,
+    "the page nav pins itself to an absolute width again",
+  );
+});

@@ -6,6 +6,25 @@
   justify-content: center;
 }
 
+.docs-page-main {
+  flex: 1;
+  margin: 2rem 1rem;
+}
+
+@media (min-width: 768px) {
+  .docs-page-main {
+    margin-block: 4rem;
+    padding-inline: var(--jaad-page-padding);
+  }
+}
+
+@media (min-width: 1024px) {
+  .docs-page-main {
+    margin-bottom: 8rem;
+    padding-inline: calc(var(--jaad-page-padding) * 2);
+  }
+}
+
 .docs-main {
   width: 100%;
   max-width: var(--jaad-content-width);

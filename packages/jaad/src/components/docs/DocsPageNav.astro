@@ -19,7 +19,7 @@ const nextPage = current < items.length - 1 ? items[current + 1] : null;
 
 {
   (previousPage || nextPage) && (
-    <nav class="mx-auto max-w-3xl px-4 py-8" aria-label="Page navigation">
+    <nav class="py-8" aria-label="Page navigation">
       <div class="flex items-center justify-between gap-4">
         {previousPage && previousPage.title ? (
           <a
