@@ -246,7 +246,7 @@ async function collectAnswers(args) {
   if (args.install === null) {
     const install = answer(
       await p.confirm({
-        message: `Run ${packageManager()} install?`,
+        message: `Install dependencies now?`,
         initialValue: true,
       }),
     );
