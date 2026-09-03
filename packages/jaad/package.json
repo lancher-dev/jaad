@@ -1,6 +1,6 @@
 {
   "name": "@lancher-dev/jaad",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Turn a folder of markdown into a documentation site. An Astro integration.",
   "type": "module",
   "license": "MIT",

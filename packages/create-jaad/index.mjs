@@ -6,7 +6,7 @@ import { writeFileSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
 
 // Bumped together with the package they install.
-const JAAD = "^0.5.0";
+const JAAD = "^0.6.0";
 const ASTRO = "7.2.10";
 const TEMPLATES = ["docs", "site"];
 
