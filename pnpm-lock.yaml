@@ -25,7 +25,7 @@ importers:
         version: 10.1.8(eslint@10.9.1(jiti@2.7.0))
       eslint-plugin-astro:
         specifier: ^3.1.0
-        version: 3.1.0(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@typescript-eslint/parser@8.69.0(eslint@10.9.1(jiti@2.7.0))(typescript@6.0.3))(eslint@10.9.1(jiti@2.7.0))(typescript-eslint@8.69.0(eslint@10.9.1(jiti@2.7.0))(typescript@6.0.3))
+        version: 3.1.0(@typescript-eslint/parser@8.69.0(eslint@10.9.1(jiti@2.7.0))(typescript@6.0.3))(eslint@10.9.1(jiti@2.7.0))(typescript-eslint@8.69.0(eslint@10.9.1(jiti@2.7.0))(typescript@6.0.3))
       globals:
         specifier: ^17.11.0
         version: 17.12.0
@@ -64,13 +64,13 @@ importers:
         version: 3.7.4
       '@lancher-dev/jaamd':
         specifier: ^0.8.1
-        version: 0.8.1(astro@7.2.10(@astrojs/markdown-remark@7.3.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@26.4.1)(jiti@2.7.0)(yaml@2.9.0))
+        version: 0.8.1(astro@7.3.1(@astrojs/markdown-remark@7.3.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@26.4.1)(jiti@2.7.0)(yaml@2.9.0))
       '@tailwindcss/vite':
         specifier: ^4.3.3
         version: 4.3.3(vite@8.2.2(@types/node@26.4.1)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))
       astro:
         specifier: '>=7.0.0 <8.0.0'
-        version: 7.2.10(@astrojs/markdown-remark@7.3.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@26.4.1)(jiti@2.7.0)(yaml@2.9.0)
+        version: 7.3.1(@astrojs/markdown-remark@7.3.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@26.4.1)(jiti@2.7.0)(yaml@2.9.0)
       github-slugger:
         specifier: ^2.0.0
         version: 2.0.0
@@ -84,8 +84,8 @@ importers:
         specifier: workspace:*
         version: link:../packages/jaad
       astro:
-        specifier: ^7.2.0
-        version: 7.2.10(@astrojs/markdown-remark@7.3.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@26.4.1)(jiti@2.7.0)(yaml@2.9.0)
+        specifier: ^7.3.1
+        version: 7.3.1(@astrojs/markdown-remark@7.3.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@26.4.1)(jiti@2.7.0)(yaml@2.9.0)
       sharp:
         specifier: ^0.35.3
         version: 0.35.4(@types/node@26.4.1)
@@ -1159,8 +1159,8 @@ packages:
     resolution: {integrity: sha512-lS5qlx401Q1ZUhQ44XQnM4uT2qI6hA0H+vstrd841xGVxunFOs0ut3DWJGYHK1l7mxRxQdDi1j53pfE7/AyGlA==}
     engines: {node: ^22.22.3 || ^24.16.0 || >=26.3.0}
 
-  astro@7.2.10:
-    resolution: {integrity: sha512-uPtD+nK6kQXugyq4kiMPwj9OI3Sae6HSerA5X+fuv2CPaDwxmokFPPFlGRKIAXH0QAKu+zot2q6yrLG61wFmqg==}
+  astro@7.3.1:
+    resolution: {integrity: sha512-A/bJYHtc6n0UAdROY9W948fW6lX0pnUA+JWKW+IGCXRyDIGN2MsXC0OlS8onZGJjr+sv8htemwOc9W5PBRXCkw==}
     engines: {node: '>=22.12.0', npm: '>=9.6.5', pnpm: '>=7.1.0'}
     hasBin: true
     peerDependencies:
@@ -2878,6 +2878,14 @@ snapshots:
   '@astrojs/compiler-binding-linux-x64-musl@0.4.0':
     optional: true
 
+  '@astrojs/compiler-binding-wasm32-wasi@0.4.0':
+    dependencies:
+      '@napi-rs/wasm-runtime': 1.2.3
+    transitivePeerDependencies:
+      - '@emnapi/core'
+      - '@emnapi/runtime'
+    optional: true
+
   '@astrojs/compiler-binding-wasm32-wasi@0.4.0(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)':
     dependencies:
       '@napi-rs/wasm-runtime': 1.2.3(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)
@@ -2892,6 +2900,21 @@ snapshots:
   '@astrojs/compiler-binding-win32-x64-msvc@0.4.0':
     optional: true
 
+  '@astrojs/compiler-binding@0.4.0':
+    optionalDependencies:
+      '@astrojs/compiler-binding-darwin-arm64': 0.4.0
+      '@astrojs/compiler-binding-darwin-x64': 0.4.0
+      '@astrojs/compiler-binding-linux-arm64-gnu': 0.4.0
+      '@astrojs/compiler-binding-linux-arm64-musl': 0.4.0
+      '@astrojs/compiler-binding-linux-x64-gnu': 0.4.0
+      '@astrojs/compiler-binding-linux-x64-musl': 0.4.0
+      '@astrojs/compiler-binding-wasm32-wasi': 0.4.0
+      '@astrojs/compiler-binding-win32-arm64-msvc': 0.4.0
+      '@astrojs/compiler-binding-win32-x64-msvc': 0.4.0
+    transitivePeerDependencies:
+      - '@emnapi/core'
+      - '@emnapi/runtime'
+
   '@astrojs/compiler-binding@0.4.0(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)':
     optionalDependencies:
       '@astrojs/compiler-binding-darwin-arm64': 0.4.0
@@ -2903,6 +2926,13 @@ snapshots:
       '@astrojs/compiler-binding-wasm32-wasi': 0.4.0(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)
       '@astrojs/compiler-binding-win32-arm64-msvc': 0.4.0
       '@astrojs/compiler-binding-win32-x64-msvc': 0.4.0
+    transitivePeerDependencies:
+      - '@emnapi/core'
+      - '@emnapi/runtime'
+
+  '@astrojs/compiler-rs@0.4.0':
+    dependencies:
+      '@astrojs/compiler-binding': 0.4.0
     transitivePeerDependencies:
       - '@emnapi/core'
       - '@emnapi/runtime'
@@ -3364,10 +3394,10 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.6.0
 
-  '@lancher-dev/jaamd@0.8.1(astro@7.2.10(@astrojs/markdown-remark@7.3.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@26.4.1)(jiti@2.7.0)(yaml@2.9.0))':
+  '@lancher-dev/jaamd@0.8.1(astro@7.3.1(@astrojs/markdown-remark@7.3.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@26.4.1)(jiti@2.7.0)(yaml@2.9.0))':
     dependencies:
       '@astrojs/markdown-remark': 7.3.0
-      astro: 7.2.10(@astrojs/markdown-remark@7.3.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@26.4.1)(jiti@2.7.0)(yaml@2.9.0)
+      astro: 7.3.1(@astrojs/markdown-remark@7.3.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@26.4.1)(jiti@2.7.0)(yaml@2.9.0)
       remark-directive: 4.0.0
       unist-util-visit: 5.1.0
     transitivePeerDependencies:
@@ -3402,6 +3432,11 @@ snapshots:
       vfile: 6.0.3
     transitivePeerDependencies:
       - supports-color
+
+  '@napi-rs/wasm-runtime@1.2.3':
+    dependencies:
+      '@tybys/wasm-util': 0.10.3
+    optional: true
 
   '@napi-rs/wasm-runtime@1.2.3(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)':
     dependencies:
@@ -3821,9 +3856,9 @@ snapshots:
 
   astring@1.9.0: {}
 
-  astro-eslint-parser@3.1.0(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3):
+  astro-eslint-parser@3.1.0:
     dependencies:
-      '@astrojs/compiler-rs': 0.4.0(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)
+      '@astrojs/compiler-rs': 0.4.0
       '@typescript-eslint/scope-manager': 8.69.0
       '@typescript-eslint/types': 8.69.0
       debug: 4.4.3
@@ -3837,7 +3872,7 @@ snapshots:
       - '@emnapi/runtime'
       - supports-color
 
-  astro@7.2.10(@astrojs/markdown-remark@7.3.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@26.4.1)(jiti@2.7.0)(yaml@2.9.0):
+  astro@7.3.1(@astrojs/markdown-remark@7.3.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@26.4.1)(jiti@2.7.0)(yaml@2.9.0):
     dependencies:
       '@astrojs/compiler-rs': 0.4.0(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)
       '@astrojs/internal-helpers': 0.11.0
@@ -4134,12 +4169,12 @@ snapshots:
     dependencies:
       eslint: 10.9.1(jiti@2.7.0)
 
-  eslint-plugin-astro@3.1.0(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@typescript-eslint/parser@8.69.0(eslint@10.9.1(jiti@2.7.0))(typescript@6.0.3))(eslint@10.9.1(jiti@2.7.0))(typescript-eslint@8.69.0(eslint@10.9.1(jiti@2.7.0))(typescript@6.0.3)):
+  eslint-plugin-astro@3.1.0(@typescript-eslint/parser@8.69.0(eslint@10.9.1(jiti@2.7.0))(typescript@6.0.3))(eslint@10.9.1(jiti@2.7.0))(typescript-eslint@8.69.0(eslint@10.9.1(jiti@2.7.0))(typescript@6.0.3)):
     dependencies:
       '@eslint-community/eslint-utils': 4.10.1(eslint@10.9.1(jiti@2.7.0))
       '@jridgewell/sourcemap-codec': 1.6.0
       '@typescript-eslint/types': 8.69.0
-      astro-eslint-parser: 3.1.0(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)
+      astro-eslint-parser: 3.1.0
       eslint: 10.9.1(jiti@2.7.0)
       espree: 11.2.0
       globals: 17.12.0

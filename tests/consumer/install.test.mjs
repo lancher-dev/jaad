@@ -61,7 +61,7 @@ describe("a project that installed the published tarball", () => {
           private: true,
           type: "module",
           dependencies: {
-            astro: "7.2.10",
+            astro: "7.3.1",
             "@lancher-dev/jaad": tarball,
           },
         },

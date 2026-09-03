@@ -7,7 +7,7 @@ import { basename, dirname, join, resolve } from "node:path";
 
 // Bumped together with the package they install.
 const JAAD = "^0.6.0";
-const ASTRO = "7.2.10";
+const ASTRO = "^7.3.1";
 const TEMPLATES = ["docs", "site"];
 
 const HELP = `Usage: npm create @lancher-dev/jaad@latest [directory] [options]
