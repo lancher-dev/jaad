@@ -4,6 +4,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readdirSync, readFileSync } from "node:fs";
 import { writeFileSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
+import { styleText } from "node:util";
 
 // Bumped together with the package they install.
 const JAAD = "^0.6.0";
@@ -186,7 +187,12 @@ async function collectAnswers(args) {
     }
   }
 
-  if (interactive) p.intro("Create JAAD");
+  if (interactive) {
+    process.stdout.write("\n");
+    p.intro(
+      `📚 ${styleText("cyan", "JAAD", { stream: process.stdout })} · Just Another Astro Docs — Write markdown. Get docs.`,
+    );
+  }
 
   if (!args.here && !args.dir) {
     const dir = answer(
@@ -387,8 +393,16 @@ async function main() {
     }
   }
 
-  const where = request.here ? "" : `cd ${request.dir} && `;
-  p.outro(`${where}${request.install ? "" : `${pm} install && `}${pm} run dev`);
+  const next = [];
+  if (!request.here) next.push(`cd ${request.dir}`);
+  if (!request.install) next.push(`${pm} install`);
+  next.push(`${pm} run dev`);
+
+  const start = written.includes("docs/01-introduction.md")
+    ? "docs/01-introduction.md"
+    : "docs/";
+  p.note(`${next.join("\n")}\n\nStart writing in ${start}`, "Next steps");
+  p.outro("Happy documenting! ✨");
 }
 
 await main();
