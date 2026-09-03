@@ -16,9 +16,10 @@ docs/
   04-deployment.md
 ```
 
-The numbers control sidebar order. The first page owns `/`; later URLs remove
-the number prefix, so `02-markdown-reference.md` becomes
-`/markdown-reference`. Page titles come from the first heading in each file.
+The numbers control sidebar order. The first page owns the configured
+`routeBase`; later URLs remove the number prefix. With the default root route,
+`02-markdown-reference.md` becomes `/markdown-reference`. Page titles come from
+the first heading in each file.
 
 ## Chapter Organization
 

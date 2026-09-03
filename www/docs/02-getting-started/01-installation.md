@@ -5,16 +5,38 @@ JAAD is an [Astro](https://astro.build) integration. You add it to a project, po
 ## The short way
 
 ```bash
-npm create @lancher-dev/jaad@latest my-docs
+npm create @lancher-dev/jaad@latest
 ```
 
-That writes every file below for you and installs. If the repository you want to document already has a `docs/` folder, run it there instead:
+The CLI asks for the destination, template, title and whether to install. Choose
+`docs` for a documentation-only site at `/`, or `site` for a landing page at
+`/` with documentation at `/docs`.
+
+Flags pre-fill those answers, so a complete non-interactive invocation looks
+like this:
 
 ```bash
-npm create @lancher-dev/jaad@latest -- --here
+npm create @lancher-dev/jaad@latest my-docs -- --template docs --title "My Docs" --install
+```
+
+For a site with a landing page:
+
+```bash
+npm create @lancher-dev/jaad@latest my-site -- --template site --title "My Site" --install
+```
+
+If the repository already exists, use `--here` instead of a destination:
+
+```bash
+npm create @lancher-dev/jaad@latest -- --here --template site
 ```
 
 It adds JAAD to the project you already have, keeps your `package.json` as it is, and leaves your existing markdown alone.
+
+> [!NOTE]
+> In CI and other non-interactive environments every answer is required: a
+> destination or `--here`, `--template`, `--title`, and either `--install` or
+> `--no-install`.
 
 The rest of this page is the same thing by hand, which is worth reading once so you know what those files do.
 
@@ -98,9 +120,9 @@ If your markdown already lives somewhere else, point `docsDir` at it instead of 
 defineJaadConfig({ title: "My Project", docsDir: "./documentation" });
 ```
 
-The documentation is mounted at the site root. The first page in the sorted
-file structure opens at `/`; its named URL redirects there. To keep a landing
-page and mount the documentation at `/docs`, set `routeBase: "/docs"`.
+With the `docs` template, the first page in the sorted file structure opens at
+`/`; its named URL redirects there. The `site` template generates a minimal
+landing page and sets `routeBase: "/docs"` for you.
 
 ## Run it
 

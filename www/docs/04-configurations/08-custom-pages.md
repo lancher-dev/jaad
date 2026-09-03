@@ -2,6 +2,13 @@
 
 Anything outside `docs/` is an ordinary Astro page in `src/pages/`. JAAD exports the layout its own pages use, so a landing page, a changelog or a pricing page gets the same header, footer, fonts and theme without you rebuilding them.
 
+For a new project, the `site` template creates the initial landing page and
+mounts the documentation at `/docs`:
+
+```bash
+npm create @lancher-dev/jaad@latest my-site -- --template site
+```
+
 ```astro
 ---
 // src/pages/index.astro
