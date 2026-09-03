@@ -6,7 +6,7 @@ import { basename, dirname, join, resolve } from "node:path";
 import { createInterface } from "node:readline/promises";
 
 // Bumped together with the package they install.
-const JAAD = "^0.4.0";
+const JAAD = "^0.5.0";
 const ASTRO = "^7.2.0";
 
 const HELP = `Usage: npm create @lancher-dev/jaad@latest [directory] [options]
