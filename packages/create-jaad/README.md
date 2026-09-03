@@ -1,22 +1,13 @@
 <h1 align="center">create-jaad</h1>
-<p align="center">Scaffold a <b>JAAD</b> documentation site, or add one to a repository that already has a <code>docs</code> folder.</p>
+<p align="center">Scaffold a <b>JAAD</b> documentation site, or add documentation to a larger Astro site.</p>
 
-## A new site
+## How to use
 
 ```bash
 npm create @lancher-dev/jaad@latest my-docs
 ```
 
 Writes five files, installs, and leaves you with `npm run dev`.
-
-```
-my-docs/
-  package.json
-  astro.config.mjs        one line
-  jaad.config.ts          the only file you open
-  src/content.config.ts   one line
-  docs/01-introduction.md
-```
 
 ## A repository you already have
 
@@ -32,11 +23,18 @@ Nothing is ever overwritten: a file that exists is reported as kept.
 
 ## Options
 
-|                   |                                                                    |
-| ----------------- | ------------------------------------------------------------------ |
-| `--here`          | Use the current directory instead of a new one.                    |
-| `--title <title>` | Site title. Defaults to the package name, then the directory name. |
-| `--no-install`    | Write the files and stop.                                          |
+|                           |                                                         |
+| ------------------------- | ------------------------------------------------------- |
+| `[directory]`             | Create the project in this directory.                   |
+| `--here`                  | Use the current directory instead of a new one.         |
+| `--template <docs\|site>` | Put docs at `/`, or add a landing with docs at `/docs`. |
+| `--title <title>`         | Set the site title.                                     |
+| `--install`               | Install dependencies after writing the files.           |
+| `--no-install`            | Write the files and stop.                               |
+
+Interactive prompts offer useful defaults. In CI and other non-interactive
+environments every answer must be provided explicitly: a directory or
+`--here`, a template, a title, and either `--install` or `--no-install`.
 
 ## Documentation
 
