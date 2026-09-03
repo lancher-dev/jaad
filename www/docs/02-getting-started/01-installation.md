@@ -84,10 +84,10 @@ Create a `docs/` folder in the project root and put a markdown file in it.
 
 ```
 docs/
-  01-introduction.md   → /docs/introduction
-  02-guide.md          → /docs/guide
+  01-introduction.md   → /
+  02-guide.md          → /guide
   03-advanced/         → chapter "Advanced"
-    01-config.md       → /docs/advanced/config
+    01-config.md       → /advanced/config
 ```
 
 Numbers set the order and are stripped from the URL. Folders become chapters. The first `# Heading` in each file becomes the page title. No frontmatter is required, and there is no sidebar to configure.
@@ -98,7 +98,9 @@ If your markdown already lives somewhere else, point `docsDir` at it instead of 
 defineJaadConfig({ title: "My Project", docsDir: "./documentation" });
 ```
 
-The documentation is mounted at `/docs`. To open it at the site root instead, see [opening the docs at the site root](/docs/configurations/reference#opening-the-docs-at-the-site-root).
+The documentation is mounted at the site root. The first page in the sorted
+file structure opens at `/`; its named URL redirects there. To keep a landing
+page and mount the documentation at `/docs`, set `routeBase: "/docs"`.
 
 ## Run it
 
@@ -118,4 +120,4 @@ yarn dev
 
 :::
 
-The site starts at `http://localhost:4321`, with the documentation at `/docs`. Saving a markdown file reloads the browser.
+The site starts at `http://localhost:4321`, with the documentation at `/`. Saving a markdown file reloads the browser.

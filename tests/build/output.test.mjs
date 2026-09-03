@@ -78,11 +78,10 @@ test("every docs page carries its search index and llms entry", () => {
 
 test("the sidebar follows the numeric prefixes", () => {
   const links = [
-    ...page("docs/index.html").matchAll(/href="(\/docs\/[^"#]*)"/g),
+    ...page("docs/index.html").matchAll(/href="(\/docs(?:\/[^"#]*)?)"/g),
   ].map((m) => m[1]);
 
-  const first = links.indexOf("/docs/overview");
-  assert.equal(first, 0, "00-overview should lead");
+  assert.equal(links[0], "/docs", "the opening page should own routeBase");
   assert.ok(
     links.indexOf("/docs/getting-started/installation") <
       links.indexOf("/docs/markdown/reference"),
@@ -133,7 +132,7 @@ test("docs and base pages share one padding token", () => {
   }
 
   // The page nav takes its width from the main it sits in, not its own number.
-  const nav = page("docs/overview/index.html")
+  const nav = page("docs/getting-started/installation/index.html")
     .match(/<nav[^>]*>/g)
     ?.find((tag) => tag.includes('aria-label="Page navigation"'));
 

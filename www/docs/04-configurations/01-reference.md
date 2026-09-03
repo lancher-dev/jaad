@@ -31,38 +31,25 @@ Both are handed to Astro for you.
 
 ## Content
 
-| Option      | Type     | Default    | Notes                                                                                                                             |
-| ----------- | -------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| `docsDir`   | `string` | `"./docs"` | Folder to read markdown from.                                                                                                     |
-| `routeBase` | `string` | `"/docs"`  | Where the documentation is mounted. Use `"/"` for a docs-only site. Slashes are normalised, so `"docs"` and `"/docs/"` both work. |
+| Option      | Type     | Default    | Notes                                                                                             |
+| ----------- | -------- | ---------- | ------------------------------------------------------------------------------------------------- |
+| `docsDir`   | `string` | `"./docs"` | Folder to read markdown from.                                                                     |
+| `routeBase` | `string` | `"/"`      | Where the documentation is mounted. Slashes are normalised, so `"docs"` and `"/docs/"` both work. |
 
-### Opening the docs at the site root
+### Adding a landing page
 
-Two shapes, depending on whether you want a landing page at all.
+By default the documentation owns the site root, and the first sorted page is
+rendered at `/`. No `src/pages/index.astro` is needed.
 
-**A documentation site and nothing else.** Mount at the root and delete the page
-Astro's template left behind, otherwise it keeps `/` for itself:
-
-```ts
-defineJaadConfig({ title: "My Project", routeBase: "/" });
-```
-
-```bash
-rm src/pages/index.astro
-```
-
-Leave that file in place and Astro warns that `/` is defined twice, then serves
-the template page. The documentation is still built, just not at the root.
-
-**A landing page that leads to the docs.** Keep the default mount and send the
-root to it. No new option: this is the `astro` valve.
+To give `/` to a landing page, mount the documentation below it:
 
 ```ts
-defineJaadConfig({
-  title: "My Project",
-  astro: { redirects: { "/": "/docs" } },
-});
+defineJaadConfig({ title: "My Project", routeBase: "/docs" });
 ```
+
+Then create an ordinary `src/pages/index.astro`. Leaving an index page in place
+while the docs are mounted at `/` produces a route conflict, and JAAD warns with
+the configuration to use.
 
 ## Links
 

@@ -2,17 +2,18 @@
 import { render } from "astro:content";
 import { getSortedDocsPages } from "../collection.ts";
 import DocsPage from "../components/docs/DocsPage.astro";
+import { withDeploymentBase } from "../urls.ts";
 
 const sortedPages = await getSortedDocsPages();
 
 const firstPage = sortedPages[0];
 if (!firstPage) {
-  return Astro.redirect("/404");
+  return Astro.redirect(withDeploymentBase("/404", import.meta.env.BASE_URL));
 }
 
 const { Content } = await render(firstPage);
 ---
 
-<DocsPage entry={firstPage}>
+<DocsPage entry={firstPage} {sortedPages}>
   <Content />
 </DocsPage>

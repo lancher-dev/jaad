@@ -4,35 +4,45 @@ import {
   getCleanSlug,
   parseDocCollectionId,
   docTitle,
+  extractHeadingsFromMarkdown,
 } from "../../utils/docs.ts";
+import { buildDocsNavigation } from "../../navigation.ts";
 import type { DocsEntry } from "../../@types/docs.ts";
 import DocsLayout from "../../layouts/Docs.astro";
 import DocsMobileNav from "./DocsMobileNav.astro";
 import DocsPageNav from "./DocsPageNav.astro";
 import Breadcrumbs from "./Breadcrumbs.astro";
 import PageActions from "./PageActions.astro";
+import config from "virtual:jaad/config";
 
 interface Props {
   entry: DocsEntry;
+  sortedPages: DocsEntry[];
   /** Left out on the opening page, whose title is the site name alone. */
   headTitle?: string;
 }
 
-const { entry, headTitle } = Astro.props;
+const { entry, sortedPages, headTitle } = Astro.props;
 
 const cleanSlug = getCleanSlug(entry.id);
 const { chapter } = parseDocCollectionId(entry.id);
 const title = docTitle(entry);
+const headings = extractHeadingsFromMarkdown(entry.body || "");
+const navigation = buildDocsNavigation(sortedPages, entry.id, {
+  docsBase: config.docsBase,
+  deploymentBase: import.meta.env.BASE_URL,
+});
 ---
 
 <DocsLayout
   title={headTitle}
-  currentSlug={cleanSlug}
   chapter={chapter}
   entry={entry}
+  headings={headings}
+  navigationSections={navigation.sections}
 >
   <main class="docs-page-main">
-    <DocsMobileNav currentSlug={cleanSlug} entry={entry} />
+    <DocsMobileNav sections={navigation.sections} headings={headings} />
 
     <article>
       <Breadcrumbs chapter={chapter} title={title} />
@@ -46,6 +56,9 @@ const title = docTitle(entry);
       </MarkdownContent>
     </article>
 
-    <DocsPageNav id={entry.id} />
+    <DocsPageNav
+      previousPage={navigation.previousPage}
+      nextPage={navigation.nextPage}
+    />
   </main>
 </DocsLayout>

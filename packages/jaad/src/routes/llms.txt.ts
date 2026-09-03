@@ -8,18 +8,25 @@ import {
   formatChapterTitle,
 } from "../utils/docs.ts";
 import config from "virtual:jaad/config";
+import { docsMarkdownHref } from "../urls.ts";
 
 /** Plain-text index of every page, per the llms.txt convention. */
 export const GET: APIRoute = async ({ site }) => {
   const sortedPages = await getSortedDocsPages();
-
-  const base = site ? site.href.replace(/\/$/, "") : "";
 
   interface Row {
     title: string;
     slug: string;
     description: string | null;
   }
+
+  const markdownHref = (slug: string): string => {
+    const href = docsMarkdownHref(slug, {
+      docsBase: config.docsBase,
+      deploymentBase: import.meta.env.BASE_URL,
+    });
+    return site ? new URL(href, site.origin).href : href;
+  };
 
   const standalone: Row[] = [];
   const chapterOrder: string[] = [];
@@ -47,7 +54,7 @@ export const GET: APIRoute = async ({ site }) => {
   }
 
   const toLine = (row: Row): string =>
-    `- [${row.title}](${base}${config.docsBase}/${row.slug}.md)${row.description ? `: ${row.description}` : ""}`;
+    `- [${row.title}](${markdownHref(row.slug)})${row.description ? `: ${row.description}` : ""}`;
 
   const sections: string[] = [];
   if (standalone.length > 0) {

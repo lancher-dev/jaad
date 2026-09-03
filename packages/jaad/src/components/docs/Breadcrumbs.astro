@@ -1,6 +1,7 @@
 ---
 import { formatChapterTitle } from "../../utils/docs.ts";
 import config from "virtual:jaad/config";
+import { docsPageHref } from "../../urls.ts";
 
 interface Props {
   chapter?: string;
@@ -10,17 +11,20 @@ interface Props {
 const { chapter, title } = Astro.props;
 const chapterTitle = formatChapterTitle(chapter);
 
-const rootLabel =
-  formatChapterTitle(config.docsBase.replace(/^\//, "")) ?? "Docs";
+const rootSegment = config.docsBase.split("/").filter(Boolean).at(-1);
+const rootLabel = formatChapterTitle(rootSegment) ?? "Docs";
+const rootHref = docsPageHref("", {
+  docsBase: config.docsBase,
+  deploymentBase: import.meta.env.BASE_URL,
+});
 ---
 
 <nav
   aria-label="Breadcrumb"
   class="text-foreground-muted mb-4 flex items-center gap-1.5 text-xs"
 >
-  <a
-    href={config.docsBase || "/"}
-    class="hover:text-foreground-bright no-underline">{rootLabel}</a
+  <a href={rootHref} class="hover:text-foreground-bright no-underline"
+    >{rootLabel}</a
   >
   {
     chapterTitle && (

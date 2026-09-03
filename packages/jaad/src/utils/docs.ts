@@ -1,10 +1,6 @@
 import { slug as githubSlug } from "github-slugger";
 import { ucfirst } from "./helpers.ts";
-import type {
-  DocsHeadings,
-  DocsNavItem,
-  ParsedDocsCollectionId,
-} from "../@types/docs.ts";
+import type { DocsHeadings, ParsedDocsCollectionId } from "../@types/docs.ts";
 
 /** Matches a numeric order prefix, e.g. "01-" or "123-" */
 const NUMBERED_PREFIX_RE = /^(\d+)-(.+)$/;
@@ -73,6 +69,23 @@ export function getCleanSlug(id: string): string {
     .join("/");
 }
 
+/** Match the ids produced by Astro's glob loader, independently of the OS. */
+export function getDocCollectionId(filePath: string): string {
+  return filePath
+    .replace(/\.md$/, "")
+    .split(/[\\/]/)
+    .map((part) => githubSlug(part))
+    .join("/");
+}
+
+/** The opening page owns routeBase; every later page keeps its named slug. */
+export function getCanonicalDocSlug(
+  page: { id: string },
+  index: number,
+): string {
+  return index === 0 ? "" : getCleanSlug(page.id);
+}
+
 /** Decodes percent-escapes, so "detail_%26_summary" → "Detail & Summary". */
 export function slugToTitle(slug: string): string {
   return slug
@@ -137,25 +150,6 @@ export function docTitle(page: DocsPageLike): string {
   );
 }
 
-/** `base` is the mount point, without a trailing slash. */
-export function buildDocNavItems<T extends DocsPageLike>(
-  sortedPages: T[],
-  currentSlug: string,
-  base = "",
-): DocsNavItem[] {
-  return sortedPages.map((page) => {
-    const parsed = parseDocCollectionId(page.id);
-    const cleanSlug = getCleanSlug(page.id);
-    return {
-      title: docTitle(page),
-      chapter: parsed.chapter,
-      primaryOrder: parsed.orderChapter ?? parsed.order,
-      href: `${base}/${cleanSlug}`,
-      isActive: currentSlug === cleanSlug,
-    };
-  });
-}
-
 // ── Search index ────────────────────────────────────────────────────────────
 
 export interface DocsSearchEntry {
@@ -210,42 +204,10 @@ export function extractDescription(
 export function buildSearchIndex<T extends DocsPageLike>(
   sortedPages: T[],
 ): DocsSearchEntry[] {
-  return sortedPages.map((page) => ({
+  return sortedPages.map((page, index) => ({
     title: docTitle(page),
-    slug: getCleanSlug(page.id),
+    slug: getCanonicalDocSlug(page, index),
     chapter: formatChapterTitle(parseDocCollectionId(page.id).chapter),
     body: stripMarkdown(page.body || ""),
   }));
-}
-
-export type NavSection =
-  | { type: "page"; order: number; item: DocsNavItem }
-  | { type: "chapter"; order: number; chapter: string; items: DocsNavItem[] };
-
-/** Root pages and chapters interleaved by their number. */
-export function groupNavByChapter(items: DocsNavItem[]): NavSection[] {
-  const chapters = new Map<string, Extract<NavSection, { type: "chapter" }>>();
-  const sections: NavSection[] = [];
-
-  for (const item of items) {
-    if (!item.chapter) {
-      sections.push({ type: "page", order: item.primaryOrder, item });
-      continue;
-    }
-
-    let chapter = chapters.get(item.chapter);
-    if (!chapter) {
-      chapter = {
-        type: "chapter",
-        order: item.primaryOrder,
-        chapter: item.chapter,
-        items: [],
-      };
-      chapters.set(item.chapter, chapter);
-      sections.push(chapter);
-    }
-    chapter.items.push(item);
-  }
-
-  return sections.sort((a, b) => a.order - b.order);
 }

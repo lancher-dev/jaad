@@ -9,7 +9,8 @@ test("title is the only thing you must supply", () => {
   const config = bare();
   assert.equal(config.title, "T");
   assert.equal(config.docsDir, "./docs");
-  assert.equal(config.routeBase, "/docs");
+  assert.equal(config.routeBase, "/");
+  assert.equal(config.docsBase, "");
   assert.equal(config.lang, "en");
   assert.deepEqual(config.nav, []);
   assert.deepEqual(config.social, {});

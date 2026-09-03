@@ -1,18 +1,19 @@
-import { before, describe, test } from "node:test";
+import { after, before, describe, test } from "node:test";
 import assert from "node:assert/strict";
-import { execFileSync } from "node:child_process";
-import { mkdtempSync, cpSync, writeFileSync, readFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { cpSync, writeFileSync, readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { walk, packageClasses, missingFrom } from "../dist.mjs";
+import {
+  cleanupTemporaryDirectories,
+  packPackage,
+  run,
+  temporaryDirectory,
+} from "./helpers.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "..", "..");
 const PKG = join(ROOT, "packages", "jaad");
-
-const run = (cmd, args, cwd) =>
-  execFileSync(cmd, args, { cwd, encoding: "utf8", stdio: "pipe" });
 
 /**
  * Captures the contents of a directory for later assertion.
@@ -48,12 +49,9 @@ describe("a project that installed the published tarball", () => {
   let remounted;
 
   before(() => {
-    const tarball = run("npm", ["pack", "--pack-destination", tmpdir()], PKG)
-      .trim()
-      .split("\n")
-      .pop();
+    const tarball = packPackage(PKG);
 
-    project = mkdtempSync(join(tmpdir(), "jaad-consumer-"));
+    project = temporaryDirectory("jaad-consumer-");
     cpSync(join(HERE, "fixture"), project, { recursive: true });
     writeFileSync(
       join(project, "package.json"),
@@ -64,7 +62,7 @@ describe("a project that installed the published tarball", () => {
           type: "module",
           dependencies: {
             astro: "^7.2.0",
-            "@lancher-dev/jaad": join(tmpdir(), tarball),
+            "@lancher-dev/jaad": tarball,
           },
         },
         null,
@@ -76,15 +74,17 @@ describe("a project that installed the published tarball", () => {
     run("npx", ["astro", "build"], project);
     built = snapshot(join(project, "dist"));
 
-    // routeBase moves the routes; every internal link has to follow, which is
-    // what silently broke before. `appearance` is pinned in the same pass.
+    // A landing-page site opts into nested docs. Astro's deployment base and
+    // every JAAD-owned URL have to move together.
     writeFileSync(
       join(project, "jaad.config.ts"),
       `import { defineJaadConfig } from "@lancher-dev/jaad";
 export default defineJaadConfig({
   site: "https://example.dev",
+  base: "/repo",
   title: "Consumer Test",
-  routeBase: "/",
+  routeBase: "/docs",
+  logo: "/logo.svg",
   appearance: "dark",
 });
 `,
@@ -93,20 +93,29 @@ export default defineJaadConfig({
     remounted = snapshot(join(project, "dist"));
   });
 
+  after(cleanupTemporaryDirectories);
+
   test("every documentation page is built, nesting included", () => {
-    assert.ok(built.pages.includes("/docs/index.html"), "no docs index");
-    assert.ok(built.pages.includes("/docs/getting-started/index.html"));
+    assert.ok(built.pages.includes("/index.html"), "no docs index");
+    assert.ok(built.pages.includes("/getting-started/index.html"));
     assert.ok(
-      built.pages.includes("/docs/guides/deep-dive/index.html"),
+      built.pages.includes("/guides/deep-dive/index.html"),
       "nested chapter page missing",
+    );
+
+    assert.match(
+      built.read("getting-started/index.html"),
+      /http-equiv="refresh"[^>]+url=\//,
+      "the opening page's named slug is not a redirect",
     );
 
     const index = JSON.parse(built.read("search-index.json"));
     assert.equal(index.length, 2, "the search index missed a page");
+    assert.equal(index[0].slug, "", "search does not point at the docs root");
   });
 
   test("the config reaches the head of the page", () => {
-    const home = built.read("docs/index.html");
+    const home = built.read("index.html");
     // `site` arrives through the wrapper, so urls are absolute.
     assert.match(home, /<link rel="canonical" href="https:\/\/example\.dev/);
     assert.match(home, /<img src="\/logo\.svg"/, "logo not rendered");
@@ -123,7 +132,7 @@ export default defineJaadConfig({
   });
 
   test("the repository is listed once, and the mobile menu does not repeat it", () => {
-    const home = built.read("docs/index.html");
+    const home = built.read("index.html");
     const menu = home.match(/<jaad-nav-mobile[\s\S]*?<\/jaad-nav-mobile>/)[0];
 
     assert.match(menu, />API</, "the mobile menu lost the nav links");
@@ -139,7 +148,7 @@ export default defineJaadConfig({
 
   test("an empty nav renders no mobile menu at all", () => {
     assert.doesNotMatch(
-      remounted.read("index.html"),
+      remounted.read("docs/index.html"),
       /<jaad-nav-mobile/,
       "the mobile menu is rendered with nothing to put in it",
     );
@@ -194,43 +203,65 @@ export default defineJaadConfig({
   });
 
   test("the theme switcher and its script ship by default", () => {
-    const home = built.read("docs/index.html");
+    const home = built.read("index.html");
     assert.match(home, /<jaad-theme-toggle>/, "no theme switcher by default");
     assert.match(home, /prefers-color-scheme/, "no theme script by default");
   });
 
-  test("routeBase remounts the routes and every link follows", () => {
+  test("routeBase nests the docs and every link follows Astro's base", () => {
     assert.ok(
-      remounted.pages.includes("/getting-started/index.html"),
+      remounted.pages.includes("/docs/getting-started/index.html"),
       "pages not remounted",
     );
-    assert.ok(remounted.pages.includes("/guides/deep-dive/index.html"));
-    // The whole point of routeBase "/": the docs index becomes the site index.
+    assert.ok(remounted.pages.includes("/docs/guides/deep-dive/index.html"));
     assert.ok(
-      remounted.pages.includes("/index.html"),
-      "no index at the new root",
+      remounted.pages.includes("/docs/index.html"),
+      "no index at the nested docs root",
     );
     assert.match(
-      remounted.read("index.html"),
+      remounted.read("docs/index.html"),
       /docs-sidebar-left/,
-      "the root page is not the docs index",
+      "the nested page is not the docs index",
     );
 
-    const page = remounted.read("getting-started/index.html");
+    const page = remounted.read("docs/guides/deep-dive/index.html");
     assert.match(
       page,
-      /href="\/guides\/deep-dive"/,
-      "sidebar still points at the old base",
+      /href="\/repo\/docs"/,
+      "the opening-page link missed the deployment base",
     );
-    assert.doesNotMatch(
+    assert.match(
       page,
-      /href="\/docs\//,
-      "a link still points under /docs after remounting",
+      /src="\/repo\/logo\.svg"/,
+      "a public asset missed the deployment base",
+    );
+    assert.match(
+      page,
+      /data-base="\/repo\/docs"/,
+      "search missed the docs and deployment bases",
+    );
+    assert.match(
+      page,
+      /data-md-href="\/repo\/docs\/guides\/deep-dive\.md"/,
+      "the raw markdown action missed the deployment base",
+    );
+    assert.match(
+      remounted.read("llms.txt"),
+      /https:\/\/example\.dev\/repo\/docs\/getting-started\.md/,
+      "llms.txt missed the deployment base",
+    );
+    assert.match(
+      remounted.read("docs/getting-started/index.html"),
+      /url=\/repo\/docs/,
+      "the opening-page redirect missed the deployment base",
     );
   });
 
   test("a pinned appearance drops the switcher and the script", () => {
-    for (const name of ["index.html", "getting-started/index.html"]) {
+    for (const name of [
+      "docs/index.html",
+      "docs/guides/deep-dive/index.html",
+    ]) {
       const html = remounted.read(name);
       assert.match(
         html,

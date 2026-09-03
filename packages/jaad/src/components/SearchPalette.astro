@@ -1,5 +1,6 @@
 ---
 import config from "virtual:jaad/config";
+import { docsPageHref } from "../urls.ts";
 
 interface Props {
   /** Whether this page is part of the docs, where search is available. */
@@ -7,7 +8,10 @@ interface Props {
 }
 
 const { inDocs = false } = Astro.props;
-const base = config.docsBase;
+const base = docsPageHref("", {
+  docsBase: config.docsBase,
+  deploymentBase: import.meta.env.BASE_URL,
+});
 
 const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
 ---
@@ -263,7 +267,9 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
 
     #go(slug: string) {
       this.#setOpen(false);
-      navigate(`${this.dataset.base ?? ""}/${slug}`);
+      const base = this.dataset.base ?? "/";
+      const prefix = base === "/" ? "" : base.replace(/\/$/, "");
+      navigate(slug ? `${prefix}/${slug}` : base);
     }
 
     #select(i: number) {

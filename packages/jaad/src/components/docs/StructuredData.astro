@@ -1,6 +1,7 @@
 ---
 import config from "virtual:jaad/config";
 import { formatChapterTitle } from "../../utils/docs.ts";
+import { docsPageHref } from "../../urls.ts";
 
 interface Props {
   title: string;
@@ -12,11 +13,16 @@ const { title, description, chapter } = Astro.props;
 
 // Relative ids are worthless to a crawler, so without `site` emit nothing.
 const site = Astro.site;
-const base = site ? config.docsBase : null;
+const base = site
+  ? docsPageHref("", {
+      docsBase: config.docsBase,
+      deploymentBase: import.meta.env.BASE_URL,
+    })
+  : null;
 
 const crumbs = base
   ? [
-      { name: config.title, url: new URL(base || "/", site!).href },
+      { name: config.title, url: new URL(base, Astro.url.origin).href },
       ...(chapter ? [{ name: formatChapterTitle(chapter)!, url: null }] : []),
       { name: title, url: Astro.url.href },
     ]

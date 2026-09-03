@@ -1,20 +1,12 @@
 ---
-import { getSortedDocsPages } from "../../collection.ts";
-import { buildDocNavItems } from "../../utils/docs.ts";
-import config from "virtual:jaad/config";
+import type { DocsNavItem } from "../../@types/docs.ts";
 
 interface Props {
-  id: string;
+  previousPage: DocsNavItem | null;
+  nextPage: DocsNavItem | null;
 }
 
-const { id } = Astro.props;
-
-const sortedPages = await getSortedDocsPages();
-const items = buildDocNavItems(sortedPages, "", config.docsBase);
-
-const current = sortedPages.findIndex((page) => page.id === id);
-const previousPage = current > 0 ? items[current - 1] : null;
-const nextPage = current < items.length - 1 ? items[current + 1] : null;
+const { previousPage, nextPage } = Astro.props;
 ---
 
 {

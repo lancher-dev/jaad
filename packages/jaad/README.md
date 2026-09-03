@@ -39,12 +39,14 @@ Then write markdown in `docs/`:
 
 ```
 docs/
-  01-introduction.md   → /docs/introduction
+  01-introduction.md   → / (and /introduction redirects here)
   02-guides/           → chapter "Guides"
-    01-setup.md        → /docs/guides/setup
+    01-setup.md        → /guides/setup
 ```
 
 Numbers set the order and are stripped from the URL. Folders become chapters. The first `# Heading` is the page title.
+Set `routeBase: "/docs"` when a landing page should own `/` and the
+documentation should live below it.
 
 ## Documentation
 

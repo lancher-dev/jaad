@@ -1,5 +1,6 @@
 ---
 import config from "virtual:jaad/config";
+import { withDeploymentBase } from "../urls.ts";
 
 const links = config.nav;
 ---
@@ -46,7 +47,7 @@ const links = config.nav;
             {links.map((link) => (
               <li>
                 <a
-                  href={link.href}
+                  href={withDeploymentBase(link.href, import.meta.env.BASE_URL)}
                   class="text-foreground-secondary hover:text-foreground-bright hover:bg-primary/5 block rounded-lg px-3 py-2 text-sm no-underline transition-colors"
                   {...(link.href.startsWith("http")
                     ? { target: "_blank", rel: "noopener noreferrer" }

@@ -1,24 +1,12 @@
 ---
-import { getSortedDocsPages } from "../../collection.ts";
-import {
-  formatChapterTitle,
-  buildDocNavItems,
-  groupNavByChapter,
-} from "../../utils/docs.ts";
-import config from "virtual:jaad/config";
+import type { NavSection } from "../../navigation.ts";
+import { formatChapterTitle } from "../../utils/docs.ts";
 
 interface Props {
-  currentSlug: string;
+  sections: NavSection[];
 }
 
-const { currentSlug } = Astro.props;
-
-const sortedPages = await getSortedDocsPages();
-
-const base = config.docsBase;
-const navItems = buildDocNavItems(sortedPages, currentSlug, base);
-
-const sections = groupNavByChapter(navItems);
+const { sections } = Astro.props;
 ---
 
 <aside

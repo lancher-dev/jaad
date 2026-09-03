@@ -1,5 +1,8 @@
 ---
 import Layout from "../layouts/Base.astro";
+import { withDeploymentBase } from "../urls.ts";
+
+const homeHref = withDeploymentBase("/", import.meta.env.BASE_URL);
 ---
 
 <Layout title="404" description="The page you're looking for doesn't exist.">
@@ -10,6 +13,6 @@ import Layout from "../layouts/Base.astro";
     <p class="mb-32 text-xl">
       <i>Oops!</i> The page you're looking for doesn't exist.
     </p>
-    <a href="/">Go back to the homepage</a>
+    <a href={homeHref}>Go back to the homepage</a>
   </div>
 </Layout>

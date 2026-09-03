@@ -4,16 +4,22 @@ import {
   parseDocCollectionId,
   sortDocPages,
   getCleanSlug,
+  getDocCollectionId,
+  getCanonicalDocSlug,
   slugToTitle,
   formatChapterTitle,
   extractTitleFromMarkdown,
   extractHeadingsFromMarkdown,
   stripMarkdown,
   extractDescription,
-  buildDocNavItems,
-  groupNavByChapter,
   docTitle,
 } from "../../packages/jaad/src/utils/docs.ts";
+import { buildDocsNavigation } from "../../packages/jaad/src/navigation.ts";
+
+const navigationItems = (navigation: ReturnType<typeof buildDocsNavigation>) =>
+  navigation.sections.flatMap((section) =>
+    section.type === "page" ? [section.item] : section.items,
+  );
 
 // ── Numeric prefixes: the ordering convention the whole product rests on ──────
 
@@ -46,6 +52,23 @@ test("an unnumbered directory still names the chapter", () => {
 test("prefixes are stripped from every path segment", () => {
   assert.equal(getCleanSlug("02-guides/03-advanced"), "guides/advanced");
   assert.equal(getCleanSlug("00-overview"), "overview");
+});
+
+test("file paths use the same slug rules as the content collection", () => {
+  assert.equal(
+    getDocCollectionId("03-markdown/08-images-&-videos.md"),
+    "03-markdown/08-images--videos",
+  );
+  assert.equal(
+    getDocCollectionId("03-markdown\\10-detail-&-summary.md"),
+    "03-markdown/10-detail--summary",
+  );
+});
+
+test("only the first sorted page has an empty canonical slug", () => {
+  const pages = [{ id: "01-intro" }, { id: "02-guide" }];
+  assert.equal(getCanonicalDocSlug(pages[0], 0), "");
+  assert.equal(getCanonicalDocSlug(pages[1], 1), "guide");
 });
 
 // ── Sorting ──────────────────────────────────────────────────────────────────
@@ -167,40 +190,59 @@ test("no description when there is nothing but the title", () => {
   assert.equal(extractDescription("# Only", "Only"), null);
 });
 
-test("nav links are built under the configured base", () => {
+test("the first nav item owns the docs root and later links use their slugs", () => {
   const pages = [{ id: "01-intro" }, { id: "02-guides/01-setup" }];
 
   assert.deepEqual(
-    buildDocNavItems(pages, "", "/docs").map((i) => i.href),
-    ["/docs/intro", "/docs/guides/setup"],
+    navigationItems(
+      buildDocsNavigation(pages, pages[0].id, { docsBase: "/docs" }),
+    ).map((item) => item.href),
+    ["/docs", "/docs/guides/setup"],
   );
 
   // routeBase "/" is normalised to "" by the caller, so links stay single-slashed.
   assert.deepEqual(
-    buildDocNavItems(pages, "", "").map((i) => i.href),
-    ["/intro", "/guides/setup"],
+    navigationItems(
+      buildDocsNavigation(pages, pages[0].id, { docsBase: "" }),
+    ).map((item) => item.href),
+    ["/", "/guides/setup"],
   );
 
   assert.deepEqual(
-    buildDocNavItems(pages, "", "/manual").map((i) => i.href),
-    ["/manual/intro", "/manual/guides/setup"],
+    navigationItems(
+      buildDocsNavigation(pages, pages[0].id, { docsBase: "/manual" }),
+    ).map((item) => item.href),
+    ["/manual", "/manual/guides/setup"],
+  );
+});
+
+test("nav links include Astro's deployment base", () => {
+  const pages = [{ id: "01-intro" }, { id: "02-guide" }];
+  assert.deepEqual(
+    navigationItems(
+      buildDocsNavigation(pages, pages[0].id, {
+        docsBase: "/docs",
+        deploymentBase: "/repo/",
+      }),
+    ).map((item) => item.href),
+    ["/repo/docs", "/repo/docs/guide"],
   );
 });
 
 test("root pages and chapters interleave by number", () => {
-  const items = buildDocNavItems(
+  const navigation = buildDocsNavigation(
     [
       { id: "01-intro" },
       { id: "02-guides/01-setup" },
       { id: "02-guides/02-deep" },
       { id: "03-changelog" },
     ],
-    "",
-    "/docs",
+    "01-intro",
+    { docsBase: "/docs" },
   );
 
   assert.deepEqual(
-    groupNavByChapter(items).map((s) =>
+    navigation.sections.map((s) =>
       s.type === "page" ? s.item.title : `${s.chapter}(${s.items.length})`,
     ),
     ["Intro", "guides(2)", "Changelog"],
@@ -208,14 +250,30 @@ test("root pages and chapters interleave by number", () => {
 });
 
 test("grouping keeps a chapter together even when its pages are apart", () => {
-  const items = buildDocNavItems(
+  const navigation = buildDocsNavigation(
     [{ id: "02-a/01-x" }, { id: "02-a/02-y" }],
-    "",
-    "/docs",
+    "02-a/01-x",
+    { docsBase: "/docs" },
   );
-  const sections = groupNavByChapter(items);
+  const sections = navigation.sections;
   assert.equal(sections.length, 1);
   assert.equal(sections[0].type, "chapter");
+});
+
+test("navigation derives active, previous and next pages together", () => {
+  const pages = [{ id: "01-intro" }, { id: "02-guide" }, { id: "03-api" }];
+  const navigation = buildDocsNavigation(pages, "02-guide", {
+    docsBase: "/docs",
+  });
+
+  assert.equal(navigation.previousPage?.title, "Intro");
+  assert.equal(navigation.nextPage?.title, "Api");
+  assert.equal(
+    navigation.sections.filter(
+      (section) => section.type === "page" && section.item.isActive,
+    ).length,
+    1,
+  );
 });
 
 // ── One title rule, wherever a page is named ─────────────────────────────────

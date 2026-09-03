@@ -1,19 +1,20 @@
-import { test } from "node:test";
+import { after, test } from "node:test";
 import assert from "node:assert/strict";
-import { execFileSync } from "node:child_process";
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { walk } from "../dist.mjs";
+import {
+  cleanupTemporaryDirectories,
+  packPackage,
+  run,
+  temporaryDirectory,
+} from "./helpers.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "..", "..");
 const PKG = join(ROOT, "packages", "jaad");
 const CLI = join(ROOT, "packages", "create-jaad", "index.mjs");
-
-const run = (cmd, args, cwd) =>
-  execFileSync(cmd, args, { cwd, encoding: "utf8", stdio: "pipe" });
 
 /** The generated manifest asks npm for the published jaad; point it at ours. */
 function useLocalJaad(project, tarball) {
@@ -24,21 +25,16 @@ function useLocalJaad(project, tarball) {
 }
 
 let tarball;
-const pack = () =>
-  (tarball ??= join(
-    tmpdir(),
-    run("npm", ["pack", "--pack-destination", tmpdir()], PKG)
-      .trim()
-      .split("\n")
-      .pop(),
-  ));
+const pack = () => (tarball ??= packPackage(PKG));
+
+after(cleanupTemporaryDirectories);
 
 test(
   "the scaffolder produces a project that builds",
   { timeout: 600_000 },
   () => {
     const tarball = pack();
-    const parent = mkdtempSync(join(tmpdir(), "jaad-create-"));
+    const parent = temporaryDirectory("jaad-create-");
 
     run(
       "node",
@@ -54,13 +50,13 @@ test(
     const built = walk(join(project, "dist")).map((f) =>
       f.slice(join(project, "dist").length),
     );
-    assert.ok(built.includes("/docs/index.html"), "no docs index");
+    assert.ok(built.includes("/index.html"), "no docs index");
     assert.ok(
-      built.includes("/docs/introduction/index.html"),
-      "no sample page",
+      built.includes("/introduction/index.html"),
+      "no compatibility redirect for the sample page",
     );
     assert.match(
-      readFileSync(join(project, "dist", "docs", "index.html"), "utf8"),
+      readFileSync(join(project, "dist", "index.html"), "utf8"),
       /<title>Scaffolded<\/title>/,
       "the title did not reach the site",
     );
@@ -76,7 +72,7 @@ test(
   { timeout: 600_000 },
   () => {
     const tarball = pack();
-    const project = mkdtempSync(join(tmpdir(), "jaad-here-"));
+    const project = temporaryDirectory("jaad-here-");
 
     mkdirSync(join(project, "docs", "02-guides"), { recursive: true });
     writeFileSync(
@@ -125,16 +121,13 @@ test(
     const built = walk(join(project, "dist")).map((f) =>
       f.slice(join(project, "dist").length),
     );
+    assert.ok(built.includes("/index.html"), "existing opening page missing");
     assert.ok(
-      built.includes("/docs/overview/index.html"),
-      "existing page missing",
-    );
-    assert.ok(
-      built.includes("/docs/guides/setup/index.html"),
+      built.includes("/guides/setup/index.html"),
       "existing chapter missing",
     );
     assert.ok(
-      !built.includes("/docs/introduction/index.html"),
+      !built.includes("/introduction/index.html"),
       "a sample page was written over an existing docs folder",
     );
   },

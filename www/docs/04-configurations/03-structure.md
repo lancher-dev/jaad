@@ -16,7 +16,9 @@ docs/
   04-deployment.md
 ```
 
-The numbers control sidebar order. URLs remove the number prefix, so `01-getting-started.md` becomes `/docs/getting-started`. Page titles come from the first heading in each file.
+The numbers control sidebar order. The first page owns `/`; later URLs remove
+the number prefix, so `02-markdown-reference.md` becomes
+`/markdown-reference`. Page titles come from the first heading in each file.
 
 ## Chapter Organization
 
@@ -37,13 +39,14 @@ docs/
     02-api.md
 ```
 
-Folders and files both strip their number prefixes from URLs. The file `01-introduction/02-installation.md` becomes `/docs/introduction/installation`. Chapter names come from folder names converted to title case.
+Folders and files both strip their number prefixes from URLs. The file `01-introduction/02-installation.md` becomes `/introduction/installation`. Chapter names come from folder names converted to title case.
 
 ## File Naming
 
 Choose descriptive names using lowercase letters and hyphens. The conversion to page titles happens automatically. A file named `advanced-configuration.md` displays as "Advanced Configuration" in the sidebar.
 
-Number prefixes must be exactly two digits: `01`, `02`, through `99`. Files without number prefixes sort after numbered files alphabetically.
+Number prefixes can contain one or more digits. Files without number prefixes
+sort after numbered files; use prefixes whenever their relative order matters.
 
 ## Page Title
 

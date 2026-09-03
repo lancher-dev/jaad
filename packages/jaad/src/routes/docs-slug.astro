@@ -1,32 +1,44 @@
 ---
-import { getEntry, render } from "astro:content";
+import { render } from "astro:content";
 import { getSortedDocsPages } from "../collection.ts";
-import { getCleanSlug, parseDocCollectionId, docTitle } from "../utils/docs.ts";
+import { getCanonicalDocSlug, getCleanSlug, docTitle } from "../utils/docs.ts";
 import DocsPage from "../components/docs/DocsPage.astro";
+import config from "virtual:jaad/config";
+import { docsPageHref, withDeploymentBase } from "../urls.ts";
 
 export async function getStaticPaths() {
   const sortedPages = await getSortedDocsPages();
 
-  return sortedPages.map((page) => ({
-    params: { slug: getCleanSlug(page.id) },
-    props: { id: page.id },
-  }));
+  return sortedPages.map((page, index) => {
+    const canonicalSlug = getCanonicalDocSlug(page, index);
+    return {
+      params: { slug: getCleanSlug(page.id) },
+      props: { id: page.id, isOpening: canonicalSlug === "" },
+    };
+  });
 }
 
-const { id } = Astro.props;
+const { id, isOpening } = Astro.props;
 
-const docPage = await getEntry("docsPages", id);
+if (isOpening) {
+  return Astro.redirect(
+    docsPageHref("", {
+      docsBase: config.docsBase,
+      deploymentBase: import.meta.env.BASE_URL,
+    }),
+    301,
+  );
+}
+
+const sortedPages = await getSortedDocsPages();
+const docPage = sortedPages.find((page) => page.id === id);
 if (!docPage) {
-  return Astro.redirect("/404");
+  return Astro.redirect(withDeploymentBase("/404", import.meta.env.BASE_URL));
 }
 
 const { Content } = await render(docPage);
-
-// `01-home.md` opens the docs, so its title is the site name alone.
-const parsed = parseDocCollectionId(id);
-const isOpening = parsed.order === 1 && parsed.slug.toLowerCase() === "home";
 ---
 
-<DocsPage entry={docPage} headTitle={isOpening ? undefined : docTitle(docPage)}>
+<DocsPage entry={docPage} {sortedPages} headTitle={docTitle(docPage)}>
   <Content />
 </DocsPage>

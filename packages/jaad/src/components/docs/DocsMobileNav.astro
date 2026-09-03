@@ -1,30 +1,15 @@
 ---
-import { getSortedDocsPages } from "../../collection.ts";
-import type { DocsEntry } from "../../@types/docs.ts";
-import {
-  formatChapterTitle,
-  extractHeadingsFromMarkdown,
-  buildDocNavItems,
-  groupNavByChapter,
-} from "../../utils/docs.ts";
+import type { DocsHeadings } from "../../@types/docs.ts";
+import type { NavSection } from "../../navigation.ts";
+import { formatChapterTitle } from "../../utils/docs.ts";
 import ScrollToTop from "../ScrollToTop.astro";
-import config from "virtual:jaad/config";
 
 interface Props {
-  currentSlug: string;
-  entry: DocsEntry;
+  sections: NavSection[];
+  headings: DocsHeadings[];
 }
 
-const { currentSlug, entry } = Astro.props;
-
-const sortedPages = await getSortedDocsPages();
-
-const base = config.docsBase;
-const navItems = buildDocNavItems(sortedPages, currentSlug, base);
-
-const sections = groupNavByChapter(navItems);
-
-const headings = extractHeadingsFromMarkdown(entry.body || "");
+const { sections, headings } = Astro.props;
 ---
 
 <div class="docs-mobile-nav mb-8 space-y-4 lg:hidden">

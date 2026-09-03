@@ -180,7 +180,7 @@ async function main() {
     write(
       target,
       "docs/01-introduction.md",
-      "# Introduction\n\nWrite markdown in `docs/`. Numbers set the order and are stripped from the URL, folders become chapters, and the first heading becomes the page title.\n",
+      "# Introduction\n\nWrite markdown in `docs/`. The first page opens at `/`; numbers set the order and are stripped from later URLs, folders become chapters, and the first heading becomes the page title.\n",
       written,
       skipped,
     );

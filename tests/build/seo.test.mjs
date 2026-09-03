@@ -43,7 +43,9 @@ test("a page description is not just its own title", () => {
 
 test("every page declares a language", () => {
   for (const file of distFiles(".html")) {
-    assert.match(readFileSync(file, "utf8"), /<html lang="[^"]+"/, file);
+    const html = readFileSync(file, "utf8");
+    if (/<meta http-equiv="refresh"/.test(html)) continue;
+    assert.match(html, /<html lang="[^"]+"/, file);
   }
 });
 
@@ -63,4 +65,11 @@ test("docs pages carry parseable structured data with absolute urls", () => {
   for (const crumb of crumbs) {
     if (crumb.item) assert.match(crumb.item, /^https?:\/\//, crumb.name);
   }
+});
+
+test("the opening page redirect is not listed as canonical content", () => {
+  const sitemap = distFiles(".xml")
+    .map((file) => readFileSync(file, "utf8"))
+    .join("\n");
+  assert.doesNotMatch(sitemap, /\/docs\/overview\/?<\/loc>/);
 });

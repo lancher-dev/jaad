@@ -1,6 +1,7 @@
 ---
 import config from "virtual:jaad/config";
 import { editUrl } from "../../infer.ts";
+import { docsMarkdownHref } from "../../urls.ts";
 
 interface Props {
   /** Content collection entry id, e.g. "03-markdown/12-inner-html". */
@@ -11,7 +12,10 @@ interface Props {
 
 const { id, cleanSlug } = Astro.props;
 
-const mdHref = `${config.docsBase}/${cleanSlug}.md`;
+const mdHref = docsMarkdownHref(cleanSlug, {
+  docsBase: config.docsBase,
+  deploymentBase: import.meta.env.BASE_URL,
+});
 const editHref = config.editBase ? editUrl(config.editBase, `${id}.md`) : null;
 ---
 

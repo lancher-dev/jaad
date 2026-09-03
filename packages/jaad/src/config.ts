@@ -8,6 +8,7 @@ import {
   type RepoInfo,
 } from "./infer.ts";
 import { PRESETS, PRESET_NAMES, isPreset } from "./themes/index.ts";
+import { normaliseBasePath } from "./urls.ts";
 
 export const jaadConfigSchema = z.object({
   title: z.string(),
@@ -21,7 +22,7 @@ export const jaadConfigSchema = z.object({
     .optional(),
 
   docsDir: z.string().default("./docs"),
-  routeBase: z.string().default("/docs"),
+  routeBase: z.string().default("/"),
 
   social: z
     .record(
@@ -109,11 +110,6 @@ function findFavicon(cwd: string): string | null {
 }
 
 /** Empty at the root, otherwise one leading slash and no trailing one. */
-function mountPoint(routeBase: string): string {
-  const trimmed = routeBase.replace(/^\/+/, "").replace(/\/+$/, "");
-  return trimmed ? `/${trimmed}` : "";
-}
-
 function resolveEditBase(
   editLink: JaadConfig["editLink"],
   repo: RepoInfo | null,
@@ -169,7 +165,7 @@ export function resolveConfig(
     description: config.description ?? inferDescription(cwd) ?? undefined,
     repoUrl: repo?.url ?? null,
     favicon: findFavicon(cwd),
-    docsBase: mountPoint(config.routeBase),
+    docsBase: normaliseBasePath(config.routeBase),
     shiki:
       typeof config.theme === "string"
         ? PRESETS[config.theme].shiki

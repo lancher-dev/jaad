@@ -14,13 +14,13 @@ The result is a site that stays out of your way while you write, and produces cl
 
 JAAD is assembled from a small set of well-established tools:
 
-| Tool                                     | Role                                                                  |
-| ---------------------------------------- | --------------------------------------------------------------------- |
-| [Astro](https://astro.build)             | Static site generator and build pipeline                              |
-| [Markdown / MDX](https://commonmark.org) | Content format, standard CommonMark + GFM extensions                  |
-| [Tailwind CSS](https://tailwindcss.com)  | Utility-first styling                                                 |
-| Custom elements                          | Interactive parts (search, theme switch, mobile nav), no UI framework |
-| [Shiki](https://shiki.style)             | Syntax highlighting inside code blocks                                |
+| Tool                                    | Role                                                                  |
+| --------------------------------------- | --------------------------------------------------------------------- |
+| [Astro](https://astro.build)            | Static site generator and build pipeline                              |
+| [Markdown](https://commonmark.org)      | Content format, standard CommonMark + GFM extensions                  |
+| [Tailwind CSS](https://tailwindcss.com) | Utility-first styling                                                 |
+| Custom elements                         | Interactive parts (search, theme switch, mobile nav), no UI framework |
+| [Shiki](https://shiki.style)            | Syntax highlighting inside code blocks                                |
 
 Being built on Astro means you get everything Astro provides for free: fast static builds, view transitions, image optimization, and a large ecosystem of integrations. Anything not covered in this documentation can be found in the [Astro docs](https://docs.astro.build).
 
