@@ -1,32 +1,73 @@
 #!/usr/bin/env node
+import * as p from "@clack/prompts";
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readdirSync, readFileSync } from "node:fs";
 import { writeFileSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
-import { createInterface } from "node:readline/promises";
 
 // Bumped together with the package they install.
 const JAAD = "^0.5.0";
-const ASTRO = "^7.2.0";
+const ASTRO = "7.2.10";
+const TEMPLATES = ["docs", "site"];
 
 const HELP = `Usage: npm create @lancher-dev/jaad@latest [directory] [options]
 
-  --here            Add JAAD to the current directory instead of a new one.
-  --title <title>   Site title. Defaults to the directory name.
-  --no-install      Write the files and stop.
-  -h, --help        Show this.
+  --here                    Add JAAD to the current directory.
+  --template <docs|site>    Docs at /, or a landing page with docs at /docs.
+  --title <title>           Site title.
+  --install                 Install dependencies.
+  --no-install              Write the files and stop.
+  -h, --help                Show this.
 `;
 
+function fail(message) {
+  throw new Error(`create-jaad: ${message}`);
+}
+
+function takeValue(argv, index, option) {
+  const value = argv[index + 1];
+  if (!value || value.startsWith("-")) fail(`${option} needs a value.`);
+  return value;
+}
+
 function parseArgs(argv) {
-  const args = { here: false, install: null, title: null, dir: null };
+  const args = {
+    here: false,
+    install: null,
+    template: null,
+    title: null,
+    dir: null,
+    help: false,
+  };
 
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
     if (arg === "--here") args.here = true;
-    else if (arg === "--title") args.title = argv[++i];
-    else if (arg === "--no-install") args.install = false;
-    else if (arg === "-h" || arg === "--help") args.help = true;
-    else if (!arg.startsWith("-")) args.dir ??= arg;
+    else if (arg === "--template") args.template = takeValue(argv, i++, arg);
+    else if (arg === "--title") args.title = takeValue(argv, i++, arg);
+    else if (arg === "--install") {
+      if (args.install === false) {
+        fail("--install and --no-install cannot be used together.");
+      }
+      args.install = true;
+    } else if (arg === "--no-install") {
+      if (args.install === true) {
+        fail("--install and --no-install cannot be used together.");
+      }
+      args.install = false;
+    } else if (arg === "-h" || arg === "--help") args.help = true;
+    else if (arg.startsWith("-")) fail(`unknown option ${arg}.`);
+    else if (args.dir) fail("only one directory can be provided.");
+    else args.dir = arg;
+  }
+
+  if (args.here && args.dir) {
+    fail("--here cannot be used together with a directory.");
+  }
+  if (args.template && !TEMPLATES.includes(args.template)) {
+    fail(
+      `unknown template ${args.template}; available: ${TEMPLATES.join(", ")}.`,
+    );
   }
 
   return args;
@@ -110,44 +151,149 @@ function packageManager() {
   return "npm";
 }
 
-async function ask(question, fallback) {
-  if (!process.stdin.isTTY) return fallback;
-  const rl = createInterface({ input: process.stdin, output: process.stdout });
-  try {
-    const answer = (await rl.question(question)).trim();
-    return answer || fallback;
-  } finally {
-    rl.close();
+function answer(value) {
+  if (p.isCancel(value)) {
+    p.cancel("Setup cancelled.");
+    return null;
+  }
+  return value;
+}
+
+function assertTargetAvailable(args, target) {
+  if (!args.here && existsSync(target) && readdirSync(target).length > 0) {
+    fail(`${args.dir} exists and is not empty. Use --here to add JAAD to it.`);
   }
 }
 
-async function main() {
-  const args = parseArgs(process.argv.slice(2));
-  if (args.help) return console.log(HELP);
+function missingAnswers(args) {
+  const missing = [];
+  if (!args.here && !args.dir)
+    missing.push("directory ([directory] or --here)");
+  if (!args.template) missing.push("template (--template docs|site)");
+  if (!args.title) missing.push("title (--title <title>)");
+  if (args.install === null) {
+    missing.push("installation (--install or --no-install)");
+  }
+  return missing;
+}
+
+async function collectAnswers(args) {
+  const interactive = Boolean(process.stdin.isTTY && process.stdout.isTTY);
+  if (!interactive) {
+    const missing = missingAnswers(args);
+    if (missing.length > 0) {
+      fail(`missing answers in non-interactive mode: ${missing.join(", ")}.`);
+    }
+  }
+
+  if (interactive) p.intro("Create JAAD");
 
   if (!args.here && !args.dir) {
-    args.dir = await ask("Directory (. for the current one): ", ".");
+    const dir = answer(
+      await p.text({
+        message: "Where should we create the project?",
+        defaultValue: ".",
+      }),
+    );
+    if (dir === null) return null;
+    args.dir = dir;
     if (args.dir === ".") args.here = true;
   }
 
   const target = resolve(args.here ? "." : args.dir);
-  if (!args.here && existsSync(target) && readdirSync(target).length > 0) {
-    console.error(`create-jaad: ${args.dir} exists and is not empty.`);
-    console.error("Use --here to add JAAD to a directory you already have.");
-    process.exitCode = 1;
-    return;
-  }
-  mkdirSync(target, { recursive: true });
+  assertTargetAvailable(args, target);
 
-  // In --here mode the manifest names the project better than the folder does.
+  if (!args.template) {
+    const template = answer(
+      await p.select({
+        message: "What are you building?",
+        initialValue: "docs",
+        options: [
+          {
+            value: "docs",
+            label: "Documentation site",
+            hint: "docs at /",
+          },
+          {
+            value: "site",
+            label: "Website with documentation",
+            hint: "landing page at /, docs at /docs",
+          },
+        ],
+      }),
+    );
+    if (template === null) return null;
+    args.template = template;
+  }
+
   const manifest = readManifest(target);
   const suggested =
     typeof manifest?.name === "string" && manifest.name
       ? titleFrom(manifest.name)
       : titleFrom(basename(target));
 
-  const title =
-    args.title ?? (await ask(`Title (${suggested}): `, null)) ?? suggested;
+  if (!args.title) {
+    const title = answer(
+      await p.text({
+        message: "Site title",
+        defaultValue: suggested,
+      }),
+    );
+    if (title === null) return null;
+    args.title = title;
+  }
+
+  if (args.install === null) {
+    const install = answer(
+      await p.confirm({
+        message: `Run ${packageManager()} install?`,
+        initialValue: true,
+      }),
+    );
+    if (install === null) return null;
+    args.install = install;
+  }
+
+  return { ...args, target, manifest };
+}
+
+function jaadConfig(title, template) {
+  const additions =
+    template === "site"
+      ? '\n  routeBase: "/docs",\n  nav: [{ label: "Docs", href: "/docs" }],'
+      : "";
+  return `import { defineJaadConfig } from "@lancher-dev/jaad";\n\nexport default defineJaadConfig({\n  title: ${JSON.stringify(title)},${additions}\n});\n`;
+}
+
+function landingPage(title) {
+  return `---
+import Layout from "@lancher-dev/jaad/layouts/Base.astro";
+
+const title = ${JSON.stringify(title)};
+---
+
+<Layout>
+  <section class="mx-auto max-w-2xl py-16 text-center">
+    <h1 class="text-foreground-bright font-serif text-4xl font-semibold">
+      {title}
+    </h1>
+    <p class="text-foreground-secondary mt-5 text-lg">
+      Welcome. Start here, then explore the documentation.
+    </p>
+    <a
+      href="/docs"
+      class="bg-primary text-background hover:bg-primary-dark mt-8 inline-block rounded-sm px-6 py-3 font-medium no-underline transition-colors"
+    >
+      Read the documentation
+    </a>
+  </section>
+</Layout>
+`;
+}
+
+function scaffold(request) {
+  const { target, manifest, title, template } = request;
+  mkdirSync(target, { recursive: true });
 
   const written = [];
   const skipped = [];
@@ -162,7 +308,7 @@ async function main() {
   write(
     target,
     "jaad.config.ts",
-    `import { defineJaadConfig } from "@lancher-dev/jaad";\n\nexport default defineJaadConfig({\n  title: ${JSON.stringify(title)},\n});\n`,
+    jaadConfig(title, template),
     written,
     skipped,
   );
@@ -174,52 +320,75 @@ async function main() {
     skipped,
   );
 
-  // A repository that already has markdown is the reason --here exists.
+  if (template === "site") {
+    write(
+      target,
+      "src/pages/index.astro",
+      landingPage(title),
+      written,
+      skipped,
+    );
+  }
+
   const found = markdownUnder(join(target, "docs"));
   if (found === 0) {
+    const opening = template === "site" ? "/docs" : "/";
     write(
       target,
       "docs/01-introduction.md",
-      "# Introduction\n\nWrite markdown in `docs/`. The first page opens at `/`; numbers set the order and are stripped from later URLs, folders become chapters, and the first heading becomes the page title.\n",
+      `# Introduction\n\nWrite markdown in \`docs/\`. The first page opens at \`${opening}\`; numbers set the order and are stripped from later URLs, folders become chapters, and the first heading becomes the page title.\n`,
       written,
       skipped,
     );
   }
 
   writeManifest(target, manifest, basename(target));
+  return { written, skipped, found };
+}
+
+async function main() {
+  let args;
+  try {
+    args = parseArgs(process.argv.slice(2));
+    if (args.help) return console.log(HELP);
+  } catch (error) {
+    console.error(error.message);
+    process.exitCode = 1;
+    return;
+  }
+
+  let request;
+  try {
+    request = await collectAnswers(args);
+  } catch (error) {
+    p.log.error(error.message);
+    process.exitCode = 1;
+    return;
+  }
+  if (!request) return;
+
+  const { written, skipped, found } = scaffold(request);
+  p.log.success(request.title);
+  for (const file of written) p.log.step(`created  ${file}`);
+  for (const file of skipped) p.log.info(`kept     ${file}`);
+  if (found > 0) p.log.info(`found    ${found} markdown file(s) in docs/`);
+  p.log.step("updated  package.json");
 
   const pm = packageManager();
-  console.log(`\n  ${title}\n`);
-  for (const file of written) console.log(`  created  ${file}`);
-  for (const file of skipped) console.log(`  kept     ${file}`);
-  if (found > 0) {
-    console.log(`  found    ${found} markdown file(s) in docs/`);
-  }
-  console.log("  updated  package.json");
-
-  const install =
-    args.install ??
-    (await ask(`\nRun ${pm} install now? [Y/n] `, "y"))
-      .toLowerCase()
-      .startsWith("y");
-
-  if (install) {
-    console.log("");
+  if (request.install) {
     const result = spawnSync(pm, ["install"], {
-      cwd: target,
+      cwd: request.target,
       stdio: "inherit",
     });
     if (result.status !== 0) {
-      console.error(`\ncreate-jaad: ${pm} install failed.`);
+      p.log.error(`${pm} install failed.`);
       process.exitCode = 1;
       return;
     }
   }
 
-  const where = args.here ? "" : `cd ${args.dir} && `;
-  console.log(
-    `\n  ${where}${install ? "" : `${pm} install && `}${pm} run dev\n`,
-  );
+  const where = request.here ? "" : `cd ${request.dir} && `;
+  p.outro(`${where}${request.install ? "" : `${pm} install && `}${pm} run dev`);
 }
 
 await main();

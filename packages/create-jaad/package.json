@@ -27,6 +27,9 @@
     "README.md",
     "LICENSE"
   ],
+  "dependencies": {
+    "@clack/prompts": "^1.7.0"
+  },
   "engines": {
     "node": ">=22.12.0"
   },

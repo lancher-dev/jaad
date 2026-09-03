@@ -1,6 +1,7 @@
 import { after, test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import { existsSync, mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { walk } from "../dist.mjs";
@@ -38,7 +39,15 @@ test(
 
     run(
       "node",
-      [CLI, "docs-site", "--title", "Scaffolded", "--no-install"],
+      [
+        CLI,
+        "docs-site",
+        "--template",
+        "docs",
+        "--title",
+        "Scaffolded",
+        "--no-install",
+      ],
       parent,
     );
 
@@ -59,6 +68,53 @@ test(
       readFileSync(join(project, "dist", "index.html"), "utf8"),
       /<title>Scaffolded<\/title>/,
       "the title did not reach the site",
+    );
+  },
+);
+
+test(
+  "the site template keeps the landing page separate from the docs",
+  { timeout: 600_000 },
+  () => {
+    const tarball = pack();
+    const parent = temporaryDirectory("jaad-create-site-");
+
+    run(
+      "node",
+      [
+        CLI,
+        "product-site",
+        "--template",
+        "site",
+        "--title",
+        "Product",
+        "--no-install",
+      ],
+      parent,
+    );
+
+    const project = join(parent, "product-site");
+    useLocalJaad(project, tarball);
+    run("npm", ["install", "--no-audit", "--no-fund"], project);
+    run("npx", ["astro", "build"], project);
+
+    const built = walk(join(project, "dist")).map((f) =>
+      f.slice(join(project, "dist").length),
+    );
+    assert.ok(built.includes("/index.html"), "no landing page");
+    assert.ok(built.includes("/docs/index.html"), "no docs index");
+    assert.ok(
+      built.includes("/docs/introduction/index.html"),
+      "no compatibility redirect for the sample page",
+    );
+    assert.match(
+      readFileSync(join(project, "dist", "index.html"), "utf8"),
+      /href="\/docs"[^>]*>\s*Read the documentation/,
+      "the landing page does not link to the docs",
+    );
+    assert.match(
+      readFileSync(join(project, "jaad.config.ts"), "utf8"),
+      /routeBase: "\/docs"/,
     );
   },
 );
@@ -92,8 +148,25 @@ test(
       join(project, "docs", "02-guides", "01-setup.md"),
       "# Setup\n\nAlso mine.\n",
     );
+    mkdirSync(join(project, "src", "pages"), { recursive: true });
+    writeFileSync(
+      join(project, "src", "pages", "index.astro"),
+      "<h1 data-existing>Existing landing</h1>\n",
+    );
 
-    const output = run("node", [CLI, "--here", "--no-install"], project);
+    const output = run(
+      "node",
+      [
+        CLI,
+        "--here",
+        "--template",
+        "site",
+        "--title",
+        "My Library",
+        "--no-install",
+      ],
+      project,
+    );
     assert.match(
       output,
       /found\s+2 markdown/,
@@ -121,9 +194,13 @@ test(
     const built = walk(join(project, "dist")).map((f) =>
       f.slice(join(project, "dist").length),
     );
-    assert.ok(built.includes("/index.html"), "existing opening page missing");
+    assert.match(
+      readFileSync(join(project, "dist", "index.html"), "utf8"),
+      /data-existing/,
+      "the existing landing page was replaced",
+    );
     assert.ok(
-      built.includes("/guides/setup/index.html"),
+      built.includes("/docs/guides/setup/index.html"),
       "existing chapter missing",
     );
     assert.ok(
@@ -132,3 +209,62 @@ test(
     );
   },
 );
+
+test("non-interactive requests are complete before files are written", () => {
+  const cases = [
+    {
+      name: "missing answers",
+      args: ["project", "--title", "Incomplete", "--no-install"],
+      message: /missing answers.*template/s,
+      target: "project",
+    },
+    {
+      name: "unknown template",
+      args: [
+        "project",
+        "--template",
+        "blog",
+        "--title",
+        "Invalid",
+        "--no-install",
+      ],
+      message: /unknown template blog/,
+      target: "project",
+    },
+    {
+      name: "missing option value",
+      args: ["project", "--template"],
+      message: /--template needs a value/,
+      target: "project",
+    },
+    {
+      name: "conflicting install answers",
+      args: [
+        "project",
+        "--template",
+        "docs",
+        "--title",
+        "Conflict",
+        "--install",
+        "--no-install",
+      ],
+      message: /cannot be used together/,
+      target: "project",
+    },
+  ];
+
+  for (const scenario of cases) {
+    const parent = temporaryDirectory(`jaad-invalid-${scenario.name}-`);
+    const result = spawnSync("node", [CLI, ...scenario.args], {
+      cwd: parent,
+      encoding: "utf8",
+    });
+    assert.equal(result.status, 1, scenario.name);
+    assert.match(`${result.stdout}\n${result.stderr}`, scenario.message);
+    assert.equal(
+      existsSync(join(parent, scenario.target)),
+      false,
+      `${scenario.name} wrote files`,
+    );
+  }
+});

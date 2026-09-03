@@ -51,7 +51,11 @@ importers:
         specifier: ^8.67.0
         version: 8.69.0(eslint@10.9.1(jiti@2.7.0))(typescript@6.0.3)
 
-  packages/create-jaad: {}
+  packages/create-jaad:
+    dependencies:
+      '@clack/prompts':
+        specifier: ^1.7.0
+        version: 1.7.0
 
   packages/jaad:
     dependencies:
