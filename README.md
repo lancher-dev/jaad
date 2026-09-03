@@ -1,7 +1,11 @@
 <p align="center">
-  <br/>
-  <a href="https://jaad.lancher.dev">JAAD</a> is <b>Just Another Astro Docs</b>,<br/>
-  an <a href="https://astro.build">Astro</a> integration that turns a folder of markdown into a documentation site.<br/>
+  <a href="https://jaad.lancher.dev">
+    <img src="./.github/readme-header.png" alt="JAAD — Just Another Astro Docs. Documentation, simplified." width="1200" />
+  </a>
+</p>
+
+<p align="center">
+  An <a href="https://astro.build">Astro</a> integration that turns a folder of markdown into a documentation site.
 </p>
 
 <div align="center">
