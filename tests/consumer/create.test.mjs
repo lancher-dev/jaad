@@ -37,7 +37,7 @@ test(
     const tarball = pack();
     const parent = temporaryDirectory("jaad-create-");
 
-    run(
+    const output = run(
       "node",
       [
         CLI,
@@ -50,6 +50,10 @@ test(
       ],
       parent,
     );
+    assert.match(output, /cd docs-site/);
+    assert.match(output, /npm install/);
+    assert.match(output, /npm run dev/);
+    assert.match(output, /Start writing in docs\/01-introduction\.md/);
 
     const project = join(parent, "docs-site");
     useLocalJaad(project, tarball);
@@ -172,6 +176,10 @@ test(
       /found\s+2 markdown/,
       "existing pages were not noticed",
     );
+    assert.doesNotMatch(output, /\bcd\s/);
+    assert.match(output, /npm install/);
+    assert.match(output, /npm run dev/);
+    assert.match(output, /Start writing in docs\//);
 
     const manifest = JSON.parse(
       readFileSync(join(project, "package.json"), "utf8"),
