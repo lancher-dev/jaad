@@ -1,34 +1,56 @@
 @import "tailwindcss";
+@import "./identity.css";
 
 @source "../";
 
-@theme {
-  --color-background: #faf8f5;
-  --color-background-secondary: #f7f5f2;
-  --color-background-tertiary: #efedea;
-  --color-surface: #ffffff;
-  --color-foreground: #3a3a3a;
-  --color-foreground-bright: #1a1a1a;
-  --color-foreground-secondary: #686765;
-  --color-foreground-muted: #8c8985;
-  --color-primary: #2d2d2d;
-  --color-primary-dark: #111111;
-  --color-border: #d9d5d0;
-  --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
-  --font-serif: Georgia, serif;
-  --font-mono: "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+@theme inline {
+  --color-background: var(--identity-background);
+  --color-surface: var(--identity-surface);
+  --color-foreground: var(--identity-foreground);
+  --color-foreground-bright: var(--identity-foreground-bright);
+  --color-primary: var(--identity-primary);
+  --color-background-secondary: var(--identity-background-secondary);
+  --color-background-tertiary: var(--identity-background-tertiary);
+  --color-surface-hover: var(--identity-surface-hover);
+  --color-border-light: var(--identity-border-light);
+  --color-border: var(--identity-border);
+  --color-border-dark: var(--identity-border-dark);
+  --color-foreground-muted: var(--identity-foreground-muted);
+  --color-foreground-secondary: var(--identity-foreground-secondary);
+  --color-primary-dark: var(--identity-primary-dark);
+  --color-primary-light: var(--identity-primary-light);
+  --font-sans: var(--identity-font-sans);
+  --font-serif: var(--identity-font-serif);
+  --font-mono: var(--identity-font-mono);
+}
+
+:root {
+  --site-content-width: var(--identity-content-width);
+  --site-page-padding: var(--identity-page-padding);
 }
 
 @layer base {
   html {
-    background: var(--color-background);
+    background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
+    font-size: 16px;
+    scroll-behavior: smooth;
+    scrollbar-gutter: stable;
   }
 
   body {
+    display: flex;
+    flex-direction: column;
     min-height: 100vh;
     margin: 0;
+  }
+
+  h1,
+  h2,
+  h3 {
+    color: var(--color-foreground-bright);
+    font-family: var(--font-serif);
   }
 
   a {
@@ -47,7 +69,8 @@
 }
 
 .site-chrome {
-  width: min(100% - 2rem, 64rem);
+  width: 100%;
+  max-width: var(--site-content-width);
   margin-inline: auto;
 }
 
@@ -55,17 +78,77 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-block: 1rem;
+  padding: 1rem;
 }
 
 .site-main {
-  padding-inline: 2rem;
+  width: 100%;
+  max-width: var(--site-content-width);
+  flex: 1;
+  margin-inline: auto;
+  padding-inline: var(--site-page-padding);
 }
 
 .site-footer {
-  border-top: 1px solid var(--color-border);
-  padding-block: 1rem;
+  margin-top: 1rem;
+  border-top: 1px solid var(--color-border-dark);
+  padding: 0.5rem 1rem 0.25rem;
   color: var(--color-foreground-muted);
-  font-size: 0.8rem;
+  font-size: 0.95rem;
+  font-style: italic;
+  line-height: 1.6;
   text-align: center;
+}
+
+.site-theme-button {
+  display: flex;
+  width: 2.25rem;
+  height: 2.25rem;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--color-foreground-secondary);
+  transition: color 200ms ease-in-out;
+}
+
+.site-theme-button:hover {
+  color: var(--color-foreground-bright);
+}
+
+.site-theme-button svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.site-theme-icon-light {
+  display: none;
+}
+
+html.dark .site-theme-icon-dark {
+  display: none;
+}
+
+html.dark .site-theme-icon-light {
+  display: block;
+}
+
+@media (min-width: 1024px) {
+  .site-main {
+    padding-inline: calc(var(--site-page-padding) * 2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+  }
 }

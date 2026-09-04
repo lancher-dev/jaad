@@ -1,4 +1,6 @@
 ---
+import { Font } from "astro:assets";
+import SiteThemeToggle from "../components/SiteThemeToggle.astro";
 import "../styles/site.css";
 
 interface Props {
@@ -8,11 +10,24 @@ interface Props {
 
 const {
   title,
-  description = "JAAD - Just Another Astro Docs. A clean, minimalist documentation framework.",
+  description = "An Astro integration that turns a folder of Markdown into a documentation site.",
 } = Astro.props;
 const pageTitle = title ? `${title} | JAAD` : "JAAD";
 const canonical = Astro.url.href;
 const ogImage = Astro.site ? new URL("/og-image.png", Astro.site) : null;
+const base = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL.slice(0, -1)
+  : import.meta.env.BASE_URL;
+const homeHref = base + "/";
+const docsHref = base + "/docs";
+const favicon = base + "/favicon.svg";
+const themeScript = `(function () {
+  function isDark() {
+    var theme = localStorage.getItem("theme");
+    return theme === "dark" || (!theme && matchMedia("(prefers-color-scheme: dark)").matches);
+  }
+  document.documentElement.classList.toggle("dark", isDark());
+})();`;
 ---
 
 <!doctype html>
@@ -23,19 +38,27 @@ const ogImage = Astro.site ? new URL("/og-image.png", Astro.site) : null;
     <meta name="description" content={description} />
     <title>{pageTitle}</title>
     <link rel="canonical" href={canonical} />
-    <link rel="icon" href="/favicon.svg" />
+    <link rel="icon" href={favicon} />
+    <Font cssVariable="--font-inter" preload />
+    <Font cssVariable="--font-merriweather" preload />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     {ogImage && <meta property="og:image" content={ogImage} />}
+    <script is:inline set:html={themeScript} />
   </head>
   <body data-site-layout>
     <header class="site-chrome site-header">
-      <a class="font-brand text-primary text-xl no-underline" href="/">JAAD</a>
-      <nav aria-label="Main navigation">
-        <a class="text-sm no-underline" href="/docs">Documentation</a>
-      </nav>
+      <a class="font-brand text-primary text-xl no-underline" href={homeHref}
+        >JAAD</a
+      >
+      <div class="flex items-center gap-2">
+        <nav aria-label="Main navigation">
+          <a class="text-sm no-underline" href={docsHref}>Documentation</a>
+        </nav>
+        <SiteThemeToggle />
+      </div>
     </header>
 
     <main class="site-main"><slot /></main>

@@ -1,0 +1,29 @@
+@import "./styles/identity.css";
+
+:root,
+html.dark {
+  --color-background: var(--identity-background);
+  --color-surface: var(--identity-surface);
+  --color-foreground: var(--identity-foreground);
+  --color-foreground-bright: var(--identity-foreground-bright);
+  --color-primary: var(--identity-primary);
+  --color-background-secondary: var(--identity-background-secondary);
+  --color-background-tertiary: var(--identity-background-tertiary);
+  --color-surface-hover: var(--identity-surface-hover);
+  --color-border-light: var(--identity-border-light);
+  --color-border: var(--identity-border);
+  --color-border-dark: var(--identity-border-dark);
+  --color-foreground-muted: var(--identity-foreground-muted);
+  --color-foreground-secondary: var(--identity-foreground-secondary);
+  --color-primary-dark: var(--identity-primary-dark);
+  --color-primary-light: var(--identity-primary-light);
+  --font-sans: var(--identity-font-sans);
+  --font-serif: var(--identity-font-serif);
+  --font-mono: var(--identity-font-mono);
+}
+
+:root {
+  --jaad-content-width: var(--identity-content-width);
+  --jaad-chrome-width: var(--jaad-content-width);
+  --jaad-page-padding: var(--identity-page-padding);
+}

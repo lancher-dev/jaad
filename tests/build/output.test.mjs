@@ -151,6 +151,20 @@ test("the chrome is measured against the content, not against a second number", 
   assert.match(page("docs/index.html"), /data-jaad-default-frame/);
 });
 
+test("the landing page shares the docs measure without using its frame", () => {
+  const home = page("index.html");
+  const css = allCss().replace(/\s+/g, "");
+
+  assert.match(home, /<body[^>]*data-site-layout/);
+  assert.doesNotMatch(home, /jaad-chrome|data-jaad-default-frame/);
+  assert.match(
+    css,
+    /\.site-chrome\{[^}]*max-width:var\(--site-content-width\)/,
+  );
+  assert.match(css, /\.site-main\{[^}]*max-width:var\(--site-content-width\)/);
+  assert.match(home, /<site-theme-toggle>/);
+});
+
 test("docs and the deprecated base layout share one padding token", () => {
   const css = allCss().replace(/\s+/g, "");
 

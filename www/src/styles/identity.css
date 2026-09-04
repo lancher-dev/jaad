@@ -1,0 +1,127 @@
+:root {
+  color-scheme: light;
+
+  --identity-background: #faf8f5;
+  --identity-surface: #ffffff;
+  --identity-foreground: #3a3a3a;
+  --identity-foreground-bright: #1a1a1a;
+  --identity-primary: #2d2d2d;
+
+  --identity-background-secondary: color-mix(
+    in oklab,
+    var(--identity-foreground) 2%,
+    var(--identity-background)
+  );
+  --identity-background-tertiary: color-mix(
+    in oklab,
+    var(--identity-foreground) 6%,
+    var(--identity-background)
+  );
+  --identity-surface-hover: color-mix(
+    in oklab,
+    var(--identity-foreground) 5%,
+    var(--identity-background)
+  );
+
+  --identity-border-light: color-mix(
+    in oklab,
+    var(--identity-foreground) 11%,
+    var(--identity-background)
+  );
+  --identity-border: color-mix(
+    in oklab,
+    var(--identity-foreground) 17%,
+    var(--identity-background)
+  );
+  --identity-border-dark: color-mix(
+    in oklab,
+    var(--identity-foreground) 25%,
+    var(--identity-background)
+  );
+
+  --identity-foreground-muted: color-mix(
+    in oklab,
+    var(--identity-foreground) 55%,
+    var(--identity-background)
+  );
+  --identity-foreground-secondary: color-mix(
+    in oklab,
+    var(--identity-foreground) 72%,
+    var(--identity-background)
+  );
+
+  --identity-primary-dark: var(--identity-foreground-bright);
+  --identity-primary-light: color-mix(
+    in oklab,
+    var(--identity-primary) 83%,
+    var(--identity-background)
+  );
+
+  --identity-font-sans:
+    var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --identity-font-serif: var(--font-merriweather), Georgia, serif;
+  --identity-font-mono:
+    "SF Mono", SF Mono, Consolas, "Liberation Mono", Menlo, Courier, monospace;
+
+  --identity-content-width: 56rem;
+  --identity-page-padding: 2rem;
+}
+
+html.dark {
+  color-scheme: dark;
+
+  --identity-background: #0d1117;
+  --identity-surface: #21262d;
+  --identity-foreground: #c9d1d9;
+  --identity-foreground-bright: #e6edf3;
+  --identity-primary: #c9d1d9;
+
+  --identity-background-secondary: color-mix(
+    in oklab,
+    var(--identity-foreground) 7%,
+    var(--identity-background)
+  );
+  --identity-background-tertiary: color-mix(
+    in oklab,
+    var(--identity-foreground) 10%,
+    var(--identity-background)
+  );
+  --identity-surface-hover: color-mix(
+    in oklab,
+    var(--identity-foreground) 22%,
+    var(--identity-background)
+  );
+
+  --identity-border-light: color-mix(
+    in oklab,
+    var(--identity-foreground) 13%,
+    var(--identity-background)
+  );
+  --identity-border: color-mix(
+    in oklab,
+    var(--identity-foreground) 22%,
+    var(--identity-background)
+  );
+  --identity-border-dark: color-mix(
+    in oklab,
+    var(--identity-foreground) 36%,
+    var(--identity-background)
+  );
+
+  --identity-foreground-muted: color-mix(
+    in oklab,
+    var(--identity-foreground) 57%,
+    var(--identity-background)
+  );
+  --identity-foreground-secondary: color-mix(
+    in oklab,
+    var(--identity-foreground) 71%,
+    var(--identity-background)
+  );
+
+  --identity-primary-light: color-mix(
+    in oklab,
+    var(--identity-primary) 71%,
+    var(--identity-background)
+  );
+}
