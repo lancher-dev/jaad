@@ -1,9 +1,6 @@
 # Configuration
 
-Everything lives in `jaad.config.ts`. Only `title` is required.
-
-These options configure the documentation experience. Ordinary Astro pages
-outside `docs/` keep their own layout and styles.
+All JAAD options live in `jaad.config.ts`. Only `title` is required.
 
 ```ts
 import { defineJaadConfig } from "@lancher-dev/jaad";
@@ -14,207 +11,161 @@ export default defineJaadConfig({
 });
 ```
 
+These options apply only to documentation pages. Pages in `src/pages/` keep
+their own layout, styles and metadata.
+
 ## Site
 
-| Option | Type     | Default | Notes                                                             |
-| ------ | -------- | ------- | ----------------------------------------------------------------- |
-| `site` | `string` | none    | Public URL. Needed for canonical links, sitemap and social cards. |
-| `base` | `string` | none    | Subpath, when the site is not served from a domain root.          |
-
-Both are handed to Astro for you.
+| Option | Type     | Default | Description                                         |
+| ------ | -------- | ------- | --------------------------------------------------- |
+| `site` | `string` | none    | Public URL used for canonical links and the sitemap |
+| `base` | `string` | none    | Subpath when the site is not served from `/`        |
 
 ## Identity
 
-| Option        | Type     | Default        | Notes                                                                                       |
-| ------------- | -------- | -------------- | ------------------------------------------------------------------------------------------- |
-| `title`       | `string` | none           | **Required.** Site name, browser tab, social cards.                                         |
-| `description` | `string` | `package.json` | Falls back to your `package.json` description.                                              |
-| `lang`        | `string` | `"en"`         | Sets `<html lang>` and `og:locale`.                                                         |
-| `logo`        | `string` | none           | Public URL such as `/logo.svg`, shown instead of the title. A source path is a build error. |
+| Option        | Type     | Default        | Description                                       |
+| ------------- | -------- | -------------- | ------------------------------------------------- |
+| `title`       | `string` | none           | **Required.** Site name and metadata              |
+| `description` | `string` | `package.json` | Site description                                  |
+| `lang`        | `string` | `"en"`         | Value for `<html lang>` and `og:locale`           |
+| `logo`        | `string` | none           | Public path or URL shown instead of the site name |
+
+A source file path passed to `logo` produces a build error. Use a public path
+such as `/logo.svg`.
 
 ## Content
 
-| Option      | Type     | Default    | Notes                                                                                             |
-| ----------- | -------- | ---------- | ------------------------------------------------------------------------------------------------- |
-| `docsDir`   | `string` | `"./docs"` | Folder to read markdown from.                                                                     |
-| `routeBase` | `string` | `"/"`      | Where the documentation is mounted. Slashes are normalised, so `"docs"` and `"/docs/"` both work. |
+| Option      | Type     | Default    | Description                          |
+| ----------- | -------- | ---------- | ------------------------------------ |
+| `docsDir`   | `string` | `"./docs"` | Directory containing Markdown files  |
+| `routeBase` | `string` | `"/"`      | Route where documentation is mounted |
 
-### Adding a landing page
-
-By default the documentation owns the site root, and the first sorted page is
-rendered at `/`. No `src/pages/index.astro` is needed.
-
-To give `/` to a landing page, mount the documentation below it:
+To keep a landing page at `/`, mount documentation below it:
 
 ```ts
 defineJaadConfig({ title: "My Project", routeBase: "/docs" });
 ```
 
-Then create an ordinary `src/pages/index.astro`. Leaving an index page in place
-while the docs are mounted at `/` produces a route conflict, and JAAD warns with
-the configuration to use.
+When documentation is mounted at `/`, an existing `src/pages/index.*` creates
+a route conflict and JAAD reports the required `routeBase` setting.
 
-## Links
+## Navigation
 
-`nav` are text links; `social` are icons.
+| Option   | Type                                   | Default  | Description       |
+| -------- | -------------------------------------- | -------- | ----------------- |
+| `nav`    | `{ label: string; href: string }[]`    | `[]`     | Header text links |
+| `social` | `Record<string, string \| SocialLink>` | inferred | Header icon links |
+
+For example:
 
 ```ts
 defineJaadConfig({
   title: "My Project",
   nav: [{ label: "API", href: "https://api.example.dev" }],
   social: {
-    // A bundled git forge only needs its URL.
     github: "https://github.com/me/repo",
-
-    // Anything else brings its own icon.
     forum: {
       href: "https://forum.example.dev",
       label: "Forum",
-      svg: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="…" /></svg>`,
+      svg: `<svg viewBox="0 0 24 24">...</svg>`,
     },
   },
 });
 ```
 
-Bundled forges: `github`, `gitlab`, `codeberg`, `gitea`, `forgejo`, `bitbucket`, `sourcehut`. These are the forges the repository link can be inferred from. Any other key works as long as you pass an `svg`.
+Bundled forge icons are available for `github`, `gitlab`, `codeberg`, `gitea`,
+`forgejo`, `bitbucket` and `sourcehut`. Other keys require an `svg`.
 
-**You usually do not need `social` at all.** If the project has a git remote, the repository link and its icon are worked out from it.
-
-Naming a forge yourself turns that inference off, so the header shows the repository you chose and not the one the remote happens to point at. This is what a documentation site kept in its own repository needs.
+When `social` is omitted, JAAD derives the repository link and forge icon from
+the git remote. An explicit forge entry overrides that inference.
 
 ## Footer
 
-| Option   | Type              | Default   | Notes                                                         |
-| -------- | ----------------- | --------- | ------------------------------------------------------------- |
-| `footer` | `string \| false` | `:credit` | One line of text. Inline HTML is allowed. `false` removes it. |
+| Option   | Type              | Default   | Description                          |
+| -------- | ----------------- | --------- | ------------------------------------ |
+| `footer` | `string \| false` | `:credit` | Footer HTML, or `false` to remove it |
 
-The footer is one line, and the words in it are yours. Leave it unset and you get the
-"Built with JAAD" credit; write your own and that is what appears instead:
-
-```ts
-defineJaadConfig({ title: "…", footer: "© 2026 Me" });
-
-defineJaadConfig({
-  title: "…",
-  footer: 'MIT Licensed · © 2026 Me · <a href="/imprint">Imprint</a>',
-});
-```
-
-`:credit` stands in for the credit line, wherever you want it, so keeping it does not mean
-pasting our URL into your config:
+Use `:credit` to place the JAAD credit inside custom text:
 
 ```ts
-defineJaadConfig({ title: "…", footer: "© 2026 Me · :credit" });
+defineJaadConfig({ title: "...", footer: "© 2026 Me · :credit" });
 ```
-
-`footer: false` removes the footer altogether.
 
 ## Repository
 
-| Option     | Type                | Default | Notes                                                                           |
-| ---------- | ------------------- | ------- | ------------------------------------------------------------------------------- |
-| `editLink` | `boolean \| string` | `true`  | `true` derives it from the git remote. Pass a URL to override, `false` to hide. |
+| Option     | Type                | Default | Description                                     |
+| ---------- | ------------------- | ------- | ----------------------------------------------- |
+| `editLink` | `boolean \| string` | `true`  | Derive, override or hide “Edit this page” links |
 
-With `editLink: true` the base URL comes from `git remote get-url origin`, the current branch, and `docsDir` resolved from the **repository** root, so a site living in a subdirectory still links correctly. When there is no repository, no remote, or the remote cannot be parsed, the link is simply omitted rather than pointing somewhere wrong.
-
-To override, pass a URL. `:path` is replaced with the file, or appended if absent:
+Pass a URL to override the inferred repository. `:path` is replaced with the
+source file path, or appended when absent:
 
 ```ts
 defineJaadConfig({
-  title: "…",
+  title: "...",
   editLink: "https://git.example.dev/me/repo/edit/main/docs/:path",
 });
 ```
 
-## SEO
+The link is omitted when the git remote, branch or repository root cannot be
+resolved safely.
 
-| Option    | Type              | Default          | Notes                                         |
-| --------- | ----------------- | ---------------- | --------------------------------------------- |
-| `head`    | `HeadTag[]`       | `[]`             | Extra tags in `<head>`.                       |
-| `ogImage` | `string \| false` | detected or none | Resolved against `site` into an absolute URL. |
+## SEO and head tags
 
-JAAD looks in `public/` for `og-image.png`, `.jpg`, `.jpeg` or `.webp`, in that
-order. If none exists, image metadata is omitted rather than pointing at a
-missing asset. Pass a public path or absolute URL to override the detected
-image, or `false` to disable it explicitly:
+| Option    | Type              | Default          | Description                       |
+| --------- | ----------------- | ---------------- | --------------------------------- |
+| `head`    | `HeadTag[]`       | `[]`             | Extra elements in `<head>`        |
+| `ogImage` | `string \| false` | detected or none | Social image path, URL or `false` |
 
-```ts
-defineJaadConfig({ title: "…", ogImage: "/social-card.png" });
-```
+JAAD detects `public/og-image.png`, `.jpg`, `.jpeg` or `.webp`, in that order.
+Local images and canonical URLs require `site`; absolute image URLs do not.
 
-Canonical URLs and local social images are emitted only when `site` is set.
-An absolute external `ogImage` can be emitted without `site` because it already
-has a public origin.
-
-For analytics, verification tags and preconnects.
+Use `head` for analytics, verification tags and preconnects:
 
 ```ts
 defineJaadConfig({
-  title: "…",
+  title: "...",
   head: [
-    { tag: "meta", attrs: { name: "google-site-verification", content: "…" } },
-    {
-      tag: "script",
-      attrs: { src: "https://analytics.example.dev/s.js", defer: true },
-    },
+    { tag: "meta", attrs: { name: "robots", content: "index,follow" } },
+    { tag: "script", attrs: { src: "/analytics.js", defer: true } },
   ],
 });
 ```
 
-## Theme
+## Theme and appearance
 
 | Option       | Type                                        | Default     |
 | ------------ | ------------------------------------------- | ----------- |
 | `theme`      | `string \| { light: string; dark: string }` | `"default"` |
 | `appearance` | `"auto" \| "light" \| "dark"`               | `"auto"`    |
 
-A name sets the chrome, the markdown and the code colours together:
+A named theme styles the interface, Markdown and code blocks. A `{ light,
+dark }` object changes only the Shiki code themes. See
+[Themes](/docs/configurations/themes) for available names and custom themes.
 
-```ts
-defineJaadConfig({ title: "My Project", theme: "dracula" });
-```
+`appearance: "auto"` follows the reader's preference and shows the switcher.
+`"light"` and `"dark"` pin the appearance and remove it.
 
-Bundled: `default`, `catppuccin`, `gruvbox`, `rose-pine`, `rose-pine-moon`, `dracula`, `nord`,
-`one-dark`, `tokyo-night`. An unknown name stops the build and lists the ones that exist.
+## Detected project values
 
-An object is a [Shiki](https://shiki.style/themes) pair instead, leaving the colours to the
-CSS tokens:
-
-```ts
-defineJaadConfig({
-  title: "…",
-  theme: { light: "github-light", dark: "github-dark" },
-});
-```
-
-`appearance` decides whether the reader gets a say. `"auto"` follows their system preference
-and shows the switcher; `"light"` or `"dark"` pins the site and removes it.
-
-```ts
-defineJaadConfig({ title: "…", theme: "tokyo-night", appearance: "dark" });
-```
-
-See [Themes](/docs/configurations/themes) for writing your own.
-
-## Worked out for you
-
-These have no option because they are read from the project:
-
-| What                                       | Where it comes from                               |
-| ------------------------------------------ | ------------------------------------------------- |
-| Repository link and icon                   | `git remote get-url origin`                       |
-| "Edit this page" base URL                  | git remote, branch, and `docsDir`                 |
-| Missing `description`                      | `package.json`                                    |
-| Favicon                                    | `public/favicon.svg`, `.ico` or `.png`            |
-| Social card image                          | `public/og-image.png`, `.jpg`, `.jpeg` or `.webp` |
-| Custom styles                              | `src/jaad.css`, if present                        |
-| Sitemap                                    | Generated when `site` is set                      |
-| Search index, `llms.txt`, raw `.md` routes | Below `routeBase`                                 |
+| Value                                     | Source                                            |
+| ----------------------------------------- | ------------------------------------------------- |
+| Repository and edit links                 | git remote, branch and `docsDir`                  |
+| Missing description                       | `package.json`                                    |
+| Favicon                                   | `public/favicon.svg`, `.ico` or `.png`            |
+| Social image                              | `public/og-image.png`, `.jpg`, `.jpeg` or `.webp` |
+| Custom styles                             | `src/jaad.css`                                    |
+| Sitemap                                   | Generated when `site` is set                      |
+| Search index, `llms.txt` and raw Markdown | Generated below `routeBase`                       |
 
 ## Extending Astro
 
-Most projects never need this. When you do, `astro` takes any Astro option and is merged into
-the generated config. Integrations you add are appended to JAAD's, not replacing them.
+| Option  | Type                      | Default |
+| ------- | ------------------------- | ------- |
+| `astro` | `Record<string, unknown>` | `{}`    |
+
+Pass additional Astro options through `astro`. Extra integrations are appended
+to JAAD's integrations:
 
 ```ts
 defineJaadConfig({
@@ -226,17 +177,6 @@ defineJaadConfig({
 });
 ```
 
-For full control, replace `astro.config.mjs` with your own. The one-line version is only a
-re-export, and `jaad()` is still exported as an ordinary Astro integration:
-
-```js
-// astro.config.mjs
-import { defineConfig } from "astro/config";
-import jaad from "@lancher-dev/jaad";
-import config from "./jaad.config";
-
-export default defineConfig({
-  site: config.site,
-  integrations: [jaad(config)],
-});
-```
+For full control, use a regular Astro configuration and add `jaad(config)` to
+its integrations, as shown in
+[Existing Astro project](/docs/getting-started/installation#existing-astro-project).

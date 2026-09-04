@@ -1,13 +1,9 @@
 # Styles
 
-Colours, fonts and surfaces are CSS custom properties. You change them by creating one file.
-
-## src/jaad.css
-
-If `src/jaad.css` exists in your project, JAAD loads it **after** its own stylesheet, so anything you put there wins. There is no option to set. The file is the convention.
+Create `src/jaad.css` to override JAAD's CSS custom properties. It loads after
+the bundled stylesheet and applies only to documentation pages.
 
 ```css
-/* src/jaad.css */
 :root {
   --color-primary: #3b5bdb;
   --color-background: #ffffff;
@@ -19,47 +15,29 @@ html.dark {
 }
 ```
 
-No build step, no option. It applies to the documentation interface and the
-rendered markdown. Pages outside the documentation own their styles.
+## Core tokens
 
-## The tokens that matter
+| Token                | Purpose                          |
+| -------------------- | -------------------------------- |
+| `--color-background` | Page background                  |
+| `--color-foreground` | Body text                        |
+| `--color-primary`    | Links, accents and active states |
+| `--color-surface`    | Raised surfaces                  |
+| `--color-border`     | Separators and outlines          |
+| `--font-sans`        | Interface and body text          |
 
-Six will get you most of the way:
+The complete groups are:
 
-| Token                | What it colours                          |
-| -------------------- | ---------------------------------------- |
-| `--color-background` | Page background                          |
-| `--color-foreground` | Body text                                |
-| `--color-primary`    | Links, accents, active states            |
-| `--color-surface`    | Cards, the search palette, raised panels |
-| `--color-border`     | Separators and outlines                  |
-| `--font-sans`        | Interface and body text                  |
+- Backgrounds: `--color-background`, `--color-background-secondary`,
+  `--color-background-tertiary`, `--color-surface`, `--color-surface-hover`.
+- Text: `--color-foreground`, `--color-foreground-secondary`,
+  `--color-foreground-muted`, `--color-foreground-bright`.
+- Accent: `--color-primary`, `--color-primary-dark`, `--color-primary-light`.
+- Borders: `--color-border`, `--color-border-light`, `--color-border-dark`.
+- Status: `--color-error`, `--color-warning`, `--color-info`, `--color-success`.
+- Fonts: `--font-sans`, `--font-serif`, `--font-mono`.
 
-## The full set
-
-**Backgrounds**: `--color-background`, `--color-background-secondary`, `--color-background-tertiary`, `--color-surface`, `--color-surface-hover`
-
-**Text**: `--color-foreground`, `--color-foreground-secondary`, `--color-foreground-muted`, `--color-foreground-bright`
-
-**Accent**: `--color-primary`, `--color-primary-dark`, `--color-primary-light`
-
-**Borders**: `--color-border`, `--color-border-light`, `--color-border-dark`
-
-**Status**: `--color-error`, `--color-warning`, `--color-info`, `--color-success`
-
-**Fonts**: `--font-sans`, `--font-serif`, `--font-mono`
-
-## Layout
-
-Widths are tokens too, so the same file moves them:
-
-```css
-/* src/jaad.css */
-:root {
-  --jaad-content-width: 64rem;
-  --jaad-sidebar-width: 18rem;
-}
-```
+## Layout tokens
 
 | Token                  | Default           |
 | ---------------------- | ----------------- |
@@ -68,14 +46,20 @@ Widths are tokens too, so the same file moves them:
 | `--jaad-sidebar-width` | `16rem`           |
 | `--jaad-page-padding`  | `2rem`            |
 
-The documentation header, footer and content column share one measure, and the
-sidebars are positioned from it, so changing the content width moves everything
-together. For structural changes, see
-[Advanced layout](/docs/configurations/advanced-layout).
+```css
+:root {
+  --jaad-content-width: 64rem;
+  --jaad-sidebar-width: 18rem;
+}
+```
 
-## Markdown content
+Use [Advanced layout](/docs/configurations/advanced-layout) when token changes
+are not enough.
 
-The rendered markdown is styled by [JAAMD](https://github.com/lancher-dev/jaamd), which has its own tokens under the `--jaamd-` prefix. They derive from a handful of seeds, so you rarely touch more than these:
+## Markdown tokens
+
+JAAMD tokens use the `--jaamd-` prefix. Most rendered Markdown can be changed
+through four seeds:
 
 ```css
 :root {
@@ -86,9 +70,5 @@ The rendered markdown is styled by [JAAMD](https://github.com/lancher-dev/jaamd)
 }
 ```
 
-Code block surfaces, table borders, blockquote fills and alert backgrounds are all computed from those with `color-mix()`. Change a seed and the whole set follows, staying consistent.
-
-Individual tokens can still be overridden by name when you want an exception. See [Themes](/docs/configurations/themes).
-
-> [!NOTE]
-> The derived tokens use `color-mix()`, supported in Chrome and Edge 111+, Safari 16.2+ and Firefox 113+. On older browsers those colours do not apply.
+Derived colours use `color-mix()`, supported in Chrome and Edge 111+, Safari
+16.2+ and Firefox 113+.

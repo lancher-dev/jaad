@@ -1,42 +1,36 @@
 # Advanced documentation layout
 
-The default layout is intended to work without configuration. If a project
-needs a different documentation structure, create this file:
+Use the default layout unless the documentation needs a different structure.
+To replace it, create:
 
 ```
 src/jaad/DocsFrame.astro
 ```
 
-JAAD detects it automatically. There is no configuration option. Restart the
-development server after creating the file for the first time; later edits are
-watched normally.
+JAAD detects the file automatically. Restart the development server after
+creating it; later edits are watched.
 
-The frame controls the contents of `<body data-docs>`. JAAD continues to own the
-HTML document, metadata, structured data, fonts, theme styles, view transitions
-and keyboard navigation.
+The frame controls `<body data-docs>`. JAAD still owns the HTML document,
+metadata, theme, fonts, view transitions and keyboard navigation.
 
 ## Frame contract
 
-JAAD passes each standard element through a named slot:
+| Slot                | Contents                          |
+| ------------------- | --------------------------------- |
+| `header`            | Header, navigation and search     |
+| `sidebar`           | Desktop page navigation           |
+| `mobile-navigation` | Mobile page and heading selectors |
+| `breadcrumbs`       | Current documentation path        |
+| `page-actions`      | Copy and edit actions             |
+| `content`           | Rendered Markdown article         |
+| `page-navigation`   | Previous and next links           |
+| `table-of-contents` | Desktop heading navigation        |
+| `footer`            | Documentation footer              |
 
-| Slot                | Contents                                    |
-| ------------------- | ------------------------------------------- |
-| `header`            | Documentation header, navigation and search |
-| `sidebar`           | Desktop page navigation                     |
-| `mobile-navigation` | Mobile page and heading selectors           |
-| `breadcrumbs`       | Current documentation path                  |
-| `page-actions`      | Copy and edit actions                       |
-| `content`           | Rendered Markdown article                   |
-| `page-navigation`   | Previous and next page links                |
-| `table-of-contents` | Desktop heading navigation                  |
-| `footer`            | Documentation footer                        |
-
-Render a slot wherever that element should appear. Leaving a slot out removes
-the element from every documentation page.
+Omitting a slot removes that element from every documentation page.
 
 ```astro
 ---
-// src/jaad/DocsFrame.astro
 import type { DocsFrameProps } from "@lancher-dev/jaad/advanced";
 
 type Props = DocsFrameProps;
@@ -49,14 +43,12 @@ const { page, headings } = Astro.props;
 
   <div class="docs-grid">
     <slot name="sidebar" />
-
     <main>
       <slot name="breadcrumbs" />
       <slot name="page-actions" />
       <slot name="content" />
       <slot name="page-navigation" />
     </main>
-
     {headings.length > 0 && <slot name="table-of-contents" />}
   </div>
 
@@ -85,10 +77,8 @@ const { page, headings } = Astro.props;
 </style>
 ```
 
-`DocsFrameProps` also exposes the current page, headings and complete
-navigation model. This allows conditional placement without making JAAD's
-internal components part of the public API.
+`DocsFrameProps` exposes the current page, headings and navigation model for
+conditional placement. JAAD's internal components are not part of this API.
 
-The frame is an advanced escape hatch. For colours, fonts, widths and spacing,
-prefer [`src/jaad.css`](/docs/configurations/styles); it keeps the default
-responsive and accessible structure intact.
+For colours, fonts, widths and spacing, use
+[`src/jaad.css`](/docs/configurations/styles) instead.
