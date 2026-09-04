@@ -4,8 +4,40 @@ import { readFileSync } from "node:fs";
 import { page, distFiles, allCss } from "../dist.mjs";
 
 test("jaamd's remark plugins ran", () => {
-  assert.match(page("docs/markdown/alerts/index.html"), /markdown-alert/);
-  assert.match(page("docs/markdown/code-blocks/index.html"), /code-tabs/);
+  const markdown = page("docs/markdown/index.html");
+  assert.match(markdown, /markdown-alert/);
+  assert.match(markdown, /code-tabs/);
+});
+
+test("retired documentation routes redirect to their replacements", () => {
+  const markdownPages = [
+    "alerts",
+    "blockquotes",
+    "code-blocks",
+    "combination",
+    "detail--summary",
+    "images--videos",
+    "inner-html",
+    "links",
+    "lists",
+    "reference",
+    "spoiler",
+    "tables",
+    "text-formatting",
+  ];
+
+  for (const slug of markdownPages) {
+    assert.match(
+      page(`docs/markdown/${slug}/index.html`),
+      /url=\/docs\/markdown["']?/,
+      slug,
+    );
+  }
+
+  assert.match(
+    page("docs/getting-started/development/index.html"),
+    /url=\/docs\/getting-started\/installation#run-locally/,
+  );
 });
 
 test("dual-theme code colours reach the built CSS", () => {
@@ -84,8 +116,8 @@ test("the sidebar follows the numeric prefixes", () => {
   assert.equal(links[0], "/docs", "the opening page should own routeBase");
   assert.ok(
     links.indexOf("/docs/getting-started/installation") <
-      links.indexOf("/docs/markdown/reference"),
-    "chapter 02 must come before chapter 03",
+      links.indexOf("/docs/markdown"),
+    "getting started must come before markdown",
   );
   assert.ok(
     links.indexOf("/docs/getting-started/installation") <

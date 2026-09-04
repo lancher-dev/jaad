@@ -37,7 +37,7 @@ test("pages carry site name and locale", () => {
 });
 
 test("a page description is not just its own title", () => {
-  for (const path of ["docs/index.html", "docs/markdown/tables/index.html"]) {
+  for (const path of ["docs/index.html", "docs/markdown/index.html"]) {
     const html = page(path);
     const title = html.match(/<title>([^<]*)<\/title>/)?.[1] ?? "";
     const description = meta(html, "og:description") ?? "";
@@ -59,7 +59,7 @@ test("every page declares a language", () => {
 });
 
 test("docs pages carry parseable structured data with absolute urls", () => {
-  const html = page("docs/markdown/tables/index.html");
+  const html = page("docs/configurations/styles/index.html");
   const block = html.match(
     /<script type="application\/ld\+json">([\s\S]*?)<\/script>/,
   );

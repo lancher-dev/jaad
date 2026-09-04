@@ -1,25 +1,14 @@
 # Deployment
 
-A JAAD site builds to static HTML, so it deploys anywhere that serves files.
+JAAD builds a static site in `dist/`:
 
 ```bash
-npm run build      # writes ./dist
-npm run preview    # serves ./dist locally
+npm run build
+npm run preview
 ```
 
-## Before you deploy
-
-Set `site` in `jaad.config.ts` to the final URL. Canonical links, the sitemap and social card images are all built from it, and without it they are omitted.
-
-```ts
-// jaad.config.ts
-export default defineJaadConfig({
-  site: "https://docs.example.dev",
-  title: "My Project",
-});
-```
-
-If the site is served from a subpath rather than a domain root, set `base` too:
+Set `site` to the public URL so JAAD can generate canonical links, the sitemap
+and social image URLs. Add `base` when the site is served from a subpath.
 
 ```ts
 export default defineJaadConfig({
@@ -31,7 +20,7 @@ export default defineJaadConfig({
 
 ## GitHub Pages
 
-Enable Pages for the repository with **GitHub Actions** as the source, then add this workflow:
+Select **GitHub Actions** as the Pages source, then add:
 
 ```yaml
 # .github/workflows/deploy.yml
@@ -72,24 +61,16 @@ jobs:
         uses: actions/deploy-pages@v4
 ```
 
-> [!IMPORTANT]
-> The "Edit this page" link is derived from the git remote and the branch that is checked out. Deploying from a detached or shallow checkout still works, and the link is left out when the remote cannot be read.
+## Other hosts
 
-## Everywhere else
+For Netlify, Vercel, Cloudflare Pages or another static host, use
+`npm run build` as the build command and `dist` as the publish directory.
 
-Netlify, Vercel, Cloudflare Pages and the like need no workflow: build command `npm run build`, publish directory `dist`.
+## Generated files
 
-For a plain web server, copy `dist/` behind any static host.
+In addition to the pages, the build writes:
 
-## What gets built
-
-Alongside the pages, JAAD emits:
-
-- `sitemap-index.xml`: written when `site` is set
-- `<routeBase>/search-index.json`: fetched by the search palette on first use
-- `<routeBase>/llms.txt`: a plain-text index of every page, following the [llms.txt convention](https://llmstxt.org)
-- `<routeBase>/**.md`: the raw markdown of every page, at its named URL with a `.md` extension
-
-At the default root mount, `<routeBase>` is empty and these remain
-`/search-index.json` and `/llms.txt`. Mounting documentation at `/docs` keeps
-all JAAD-owned output below `/docs`.
+- `sitemap-index.xml` when `site` is set;
+- `<routeBase>/search-index.json` for search;
+- `<routeBase>/llms.txt` as a plain-text page index;
+- `<routeBase>/**.md` for raw Markdown routes.
