@@ -3,10 +3,12 @@ import assert from "node:assert/strict";
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { pathToFileURL } from "node:url";
 import { mkdtempSync } from "node:fs";
 import {
   createSitemapFilter,
   findOpeningDocSlug,
+  shouldInjectNotFound,
 } from "../../packages/jaad/src/integration.ts";
 
 test("opening-page discovery follows collection slugging and numeric order", () => {
@@ -31,4 +33,20 @@ test("the sitemap omits only the opening page's named redirect", () => {
   assert.equal(filter("https://example.dev/repo/docs/images--videos/"), false);
   assert.equal(filter("https://example.dev/repo/docs/"), true);
   assert.equal(filter("https://example.dev/repo/docs/guide/"), true);
+});
+
+test("the fallback 404 belongs only to a docs-only site", () => {
+  const root = mkdtempSync(join(tmpdir(), "jaad-404-"));
+  const srcDir = pathToFileURL(`${root}/`);
+
+  try {
+    assert.equal(shouldInjectNotFound("", srcDir), true);
+    assert.equal(shouldInjectNotFound("/docs", srcDir), false);
+
+    mkdirSync(join(root, "pages"));
+    writeFileSync(join(root, "pages", "404.astro"), "<h1>Mine</h1>");
+    assert.equal(shouldInjectNotFound("", srcDir), false);
+  } finally {
+    rmSync(root, { recursive: true });
+  }
 });

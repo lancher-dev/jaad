@@ -1,74 +1,57 @@
-# Custom pages
+# Pages outside the documentation
 
-Anything outside `docs/` is an ordinary Astro page in `src/pages/`. JAAD exports the layout its own pages use, so a landing page, a changelog or a pricing page gets the same header, footer, fonts and theme without you rebuilding them.
+Anything outside `docs/` is an ordinary Astro page in `src/pages/`. It owns
+its layout, styles and metadata just like it would in a project without JAAD.
+Options such as `nav`, `footer`, `theme` and `appearance` configure the
+documentation interface only.
 
-For a new project, the `site` template creates the initial landing page and
-mounts the documentation at `/docs`:
+For a new project, the `site` template creates a local layout and landing page,
+then mounts the documentation at `/docs`:
 
 ```bash
 npm create @lancher-dev/jaad@latest my-site -- --template site
 ```
 
+```
+src/
+  layouts/
+    SiteLayout.astro
+  pages/
+    index.astro
+docs/
+  01-introduction.md
+```
+
+Both files under `src/` belong to the application. Edit or replace them freely;
+they do not import JAAD components or inherit its documentation chrome.
+
+## Adding another page
+
+Use the local site layout as you would use any Astro layout:
+
 ```astro
 ---
-// src/pages/index.astro
-import Layout from "@lancher-dev/jaad/layouts/Base.astro";
+// src/pages/pricing.astro
+import SiteLayout from "../layouts/SiteLayout.astro";
 ---
 
-<Layout title="Home">
-  <h1>My Project</h1>
-  <p>Write markdown. Get docs.</p>
-</Layout>
+<SiteLayout pageTitle="Pricing">
+  <h1>Pricing</h1>
+</SiteLayout>
 ```
 
-## What the layout already gives you
+JAAD continues to provide the routes below `routeBase`, the search index,
+`llms.txt`, raw Markdown routes and the sitemap integration. It does not impose
+markup or styling on the rest of the application.
 
-|          |                                                                          |
-| -------- | ------------------------------------------------------------------------ |
-| `<head>` | Title, description, canonical URL, Open Graph and Twitter cards, favicon |
-| Header   | Logo or title, `nav`, `social`, the theme switch                         |
-| Footer   | Your `footer` line                                                       |
-| Theme    | Colours, fonts and the light/dark choice                                 |
+## Migrating from the packaged Base layout
 
-`title` and `description` are optional. Without them the page uses the site title and description, and `title` is composed as `Page | Site` the same way documentation pages are.
+`@lancher-dev/jaad/layouts/Base.astro` is deprecated in JAAD 0.7 and will be
+removed in 0.8. Move its application-specific markup into a local Astro layout,
+then replace imports from the package with that local file.
 
-## Taking the whole page
+This separation also means that changing documentation widths or hiding its
+footer cannot accidentally redesign a landing or product page.
 
-The layout centres your content and gives it breathing room, which is what a text page wants and what a full-width hero does not. `bare` removes that spacing and leaves the width to you:
-
-```astro
-<Layout bare>
-  <section class="w-full bg-[var(--color-background-secondary)] py-24">
-    <h1 class="text-center">Edge to edge</h1>
-  </section>
-</Layout>
-```
-
-The `<main>` element is still there, so screen readers still find the page's main landmark. Only the spacing goes.
-
-## Widths
-
-Header, footer, documentation content and sidebars all measure themselves against four custom properties. Set them in `src/jaad.css` and everything follows, including where the sidebars sit:
-
-```css
-/* src/jaad.css */
-:root {
-  --jaad-content-width: 64rem;
-  --jaad-sidebar-width: 18rem;
-}
-```
-
-| Token                  | Default           | What it sets                                                       |
-| ---------------------- | ----------------- | ------------------------------------------------------------------ |
-| `--jaad-content-width` | `56rem`           | Documentation column, and the measure everything else derives from |
-| `--jaad-chrome-width`  | the content width | Header and footer, so they line up with the content                |
-| `--jaad-sidebar-width` | `16rem`           | Navigation and table of contents                                   |
-| `--jaad-page-padding`  | `2rem`            | Side padding of a `Base` page, doubled on large screens            |
-
-Set `--jaad-chrome-width` on its own if you want a header wider than the text under it.
-
-## What the header shows
-
-The header is built from configuration, not from props: the logo or title, `nav`, `social` and the theme switch. Change what appears by changing those options, and change how wide it is with `--jaad-chrome-width`.
-
-Every page that uses `Base` gets it. If you need a page with no header at all, that page does not use `Base`, and then the `<head>` tags, the stylesheet and the theme script are yours to write.
+To change the structure of the documentation itself, see
+[Advanced layout](/docs/configurations/advanced-layout).

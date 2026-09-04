@@ -122,7 +122,8 @@ defineJaadConfig({ title: "My Project", docsDir: "./documentation" });
 
 With the `docs` template, the first page in the sorted file structure opens at
 `/`; its named URL redirects there. The `site` template generates a minimal
-landing page and sets `routeBase: "/docs"` for you.
+landing page with its own local Astro layout and sets `routeBase: "/docs"` for
+you. The landing page does not depend on the documentation layout or theme.
 
 ## Run it
 

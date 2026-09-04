@@ -2,6 +2,9 @@
 
 Everything lives in `jaad.config.ts`. Only `title` is required.
 
+These options configure the documentation experience. Ordinary Astro pages
+outside `docs/` keep their own layout and styles.
+
 ```ts
 import { defineJaadConfig } from "@lancher-dev/jaad";
 

@@ -1,0 +1,28 @@
+---
+import type { DocsFrameProps } from "@lancher-dev/jaad/advanced";
+
+type Props = DocsFrameProps;
+
+const { page } = Astro.props;
+---
+
+<div data-custom-docs-frame data-page-id={page.id}>
+  <slot name="header" />
+
+  <div class="docs-container relative">
+    <slot name="table-of-contents" />
+    <slot name="sidebar" />
+
+    <div class="docs-main lg:mr-64 lg:ml-64">
+      <main class="docs-page-main">
+        <slot name="mobile-navigation" />
+        <article>
+          <slot name="page-actions" />
+          <slot name="breadcrumbs" />
+          <slot name="content" />
+        </article>
+        <slot name="page-navigation" />
+      </main>
+    </div>
+  </div>
+</div>

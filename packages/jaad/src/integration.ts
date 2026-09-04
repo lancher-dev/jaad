@@ -26,6 +26,7 @@ interface Stylesheets {
 export interface IntegrationState {
   deploymentBase: string;
   openingSlug: string | null;
+  docsFrame: string;
 }
 
 const INDEX_PAGE_NAMES = [
@@ -37,8 +38,26 @@ const INDEX_PAGE_NAMES = [
   "index.ts",
 ];
 
+const NOT_FOUND_PAGE_NAMES = [
+  "404.astro",
+  "404.md",
+  "404.mdx",
+  "404.html",
+  "404.js",
+  "404.ts",
+];
+
 const routeEntrypoint = (file: string) =>
   new URL(`./routes/${file}`, import.meta.url).pathname;
+
+export function shouldInjectNotFound(docsBase: string, srcDir: URL): boolean {
+  return (
+    docsBase === "" &&
+    !NOT_FOUND_PAGE_NAMES.some((name) =>
+      existsSync(new URL(`pages/${name}`, srcDir)),
+    )
+  );
+}
 
 export function findOpeningDocSlug(dir: string): string | null {
   if (!existsSync(dir)) return null;
@@ -68,12 +87,16 @@ function injectedRoutes(docsBase: string): [string, string][] {
     [`${docsBase}/[...slug].md`, "docs-slug.md.ts"],
     ["/search-index.json", "search-index.json.ts"],
     ["/llms.txt", "llms.txt.ts"],
-    ["/404", "404.astro"],
   ];
 }
 
 export function createIntegrationState(base = ""): IntegrationState {
-  return { deploymentBase: normaliseBasePath(base), openingSlug: null };
+  return {
+    deploymentBase: normaliseBasePath(base),
+    openingSlug: null,
+    docsFrame: new URL("./layouts/DefaultDocsFrame.astro", import.meta.url)
+      .pathname,
+  };
 }
 
 export function createCoreIntegration(
@@ -96,7 +119,12 @@ export function createCoreIntegration(
           vite: {
             plugins: [
               tailwindcss(),
-              jaadVirtualPlugin(config, stylesheets.user, stylesheets.theme),
+              jaadVirtualPlugin(
+                config,
+                stylesheets.user,
+                stylesheets.theme,
+                () => state.docsFrame,
+              ),
             ],
             // Package .astro sources must reach the Astro compiler.
             ssr: { noExternal: ["@lancher-dev/jaad"] },
@@ -108,6 +136,23 @@ export function createCoreIntegration(
           injectRoute({
             pattern,
             entrypoint: routeEntrypoint(entrypoint),
+            prerender: true,
+          });
+        }
+
+        const customDocsFrame = new URL(
+          "jaad/DocsFrame.astro",
+          astroConfig.srcDir,
+        );
+        if (existsSync(customDocsFrame)) {
+          state.docsFrame = fileURLToPath(customDocsFrame);
+          addWatchFile(customDocsFrame);
+        }
+
+        if (shouldInjectNotFound(config.docsBase, astroConfig.srcDir)) {
+          injectRoute({
+            pattern: "/404",
+            entrypoint: routeEntrypoint("404.astro"),
             prerender: true,
           });
         }
@@ -159,7 +204,7 @@ const withoutTrailingSlash = (value: string) =>
 
 export function createSitemapFilter(
   docsBase: string,
-  state: IntegrationState,
+  state: Pick<IntegrationState, "deploymentBase" | "openingSlug">,
 ): (page: string) => boolean {
   return (page) => {
     if (!state.openingSlug) return true;

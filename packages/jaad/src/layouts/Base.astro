@@ -1,40 +1,17 @@
 ---
-import Footer from "../components/Footer.astro";
-import Header from "../components/Header.astro";
-import Head from "../components/Head.astro";
-import config from "virtual:jaad/config";
-
-import "../styles/global.css";
-import "virtual:jaad/theme.css";
-import "virtual:jaad/user.css";
+/**
+ * @deprecated Define a local Astro layout for pages outside the documentation.
+ * This compatibility layout will be removed in JAAD 0.8.
+ */
+import Page from "./Page.astro";
 
 interface Props {
   title?: string;
   description?: string;
   bare?: boolean;
 }
-
-const { title, description, bare = false } = Astro.props;
-
-const pageTitle = title ? `${title} | ${config.title}` : config.title;
-const pageDescription = description ?? config.description ?? config.title;
 ---
 
-<!doctype html>
-<html
-  lang={config.lang}
-  class={config.appearance === "dark" ? "dark" : undefined}
->
-  <head>
-    <Head title={pageTitle} description={pageDescription} />
-  </head>
-  <body
-    class="bg-background text-foreground flex min-h-screen flex-col text-[14px] leading-[1.6]"
-  >
-    <Header />
-    <main class={bare ? "jaad-main-bare" : "jaad-main"}>
-      <slot />
-    </main>
-    <Footer />
-  </body>
-</html>
+<Page {...Astro.props}>
+  <slot />
+</Page>

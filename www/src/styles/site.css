@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+@source "../";
+
+@theme {
+  --color-background: #faf8f5;
+  --color-background-secondary: #f7f5f2;
+  --color-background-tertiary: #efedea;
+  --color-surface: #ffffff;
+  --color-foreground: #3a3a3a;
+  --color-foreground-bright: #1a1a1a;
+  --color-foreground-secondary: #686765;
+  --color-foreground-muted: #8c8985;
+  --color-primary: #2d2d2d;
+  --color-primary-dark: #111111;
+  --color-border: #d9d5d0;
+  --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-serif: Georgia, serif;
+  --font-mono: "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+@layer base {
+  html {
+    background: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+  }
+
+  body {
+    min-height: 100vh;
+    margin: 0;
+  }
+
+  a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+}
+
+@utility font-brand {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+.site-chrome {
+  width: min(100% - 2rem, 64rem);
+  margin-inline: auto;
+}
+
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: 1rem;
+}
+
+.site-main {
+  padding-inline: 2rem;
+}
+
+.site-footer {
+  border-top: 1px solid var(--color-border);
+  padding-block: 1rem;
+  color: var(--color-foreground-muted);
+  font-size: 0.8rem;
+  text-align: center;
+}

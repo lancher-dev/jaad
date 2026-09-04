@@ -5,9 +5,15 @@ import Head from "../components/Head.astro";
 import DocsSidebarLeft from "../components/docs/DocsSidebarLeft.astro";
 import TableOfContents from "../components/docs/TableOfContents.astro";
 import StructuredData from "../components/docs/StructuredData.astro";
-import { extractDescription, extractTitleFromMarkdown } from "../utils/docs.ts";
+import DocsFrame from "virtual:jaad/docs-frame";
+import {
+  extractDescription,
+  extractTitleFromMarkdown,
+  getCleanSlug,
+} from "../utils/docs.ts";
 import type { DocsEntry, DocsHeadings } from "../@types/docs.ts";
-import type { NavSection } from "../navigation.ts";
+import type { DocsNavigation } from "../navigation.ts";
+import type { DocsFrameProps } from "../advanced.ts";
 import { ClientRouter } from "astro:transitions";
 import config from "virtual:jaad/config";
 
@@ -23,16 +29,10 @@ interface Props {
   chapter?: string;
   entry?: DocsEntry;
   headings?: DocsHeadings[];
-  navigationSections?: NavSection[];
+  navigation: DocsNavigation;
 }
 
-const {
-  title,
-  chapter,
-  entry,
-  headings = [],
-  navigationSections = [],
-} = Astro.props;
+const { title, chapter, entry, headings = [], navigation } = Astro.props;
 
 const pageTitle = title ? `${title} | ${config.title}` : config.title;
 
@@ -46,6 +46,17 @@ const pageDescription =
   (entry ? extractDescription(entry.body || "", entryTitle) : null) ??
   config.description ??
   config.title;
+
+const frameProps: DocsFrameProps = {
+  page: {
+    id: entry?.id ?? "",
+    slug: entry ? getCleanSlug(entry.id) : "",
+    title: entryTitle,
+    chapter,
+  },
+  headings,
+  navigation,
+};
 ---
 
 <!doctype html>
@@ -66,19 +77,17 @@ const pageDescription =
     data-docs
     class="bg-background text-foreground flex min-h-screen flex-col text-[14px] leading-[1.6]"
   >
-    <Header inDocs />
-
-    <div class="docs-container relative">
-      <DocsSidebarLeft sections={navigationSections} />
-
-      <div class="docs-main lg:mr-64 lg:ml-64">
-        <slot />
-      </div>
-
-      <TableOfContents headings={headings} />
-    </div>
-
-    <Footer />
+    <DocsFrame {...frameProps}>
+      <Header slot="header" inDocs />
+      <DocsSidebarLeft slot="sidebar" sections={navigation.sections} />
+      <slot name="mobile-navigation" slot="mobile-navigation" />
+      <slot name="breadcrumbs" slot="breadcrumbs" />
+      <slot name="page-actions" slot="page-actions" />
+      <slot name="content" slot="content" />
+      <slot name="page-navigation" slot="page-navigation" />
+      <TableOfContents slot="table-of-contents" headings={headings} />
+      <Footer slot="footer" />
+    </DocsFrame>
 
     <script>
       import { navigate } from "astro:transitions/client";

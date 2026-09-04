@@ -33,22 +33,38 @@
 
 /* Derived from the content, so one token moves the whole layout. */
 @media (min-width: 1024px) {
-  .docs-sidebar-left {
+  [data-jaad-default-frame] .docs-sidebar-left,
+  [data-jaad-default-frame] .docs-sidebar-right {
+    position: fixed;
+    top: 0;
+    display: block;
+    height: 100vh;
+    padding: 6rem 1.5rem 2rem;
+  }
+
+  [data-jaad-default-frame] .docs-sidebar-left {
     left: var(--jaad-sidebar-offset);
   }
 
-  .docs-sidebar-right {
+  [data-jaad-default-frame] .docs-sidebar-right {
     right: var(--jaad-sidebar-offset);
   }
 
   @media (max-width: 1536px) {
-    .docs-sidebar-left {
+    [data-jaad-default-frame] .docs-sidebar-left {
       left: 1rem;
     }
 
-    .docs-sidebar-right {
+    [data-jaad-default-frame] .docs-sidebar-right {
       right: 1rem;
     }
+  }
+}
+
+@media (max-width: 1023px) {
+  [data-jaad-default-frame] .docs-sidebar-left,
+  [data-jaad-default-frame] .docs-sidebar-right {
+    display: none;
   }
 }
 

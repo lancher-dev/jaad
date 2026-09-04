@@ -19,7 +19,8 @@ html.dark {
 }
 ```
 
-No build step, no option. It applies to both the site chrome and the rendered markdown.
+No build step, no option. It applies to the documentation interface and the
+rendered markdown. Pages outside the documentation own their styles.
 
 ## The tokens that matter
 
@@ -67,9 +68,10 @@ Widths are tokens too, so the same file moves them:
 | `--jaad-sidebar-width` | `16rem`           |
 | `--jaad-page-padding`  | `2rem`            |
 
-Header, footer and the documentation column share one measure, and the sidebars are
-positioned from it, so changing the content width moves everything together. See
-[Custom pages](/docs/configurations/custom-pages) for building your own pages on top.
+The documentation header, footer and content column share one measure, and the
+sidebars are positioned from it, so changing the content width moves everything
+together. For structural changes, see
+[Advanced layout](/docs/configurations/advanced-layout).
 
 ## Markdown content
 

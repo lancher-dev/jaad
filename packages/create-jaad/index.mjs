@@ -10,6 +10,14 @@ import { styleText } from "node:util";
 const JAAD = "^0.6.1";
 const ASTRO = "^7.3.1";
 const TEMPLATES = ["docs", "site"];
+const INDEX_PAGE_NAMES = [
+  "index.astro",
+  "index.md",
+  "index.mdx",
+  "index.html",
+  "index.js",
+  "index.ts",
+];
 
 const HELP = `Usage: npm create @lancher-dev/jaad@latest [directory] [options]
 
@@ -273,27 +281,108 @@ function jaadConfig(title, template) {
 
 function landingPage(title) {
   return `---
-import Layout from "@lancher-dev/jaad/layouts/Base.astro";
+import SiteLayout from "../layouts/SiteLayout.astro";
 
 const title = ${JSON.stringify(title)};
+const base = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL.slice(0, -1)
+  : import.meta.env.BASE_URL;
+const docsHref = base + "/docs";
 ---
 
-<Layout>
-  <section class="mx-auto max-w-2xl py-16 text-center">
-    <h1 class="text-foreground-bright font-serif text-4xl font-semibold">
-      {title}
-    </h1>
-    <p class="text-foreground-secondary mt-5 text-lg">
+<SiteLayout pageTitle="Home">
+  <section class="hero">
+    <h1>{title}</h1>
+    <p>
       Welcome. Start here, then explore the documentation.
     </p>
-    <a
-      href="/docs"
-      class="bg-primary text-background hover:bg-primary-dark mt-8 inline-block rounded-sm px-6 py-3 font-medium no-underline transition-colors"
-    >
+    <a href={docsHref}>
       Read the documentation
     </a>
   </section>
-</Layout>
+</SiteLayout>
+`;
+}
+
+function siteLayout(title) {
+  return `---
+interface Props {
+  pageTitle?: string;
+  description?: string;
+}
+
+const siteTitle = ${JSON.stringify(title)};
+const {
+  pageTitle,
+  description = "A website with its own JAAD documentation.",
+} = Astro.props;
+const title = pageTitle ? \`\${pageTitle} | \${siteTitle}\` : siteTitle;
+const base = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL.slice(0, -1)
+  : import.meta.env.BASE_URL;
+const homeHref = base + "/";
+const docsHref = base + "/docs";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="site-name" href={homeHref}>{siteTitle}</a>
+      <nav aria-label="Main navigation">
+        <a href={docsHref}>Documentation</a>
+      </nav>
+    </header>
+    <main><slot /></main>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    color-scheme: light dark;
+    font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+    background: #faf8f5;
+    color: #292929;
+  }
+
+  * { box-sizing: border-box; }
+  body { min-height: 100vh; margin: 0; }
+  a { color: inherit; }
+  .site-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 64rem;
+    margin: 0 auto;
+    padding: 1.25rem 2rem;
+  }
+  .site-name { font-weight: 700; text-decoration: none; }
+  main { padding: 2rem; }
+  .hero {
+    max-width: 44rem;
+    margin: 8rem auto;
+    text-align: center;
+  }
+  .hero h1 { margin: 0; font-size: clamp(2.5rem, 8vw, 5rem); }
+  .hero p { margin: 1.5rem 0 2rem; color: #666; font-size: 1.125rem; }
+  .hero a {
+    display: inline-block;
+    border: 1px solid currentColor;
+    border-radius: 0.35rem;
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { background: #111; color: #eee; }
+    .hero p { color: #aaa; }
+  }
+</style>
 `;
 }
 
@@ -326,7 +415,18 @@ function scaffold(request) {
     skipped,
   );
 
-  if (template === "site") {
+  const ownsRoot = INDEX_PAGE_NAMES.some((name) =>
+    existsSync(join(target, "src", "pages", name)),
+  );
+
+  if (template === "site" && !ownsRoot) {
+    write(
+      target,
+      "src/layouts/SiteLayout.astro",
+      siteLayout(title),
+      written,
+      skipped,
+    );
     write(
       target,
       "src/pages/index.astro",
