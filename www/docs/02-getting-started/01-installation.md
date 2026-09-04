@@ -98,7 +98,8 @@ export { collections } from "@lancher-dev/jaad/content";
 The other two are boilerplate: `astro.config.mjs` hands over to JAAD, `src/content.config.ts` tells Astro where the markdown lives. Neither needs to change again.
 
 > [!IMPORTANT]
-> Set `site`. Without it Astro cannot build absolute URLs, so canonical links and social card images are left out.
+> Set `site`. Without it JAAD omits canonical URLs and local social card images
+> instead of emitting build-time URLs that are not publicly valid.
 
 ## Write something
 

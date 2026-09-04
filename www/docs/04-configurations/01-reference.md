@@ -128,10 +128,23 @@ defineJaadConfig({
 
 ## SEO
 
-| Option    | Type              | Default           | Notes                                         |
-| --------- | ----------------- | ----------------- | --------------------------------------------- |
-| `head`    | `HeadTag[]`       | `[]`              | Extra tags in `<head>`.                       |
-| `ogImage` | `string \| false` | `"/og-image.png"` | Resolved against `site` into an absolute URL. |
+| Option    | Type              | Default          | Notes                                         |
+| --------- | ----------------- | ---------------- | --------------------------------------------- |
+| `head`    | `HeadTag[]`       | `[]`             | Extra tags in `<head>`.                       |
+| `ogImage` | `string \| false` | detected or none | Resolved against `site` into an absolute URL. |
+
+JAAD looks in `public/` for `og-image.png`, `.jpg`, `.jpeg` or `.webp`, in that
+order. If none exists, image metadata is omitted rather than pointing at a
+missing asset. Pass a public path or absolute URL to override the detected
+image, or `false` to disable it explicitly:
+
+```ts
+defineJaadConfig({ title: "…", ogImage: "/social-card.png" });
+```
+
+Canonical URLs and local social images are emitted only when `site` is set.
+An absolute external `ogImage` can be emitted without `site` because it already
+has a public origin.
 
 For analytics, verification tags and preconnects.
 
@@ -187,15 +200,16 @@ See [Themes](/docs/configurations/themes) for writing your own.
 
 These have no option because they are read from the project:
 
-| What                         | Where it comes from                    |
-| ---------------------------- | -------------------------------------- |
-| Repository link and icon     | `git remote get-url origin`            |
-| "Edit this page" base URL    | git remote, branch, and `docsDir`      |
-| Missing `description`        | `package.json`                         |
-| Favicon                      | `public/favicon.svg`, `.ico` or `.png` |
-| Custom styles                | `src/jaad.css`, if present             |
-| Sitemap                      | Generated when `site` is set           |
-| `llms.txt`, raw `.md` routes | Always on                              |
+| What                         | Where it comes from                               |
+| ---------------------------- | ------------------------------------------------- |
+| Repository link and icon     | `git remote get-url origin`                       |
+| "Edit this page" base URL    | git remote, branch, and `docsDir`                 |
+| Missing `description`        | `package.json`                                    |
+| Favicon                      | `public/favicon.svg`, `.ico` or `.png`            |
+| Social card image            | `public/og-image.png`, `.jpg`, `.jpeg` or `.webp` |
+| Custom styles                | `src/jaad.css`, if present                        |
+| Sitemap                      | Generated when `site` is set                      |
+| `llms.txt`, raw `.md` routes | Always on                                         |
 
 ## Extending Astro
 
