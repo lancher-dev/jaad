@@ -25,6 +25,7 @@ function snapshot(dist) {
   );
 
   return {
+    files: [...contents.keys()],
     pages: [...contents.keys()].filter((f) => f.endsWith(".html")),
     read: (relative) => {
       const file = contents.get("/" + relative);
@@ -273,14 +274,24 @@ export default defineJaadConfig({
     );
     assert.match(
       page,
+      /data-index-url="\/repo\/docs\/search-index\.json"/,
+      "the search index escaped the documentation mount",
+    );
+    assert.match(
+      page,
       /data-md-href="\/repo\/docs\/guides\/deep-dive\.md"/,
       "the raw markdown action missed the deployment base",
     );
     assert.match(
-      remounted.read("llms.txt"),
+      remounted.read("docs/llms.txt"),
       /https:\/\/example\.dev\/repo\/docs\/getting-started\.md/,
       "llms.txt missed the deployment base",
     );
+    assert.doesNotMatch(
+      remounted.files.join("\n"),
+      /^\/(?:llms\.txt|search-index\.json)$/m,
+    );
+    assert.ok(remounted.files.includes("/docs/search-index.json"));
     assert.match(
       remounted.read("docs/getting-started/index.html"),
       /url=\/repo\/docs/,

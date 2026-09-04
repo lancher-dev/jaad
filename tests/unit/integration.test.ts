@@ -8,6 +8,7 @@ import { mkdtempSync } from "node:fs";
 import {
   createSitemapFilter,
   findOpeningDocSlug,
+  getInjectedRoutes,
   shouldInjectNotFound,
 } from "../../packages/jaad/src/integration.ts";
 
@@ -49,4 +50,21 @@ test("the fallback 404 belongs only to a docs-only site", () => {
   } finally {
     rmSync(root, { recursive: true });
   }
+});
+
+test("technical routes stay inside the documentation mount", () => {
+  assert.deepEqual(
+    getInjectedRoutes("/docs").map(([pattern]) => pattern),
+    [
+      "/docs",
+      "/docs/search-index.json",
+      "/docs/llms.txt",
+      "/docs/[...slug]",
+      "/docs/[...slug].md",
+    ],
+  );
+  assert.deepEqual(
+    getInjectedRoutes("").map(([pattern]) => pattern),
+    ["", "/search-index.json", "/llms.txt", "/[...slug]", "/[...slug].md"],
+  );
 });

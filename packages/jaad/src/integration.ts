@@ -80,13 +80,13 @@ export function findOpeningDocSlug(dir: string): string | null {
   return first ? getCleanSlug(first.id) : null;
 }
 
-function injectedRoutes(docsBase: string): [string, string][] {
+export function getInjectedRoutes(docsBase: string): [string, string][] {
   return [
     [docsBase, "docs-index.astro"],
+    [`${docsBase}/search-index.json`, "search-index.json.ts"],
+    [`${docsBase}/llms.txt`, "llms.txt.ts"],
     [`${docsBase}/[...slug]`, "docs-slug.astro"],
     [`${docsBase}/[...slug].md`, "docs-slug.md.ts"],
-    ["/search-index.json", "search-index.json.ts"],
-    ["/llms.txt", "llms.txt.ts"],
   ];
 }
 
@@ -132,7 +132,9 @@ export function createCoreIntegration(
           fonts,
         });
 
-        for (const [pattern, entrypoint] of injectedRoutes(config.docsBase)) {
+        for (const [pattern, entrypoint] of getInjectedRoutes(
+          config.docsBase,
+        )) {
           injectRoute({
             pattern,
             entrypoint: routeEntrypoint(entrypoint),

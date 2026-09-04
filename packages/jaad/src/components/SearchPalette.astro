@@ -12,11 +12,19 @@ const base = docsPageHref("", {
   docsBase: config.docsBase,
   deploymentBase: import.meta.env.BASE_URL,
 });
+const indexUrl = docsPageHref("search-index.json", {
+  docsBase: config.docsBase,
+  deploymentBase: import.meta.env.BASE_URL,
+});
 
 const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
 ---
 
-<jaad-search data-in-docs={inDocs ? "" : null} data-base={base}>
+<jaad-search
+  data-in-docs={inDocs ? "" : null}
+  data-base={base}
+  data-index-url={indexUrl}
+>
   <button
     data-trigger-desktop
     hidden={!inDocs}
@@ -148,30 +156,12 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
     type SearchItem,
   } from "../utils/search.ts";
 
-  const INDEX_URL = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/search-index.json`;
-
-  let cache: SearchItem[] | null = null;
-  let request: Promise<SearchItem[]> | null = null;
-
-  function loadIndex(): Promise<SearchItem[]> {
-    if (cache) return Promise.resolve(cache);
-    if (!request) {
-      request = fetch(INDEX_URL)
-        .then((res) => (res.ok ? res.json() : []))
-        .then((data: SearchItem[]) => (cache = data))
-        .catch(() => {
-          // Drop the failed promise so a later attempt can retry.
-          request = null;
-          return [];
-        });
-    }
-    return request;
-  }
-
   class JaadSearch extends HTMLElement {
     #overlay!: HTMLElement;
     #input!: HTMLInputElement;
     #list!: HTMLUListElement;
+    #index: SearchItem[] | null = null;
+    #request: Promise<SearchItem[]> | null = null;
     #results: SearchItem[] = [];
     #selected = 0;
     #restoreFocus: HTMLElement | null = null;
@@ -193,8 +183,8 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
       for (const sel of ["[data-trigger-desktop]", "[data-trigger-mobile]"]) {
         const trigger = this.querySelector<HTMLElement>(sel)!;
         trigger.addEventListener("click", () => this.#setOpen(true));
-        trigger.addEventListener("mouseenter", () => void loadIndex());
-        trigger.addEventListener("focus", () => void loadIndex());
+        trigger.addEventListener("mouseenter", () => void this.#loadIndex());
+        trigger.addEventListener("focus", () => void this.#loadIndex());
       }
 
       this.querySelector("[data-backdrop]")!.addEventListener("click", () =>
@@ -247,6 +237,22 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
       }
     }
 
+    #loadIndex(): Promise<SearchItem[]> {
+      if (this.#index) return Promise.resolve(this.#index);
+      if (!this.#request) {
+        const url = this.dataset.indexUrl ?? "/search-index.json";
+        this.#request = fetch(url)
+          .then((res) => (res.ok ? res.json() : []))
+          .then((data: SearchItem[]) => (this.#index = data))
+          .catch(() => {
+            // Drop the failed promise so a later attempt can retry.
+            this.#request = null;
+            return [];
+          });
+      }
+      return this.#request;
+    }
+
     #setOpen(open: boolean) {
       if (open === this.#open) return;
       this.#overlay.hidden = !open;
@@ -256,7 +262,7 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
         this.#previousOverflow = document.body.style.overflow;
         document.body.style.overflow = "hidden";
         requestAnimationFrame(() => this.#input.focus());
-        void loadIndex().then(() => this.#render());
+        void this.#loadIndex().then(() => this.#render());
         this.#render();
       } else {
         document.body.style.overflow = this.#previousOverflow;
@@ -309,12 +315,12 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
       this.#list.replaceChildren();
       this.#input.removeAttribute("aria-activedescendant");
 
-      if (!cache) {
+      if (!this.#index) {
         this.#list.append(this.#message("Loading..."));
         return;
       }
 
-      this.#results = scoreItems(cache, query);
+      this.#results = scoreItems(this.#index, query);
 
       if (this.#results.length === 0) {
         this.#list.append(this.#message(`No results for “${query}”`));
