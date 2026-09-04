@@ -7,7 +7,9 @@
 npm create @lancher-dev/jaad@latest my-docs
 ```
 
-Writes five files, installs, and leaves you with `npm run dev`.
+The `docs` template writes the minimal documentation setup. The `site` template
+also writes a local Astro layout and landing page; those files belong to the
+application and do not inherit JAAD's documentation layout.
 
 ## A repository you already have
 
@@ -15,9 +17,10 @@ Writes five files, installs, and leaves you with `npm run dev`.
 npm create @lancher-dev/jaad@latest -- --here
 ```
 
-Adds the same three JAAD files and the dependencies, and leaves everything else
-alone. Your `package.json` keeps its name, version, scripts and dependencies. If
-`docs/` already has markdown, no sample page is written.
+Adds the JAAD wiring and dependencies, and leaves everything else alone. Your
+`package.json` keeps its name, version, scripts and dependencies. If `docs/`
+already has markdown, no sample page is written. If a root page already exists,
+the `site` template does not add a layout or landing page beside it.
 
 Nothing is ever overwritten: a file that exists is reported as kept.
 

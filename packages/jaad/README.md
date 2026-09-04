@@ -58,6 +58,10 @@ Numbers set the order and are stripped from the URL. Folders become chapters. Th
 Set `routeBase: "/docs"` when a landing page should own `/` and the
 documentation should live below it.
 
+Pages outside the documentation use their own Astro layouts. Advanced projects
+can rearrange the documentation UI with the optional
+`src/jaad/DocsFrame.astro` convention; the default needs no configuration.
+
 ## Documentation
 
 [jaad.lancher.dev](https://jaad.lancher.dev)
