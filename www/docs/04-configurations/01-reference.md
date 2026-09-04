@@ -200,16 +200,16 @@ See [Themes](/docs/configurations/themes) for writing your own.
 
 These have no option because they are read from the project:
 
-| What                         | Where it comes from                               |
-| ---------------------------- | ------------------------------------------------- |
-| Repository link and icon     | `git remote get-url origin`                       |
-| "Edit this page" base URL    | git remote, branch, and `docsDir`                 |
-| Missing `description`        | `package.json`                                    |
-| Favicon                      | `public/favicon.svg`, `.ico` or `.png`            |
-| Social card image            | `public/og-image.png`, `.jpg`, `.jpeg` or `.webp` |
-| Custom styles                | `src/jaad.css`, if present                        |
-| Sitemap                      | Generated when `site` is set                      |
-| `llms.txt`, raw `.md` routes | Always on                                         |
+| What                                       | Where it comes from                               |
+| ------------------------------------------ | ------------------------------------------------- |
+| Repository link and icon                   | `git remote get-url origin`                       |
+| "Edit this page" base URL                  | git remote, branch, and `docsDir`                 |
+| Missing `description`                      | `package.json`                                    |
+| Favicon                                    | `public/favicon.svg`, `.ico` or `.png`            |
+| Social card image                          | `public/og-image.png`, `.jpg`, `.jpeg` or `.webp` |
+| Custom styles                              | `src/jaad.css`, if present                        |
+| Sitemap                                    | Generated when `site` is set                      |
+| Search index, `llms.txt`, raw `.md` routes | Below `routeBase`                                 |
 
 ## Extending Astro
 

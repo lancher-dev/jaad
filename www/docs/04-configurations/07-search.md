@@ -4,7 +4,13 @@ JAAD includes a built-in search palette that lets readers find any page in the d
 
 ## How it works
 
-The search index is built at compile time from the markdown collection and emitted once as a static asset at `/search-index.json`. The palette fetches it on first use, and prefetches it as soon as you hover or focus the search button, so by the time it opens the index is usually already there. It is cached for the rest of the session, so navigating between pages never refetches it.
+The search index is built at compile time from the markdown collection and
+emitted once inside `routeBase`. It is `/search-index.json` for root
+documentation and `/docs/search-index.json` when `routeBase` is `/docs`. The
+palette fetches it on first use, and prefetches it as soon as you hover or focus
+the search button, so by the time it opens the index is usually already there.
+It is cached for the rest of the session, so navigating between pages never
+refetches it.
 
 Serving the index as a single file rather than inlining it into every page keeps each document roughly half the size it would otherwise be, and lets the browser cache it across navigations.
 

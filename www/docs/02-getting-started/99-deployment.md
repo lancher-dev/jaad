@@ -86,6 +86,10 @@ For a plain web server, copy `dist/` behind any static host.
 Alongside the pages, JAAD emits:
 
 - `sitemap-index.xml`: written when `site` is set
-- `search-index.json`: fetched by the search palette on first use
-- `llms.txt`: a plain-text index of every page, following the [llms.txt convention](https://llmstxt.org)
-- `/**.md`: the raw markdown of every page, at its named URL with a `.md` extension (or below `routeBase` when configured)
+- `<routeBase>/search-index.json`: fetched by the search palette on first use
+- `<routeBase>/llms.txt`: a plain-text index of every page, following the [llms.txt convention](https://llmstxt.org)
+- `<routeBase>/**.md`: the raw markdown of every page, at its named URL with a `.md` extension
+
+At the default root mount, `<routeBase>` is empty and these remain
+`/search-index.json` and `/llms.txt`. Mounting documentation at `/docs` keeps
+all JAAD-owned output below `/docs`.

@@ -1,6 +1,8 @@
 # Structure
 
-Documentation files can be organized flat or nested in chapters. Both approaches work with the same markdown syntax and automatic navigation generation.
+Documentation files can be organized flat or nested one level into chapters.
+Both approaches work with the same markdown syntax and automatic navigation
+generation.
 
 ## Flat Organization
 
@@ -42,12 +44,22 @@ docs/
 
 Folders and files both strip their number prefixes from URLs. The file `01-introduction/02-installation.md` becomes `/introduction/installation`. Chapter names come from folder names converted to title case.
 
+One folder level is the complete hierarchy: `docs/guides/setup.md` is valid,
+while `docs/guides/basics/setup.md` stops the build with a clear error. A
+deeper tree cannot be represented faithfully by JAAD's chapter navigation.
+
 ## File Naming
 
 Choose descriptive names using lowercase letters and hyphens. The conversion to page titles happens automatically. A file named `advanced-configuration.md` displays as "Advanced Configuration" in the sidebar.
 
 Number prefixes can contain one or more digits. Files without number prefixes
 sort after numbered files; use prefixes whenever their relative order matters.
+
+Removing those prefixes must leave every page and chapter with a unique path.
+For example, `01-guide.md` and `02-guide.md` both become `/guide`, so JAAD lists
+both source files and stops the build instead of letting Astro report an opaque
+route collision. The same check applies to folders such as `01-guides/` and
+`guides/`.
 
 ## Page Title
 

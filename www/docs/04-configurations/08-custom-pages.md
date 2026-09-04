@@ -40,9 +40,9 @@ import SiteLayout from "../layouts/SiteLayout.astro";
 </SiteLayout>
 ```
 
-JAAD continues to provide the routes below `routeBase`, the search index,
-`llms.txt`, raw Markdown routes and the sitemap integration. It does not impose
-markup or styling on the rest of the application.
+JAAD continues to provide the documentation pages, search index, `llms.txt` and
+raw Markdown routes below `routeBase`, plus the sitemap integration. It does
+not impose routes, markup or styling on the rest of the application.
 
 ## Migrating from the packaged Base layout
 
