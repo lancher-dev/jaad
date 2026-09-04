@@ -7,7 +7,7 @@ import { basename, dirname, join, resolve } from "node:path";
 import { styleText } from "node:util";
 
 // Bumped together with the package they install.
-const JAAD = "^0.6.1";
+const JAAD = "^0.7.0";
 const ASTRO = "^7.3.1";
 const TEMPLATES = ["docs", "site"];
 const ASTRO_CONFIG_NAMES = [
