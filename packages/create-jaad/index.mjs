@@ -461,54 +461,155 @@ const docsHref = base + "/docs";
     <title>{title}</title>
   </head>
   <body>
-    <header class="site-header">
+    <header class="site-chrome site-header">
       <a class="site-name" href={homeHref}>{siteTitle}</a>
       <nav aria-label="Main navigation">
         <a href={docsHref}>Documentation</a>
       </nav>
     </header>
     <main><slot /></main>
+    <footer class="site-chrome site-footer">Built with JAAD.</footer>
   </body>
 </html>
 
 <style is:global>
   :root {
-    color-scheme: light dark;
-    font-family: Inter, ui-sans-serif, system-ui, sans-serif;
-    background: #faf8f5;
-    color: #292929;
+    color-scheme: light;
+    --color-background: #faf8f5;
+    --color-surface: #ffffff;
+    --color-foreground: #3a3a3a;
+    --color-foreground-bright: #1a1a1a;
+    --color-primary: #2d2d2d;
+    --color-foreground-muted: color-mix(
+      in oklab,
+      var(--color-foreground) 55%,
+      var(--color-background)
+    );
+    --color-foreground-secondary: color-mix(
+      in oklab,
+      var(--color-foreground) 72%,
+      var(--color-background)
+    );
+    --color-border-dark: color-mix(
+      in oklab,
+      var(--color-foreground) 25%,
+      var(--color-background)
+    );
+    --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+    --font-serif: Merriweather, Georgia, serif;
+    --site-content-width: 56rem;
+    --site-page-padding: 2rem;
   }
 
   * { box-sizing: border-box; }
-  body { min-height: 100vh; margin: 0; }
-  a { color: inherit; }
+  html {
+    background: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+  }
+  body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    margin: 0;
+  }
+  h1, h2, h3 {
+    color: var(--color-foreground-bright);
+    font-family: var(--font-serif);
+  }
+  a { color: var(--color-primary); }
+  .site-chrome {
+    width: 100%;
+    max-width: var(--site-content-width);
+    margin-inline: auto;
+  }
   .site-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    max-width: 64rem;
-    margin: 0 auto;
-    padding: 1.25rem 2rem;
+    padding: 1rem;
   }
-  .site-name { font-weight: 700; text-decoration: none; }
-  main { padding: 2rem; }
-  .hero {
-    max-width: 44rem;
-    margin: 8rem auto;
-    text-align: center;
-  }
-  .hero h1 { margin: 0; font-size: clamp(2.5rem, 8vw, 5rem); }
-  .hero p { margin: 1.5rem 0 2rem; color: #666; font-size: 1.125rem; }
-  .hero a {
-    display: inline-block;
-    border: 1px solid currentColor;
-    border-radius: 0.35rem;
-    padding: 0.75rem 1rem;
+  .site-header nav a {
+    color: var(--color-foreground-secondary);
+    font-size: 0.875rem;
     text-decoration: none;
   }
+  .site-header nav a:hover { color: var(--color-foreground-bright); }
+  .site-name {
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    font-style: italic;
+    font-weight: 300;
+    line-height: 1;
+    text-decoration: none;
+  }
+  main {
+    width: 100%;
+    max-width: var(--site-content-width);
+    flex: 1;
+    margin-inline: auto;
+    padding-inline: var(--site-page-padding);
+  }
+  .hero {
+    max-width: 44rem;
+    margin: 7rem auto;
+    text-align: center;
+  }
+  .hero h1 {
+    margin: 0;
+    font-size: clamp(2.5rem, 8vw, 5rem);
+    font-weight: 600;
+  }
+  .hero p {
+    margin: 1.5rem 0 2rem;
+    color: var(--color-foreground-secondary);
+    font-size: 1.125rem;
+  }
+  .hero a {
+    display: inline-block;
+    border-radius: 0.25rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--color-primary);
+    color: var(--color-background);
+    text-decoration: none;
+  }
+  .site-footer {
+    margin-top: 1rem;
+    border-top: 1px solid var(--color-border-dark);
+    padding: 0.5rem 1rem 0.25rem;
+    color: var(--color-foreground-muted);
+    font-size: 0.95rem;
+    font-style: italic;
+    line-height: 1.6;
+    text-align: center;
+  }
+  @media (min-width: 1024px) {
+    main { padding-inline: calc(var(--site-page-padding) * 2); }
+  }
   @media (prefers-color-scheme: dark) {
-    :root { background: #111; color: #eee; }
-    .hero p { color: #aaa; }
+    :root {
+      color-scheme: dark;
+      --color-background: #0d1117;
+      --color-surface: #21262d;
+      --color-foreground: #c9d1d9;
+      --color-foreground-bright: #e6edf3;
+      --color-primary: #c9d1d9;
+      --color-foreground-muted: color-mix(
+        in oklab,
+        var(--color-foreground) 57%,
+        var(--color-background)
+      );
+      --color-foreground-secondary: color-mix(
+        in oklab,
+        var(--color-foreground) 71%,
+        var(--color-background)
+      );
+      --color-border-dark: color-mix(
+        in oklab,
+        var(--color-foreground) 36%,
+        var(--color-background)
+      );
+    }
   }
 </style>
 `;

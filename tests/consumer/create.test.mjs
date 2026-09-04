@@ -166,6 +166,15 @@ test(
       existsSync(join(project, "src", "layouts", "SiteLayout.astro")),
       "the site template did not create a local layout",
     );
+    const siteLayout = readFileSync(
+      join(project, "src", "layouts", "SiteLayout.astro"),
+      "utf8",
+    );
+    assert.doesNotMatch(siteLayout, /@lancher-dev\/jaad/);
+    assert.match(siteLayout, /--site-content-width: 56rem/);
+    assert.match(siteLayout, /--color-background: #faf8f5/);
+    assert.match(siteLayout, /--color-background: #0d1117/);
+    assert.match(siteLayout, /<footer class="site-chrome site-footer">/);
     assert.match(
       readFileSync(join(project, "jaad.config.ts"), "utf8"),
       /routeBase: "\/docs"/,
