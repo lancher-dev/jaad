@@ -21,6 +21,15 @@ test("social card images are absolute urls", () => {
   }
 });
 
+test("the conventional public social image is discovered", () => {
+  const html = page("docs/index.html");
+  assert.equal(meta(html, "og:image"), "https://jaad.lancher.dev/og-image.png");
+  assert.equal(
+    meta(html, "twitter:image"),
+    "https://jaad.lancher.dev/og-image.png",
+  );
+});
+
 test("pages carry site name and locale", () => {
   const html = page("docs/index.html");
   assert.ok(meta(html, "og:site_name"));

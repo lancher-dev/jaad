@@ -129,6 +129,12 @@ export default defineJaadConfig({
       /<title>404 \| Consumer Test<\/title>/,
       "the 404 page does not carry the consumer's own title",
     );
+    assert.doesNotMatch(
+      home,
+      /(?:property|name)="(?:og:image|twitter:image)"/,
+      "a missing social image was advertised",
+    );
+    assert.match(home, /name="twitter:card" content="summary"/);
   });
 
   test("the repository is listed once, and the mobile menu does not repeat it", () => {

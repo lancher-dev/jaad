@@ -1,5 +1,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { resolveConfig } from "../../packages/jaad/src/config.ts";
 
 // Resolved outside a repository, so nothing is inferred and the defaults show.
@@ -180,4 +183,28 @@ test("a logo has to be a public url, not a source path", () => {
     "https://cdn.dev/l.svg",
   );
   assert.throws(() => bare({ logo: "./src/logo.svg" }), /public url/);
+});
+
+test("a social image is inferred only when the public asset exists", (t) => {
+  const cwd = mkdtempSync(join(tmpdir(), "jaad-config-"));
+  t.after(() => rmSync(cwd, { recursive: true }));
+
+  assert.equal(resolveConfig({ title: "T" }, cwd).ogImage, false);
+
+  mkdirSync(join(cwd, "public"));
+  writeFileSync(join(cwd, "public", "og-image.webp"), "image");
+  assert.equal(resolveConfig({ title: "T" }, cwd).ogImage, "/og-image.webp");
+  assert.equal(
+    resolveConfig({ title: "T", ogImage: false }, cwd).ogImage,
+    false,
+  );
+});
+
+test("an explicit social image has to be a public url", () => {
+  assert.equal(bare({ ogImage: "/social.png" }).ogImage, "/social.png");
+  assert.equal(
+    bare({ ogImage: "https://cdn.example.dev/social.png" }).ogImage,
+    "https://cdn.example.dev/social.png",
+  );
+  assert.throws(() => bare({ ogImage: "./src/social.png" }), /public url/);
 });
