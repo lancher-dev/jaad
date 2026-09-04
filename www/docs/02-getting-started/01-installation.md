@@ -146,7 +146,8 @@ Keep the names of your existing collections and reserve `docsPages` for JAAD.
 Finally, create `docs/` if it does not exist and start adding Markdown files.
 
 > [!IMPORTANT]
-> Set `site`. Without it Astro cannot build absolute URLs, so canonical links and social card images are left out.
+> Set `site`. Without it JAAD omits canonical URLs and local social card images
+> instead of emitting build-time URLs that are not publicly valid.
 
 ## Write something
 

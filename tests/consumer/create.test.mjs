@@ -91,11 +91,12 @@ test(
       built.includes("/introduction/index.html"),
       "no compatibility redirect for the sample page",
     );
-    assert.match(
-      readFileSync(join(project, "dist", "index.html"), "utf8"),
-      /<title>Scaffolded<\/title>/,
-      "the title did not reach the site",
-    );
+    const home = readFileSync(join(project, "dist", "index.html"), "utf8");
+    assert.match(home, /<title>Scaffolded<\/title>/, "title missing");
+    assert.doesNotMatch(home, /rel="canonical"/);
+    assert.doesNotMatch(home, /(?:property|name)="(?:og:url|twitter:url)"/);
+    assert.doesNotMatch(home, /(?:property|name)="(?:og:image|twitter:image)"/);
+    assert.doesNotMatch(home, /https?:\/\/localhost/);
   },
 );
 

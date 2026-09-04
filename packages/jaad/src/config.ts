@@ -60,7 +60,14 @@ export const jaadConfigSchema = z.object({
       }),
     )
     .default([]),
-  ogImage: z.union([z.string(), z.literal(false)]).default("/og-image.png"),
+  ogImage: z
+    .union([
+      z.string().refine((v) => v.startsWith("/") || /^https?:\/\//.test(v), {
+        message: 'ogImage must be a public url, such as "/og-image.png"',
+      }),
+      z.literal(false),
+    ])
+    .optional(),
 
   theme: z
     .union([
@@ -98,12 +105,20 @@ export interface JaadResolvedConfig extends JaadConfig {
   repoUrl: string | null;
   editBase: string | null;
   favicon: string | null;
+  /** Explicit, inferred from public/, or false when no valid image exists. */
+  ogImage: string | false;
 }
 
 const FAVICONS = ["favicon.svg", "favicon.ico", "favicon.png"];
+const OG_IMAGES = [
+  "og-image.png",
+  "og-image.jpg",
+  "og-image.jpeg",
+  "og-image.webp",
+];
 
-function findFavicon(cwd: string): string | null {
-  for (const name of FAVICONS) {
+function findPublicAsset(cwd: string, candidates: string[]): string | null {
+  for (const name of candidates) {
     if (existsSync(join(cwd, "public", name))) return `/${name}`;
   }
   return null;
@@ -164,7 +179,8 @@ export function resolveConfig(
     ...config,
     description: config.description ?? inferDescription(cwd) ?? undefined,
     repoUrl: repo?.url ?? null,
-    favicon: findFavicon(cwd),
+    favicon: findPublicAsset(cwd, FAVICONS),
+    ogImage: config.ogImage ?? findPublicAsset(cwd, OG_IMAGES) ?? false,
     docsBase: normaliseBasePath(config.routeBase),
     shiki:
       typeof config.theme === "string"
