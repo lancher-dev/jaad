@@ -22,6 +22,7 @@
   ],
   "exports": {
     ".": "./index.ts",
+    "./advanced": "./src/advanced.ts",
     "./content": "./src/content.ts",
     "./layouts/Base.astro": "./src/layouts/Base.astro",
     "./site": "./site.ts"

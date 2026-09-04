@@ -39,26 +39,29 @@ const navigation = buildDocsNavigation(sortedPages, entry.id, {
   chapter={chapter}
   entry={entry}
   headings={headings}
-  navigationSections={navigation.sections}
+  {navigation}
 >
-  <main class="docs-page-main">
-    <DocsMobileNav sections={navigation.sections} headings={headings} />
+  <DocsMobileNav
+    slot="mobile-navigation"
+    sections={navigation.sections}
+    headings={headings}
+  />
 
-    <article>
-      <Breadcrumbs chapter={chapter} title={title} />
-      <PageActions id={entry.id} cleanSlug={cleanSlug} />
+  <Breadcrumbs slot="breadcrumbs" chapter={chapter} title={title} />
+  <PageActions slot="page-actions" id={entry.id} cleanSlug={cleanSlug} />
 
-      <MarkdownContent
-        id="content"
-        class="w-full leading-relaxed wrap-break-word"
-      >
-        <slot />
-      </MarkdownContent>
-    </article>
+  <Fragment slot="content">
+    <MarkdownContent
+      id="content"
+      class="w-full leading-relaxed wrap-break-word"
+    >
+      <slot />
+    </MarkdownContent>
+  </Fragment>
 
-    <DocsPageNav
-      previousPage={navigation.previousPage}
-      nextPage={navigation.nextPage}
-    />
-  </main>
+  <DocsPageNav
+    slot="page-navigation"
+    previousPage={navigation.previousPage}
+    nextPage={navigation.nextPage}
+  />
 </DocsLayout>

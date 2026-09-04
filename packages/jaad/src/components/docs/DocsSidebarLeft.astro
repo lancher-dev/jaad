@@ -9,9 +9,7 @@ interface Props {
 const { sections } = Astro.props;
 ---
 
-<aside
-  class="docs-sidebar-left jaad-sidebar fixed top-0 left-0 hidden h-screen overflow-y-auto px-6 py-8 pt-24 lg:block"
->
+<aside class="docs-sidebar-left jaad-sidebar overflow-y-auto">
   <nav aria-label="Documentation navigation">
     {
       sections.map((section, i) =>
