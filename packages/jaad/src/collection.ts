@@ -1,6 +1,6 @@
 import { getCollection } from "astro:content";
 import type { DocsEntry } from "./@types/docs.ts";
-import { sortDocPages } from "./utils/docs.ts";
+import { sortDocPages, validateDocsStructure } from "./utils/docs.ts";
 
 let cached: DocsEntry[] | null = null;
 
@@ -8,6 +8,7 @@ let cached: DocsEntry[] | null = null;
 export async function getSortedDocsPages(): Promise<DocsEntry[]> {
   if (import.meta.env.PROD && cached) return cached;
   const pages = (await getCollection("docsPages")) as unknown as DocsEntry[];
+  validateDocsStructure(pages);
   const sorted = sortDocPages(pages);
   if (import.meta.env.PROD) cached = sorted;
   return sorted;

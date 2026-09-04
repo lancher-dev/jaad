@@ -78,6 +78,56 @@ export function getDocCollectionId(filePath: string): string {
     .join("/");
 }
 
+/** Fail before route generation when the file tree cannot produce one clear
+ * navigation and URL for every page. */
+export function validateDocsStructure(pages: { id: string }[]): void {
+  const idsBySlug = new Map<string, string[]>();
+  const directoriesByChapter = new Map<string, Set<string>>();
+  const issues: string[] = [];
+
+  for (const id of pages.map((page) => page.id).sort()) {
+    const parts = id.split("/");
+    if (parts.length > 2) {
+      issues.push(
+        `${id}: only one chapter directory is supported inside docs/`,
+      );
+    }
+
+    const slug = getCleanSlug(id);
+    const ids = idsBySlug.get(slug) ?? [];
+    ids.push(id);
+    idsBySlug.set(slug, ids);
+
+    if (parts.length === 2) {
+      const directory = parts[0];
+      const chapter = getCleanSlug(directory);
+      const directories = directoriesByChapter.get(chapter) ?? new Set();
+      directories.add(directory);
+      directoriesByChapter.set(chapter, directories);
+    }
+  }
+
+  for (const [slug, ids] of idsBySlug) {
+    if (ids.length > 1) {
+      issues.push(`${ids.join(", ")} all resolve to /${slug}`);
+    }
+  }
+
+  for (const [chapter, directories] of directoriesByChapter) {
+    if (directories.size > 1) {
+      issues.push(
+        `${[...directories].join(", ")} all resolve to chapter /${chapter}`,
+      );
+    }
+  }
+
+  if (issues.length > 0) {
+    throw new Error(
+      `jaad: invalid documentation structure\n${issues.map((issue) => `  ${issue}`).join("\n")}`,
+    );
+  }
+}
+
 /** The opening page owns routeBase; every later page keeps its named slug. */
 export function getCanonicalDocSlug(
   page: { id: string },

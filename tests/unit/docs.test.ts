@@ -13,6 +13,7 @@ import {
   stripMarkdown,
   extractDescription,
   docTitle,
+  validateDocsStructure,
 } from "../../packages/jaad/src/utils/docs.ts";
 import { buildDocsNavigation } from "../../packages/jaad/src/navigation.ts";
 
@@ -69,6 +70,49 @@ test("only the first sorted page has an empty canonical slug", () => {
   const pages = [{ id: "01-intro" }, { id: "02-guide" }];
   assert.equal(getCanonicalDocSlug(pages[0], 0), "");
   assert.equal(getCanonicalDocSlug(pages[1], 1), "guide");
+});
+
+test("a flat tree or one chapter level has an unambiguous structure", () => {
+  assert.doesNotThrow(() =>
+    validateDocsStructure([
+      { id: "01-intro" },
+      { id: "02-guides/01-setup" },
+      { id: "02-guides/02-deploy" },
+    ]),
+  );
+});
+
+test("duplicate clean slugs stop the build with both source ids", () => {
+  assert.throws(
+    () => validateDocsStructure([{ id: "01-guide" }, { id: "02-guide" }]),
+    (error: Error) => {
+      assert.match(error.message, /^jaad: invalid documentation structure\n/);
+      assert.match(error.message, /01-guide, 02-guide all resolve to \/guide/);
+      return true;
+    },
+  );
+});
+
+test("ambiguous chapters and unsupported depth are reported together", () => {
+  assert.throws(
+    () =>
+      validateDocsStructure([
+        { id: "01-guides/01-start" },
+        { id: "guides/02-next" },
+        { id: "03-api/01-client/01-create" },
+      ]),
+    (error: Error) => {
+      assert.match(
+        error.message,
+        /01-guides, guides all resolve to chapter \/guides/,
+      );
+      assert.match(
+        error.message,
+        /03-api\/01-client\/01-create: only one chapter directory is supported/,
+      );
+      return true;
+    },
+  );
 });
 
 // ── Sorting ──────────────────────────────────────────────────────────────────

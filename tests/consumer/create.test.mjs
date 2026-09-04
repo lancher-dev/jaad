@@ -97,6 +97,20 @@ test(
     assert.doesNotMatch(home, /(?:property|name)="(?:og:url|twitter:url)"/);
     assert.doesNotMatch(home, /(?:property|name)="(?:og:image|twitter:image)"/);
     assert.doesNotMatch(home, /https?:\/\/localhost/);
+
+    writeFileSync(
+      join(project, "docs", "02-introduction.md"),
+      "# Duplicate introduction\n",
+    );
+    const invalid = spawnSync("npx", ["astro", "build"], {
+      cwd: project,
+      encoding: "utf8",
+    });
+    assert.equal(invalid.status, 1, "an ambiguous docs tree still built");
+    assert.match(
+      `${invalid.stdout}\n${invalid.stderr}`,
+      /jaad: invalid documentation structure[\s\S]*01-introduction, 02-introduction all resolve to \/introduction/,
+    );
   },
 );
 
