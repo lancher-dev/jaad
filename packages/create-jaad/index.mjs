@@ -10,6 +10,26 @@ import { styleText } from "node:util";
 const JAAD = "^0.6.1";
 const ASTRO = "^7.3.1";
 const TEMPLATES = ["docs", "site"];
+const ASTRO_CONFIG_NAMES = [
+  "astro.config.ts",
+  "astro.config.mjs",
+  "astro.config.js",
+];
+const CONTENT_CONFIG_NAMES = [
+  "src/content.config.ts",
+  "src/content.config.mjs",
+  "src/content.config.js",
+];
+const JAAD_CONFIG_NAMES = [
+  "jaad.config.ts",
+  "jaad.config.mjs",
+  "jaad.config.js",
+];
+const ASTRO_CONFIG = 'export { default } from "@lancher-dev/jaad/site";\n';
+const CONTENT_CONFIG =
+  'export { collections } from "@lancher-dev/jaad/content";\n';
+const MANUAL_SETUP_URL =
+  "https://jaad.lancher.dev/docs/getting-started/installation#existing-astro-project";
 const INDEX_PAGE_NAMES = [
   "index.astro",
   "index.md",
@@ -21,7 +41,7 @@ const INDEX_PAGE_NAMES = [
 
 const HELP = `Usage: npm create @lancher-dev/jaad@latest [directory] [options]
 
-  --here                    Add JAAD to the current directory.
+  --here                    Set up JAAD in the current directory.
   --template <docs|site>    Docs at /, or a landing page with docs at /docs.
   --title <title>           Site title.
   --install                 Install dependencies.
@@ -121,12 +141,101 @@ const manifestPath = (target) => join(target, "package.json");
 
 function readManifest(target) {
   const file = manifestPath(target);
-  if (!existsSync(file)) return null;
+  if (!existsSync(file)) return { manifest: null, issue: null };
+
+  let manifest;
   try {
-    return JSON.parse(readFileSync(file, "utf8"));
+    manifest = JSON.parse(readFileSync(file, "utf8"));
   } catch {
+    return {
+      manifest: null,
+      issue: "package.json is not valid JSON",
+    };
+  }
+
+  if (!isRecord(manifest)) {
+    return {
+      manifest: null,
+      issue: "package.json must contain a JSON object",
+    };
+  }
+
+  for (const key of ["scripts", "dependencies", "devDependencies"]) {
+    if (key in manifest && !isRecord(manifest[key])) {
+      return {
+        manifest: null,
+        issue: `package.json field ${key} must contain an object`,
+      };
+    }
+  }
+
+  return { manifest, issue: null };
+}
+
+const isRecord = (value) =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
+const normaliseSource = (source) => source.replace(/\r\n/g, "\n").trim();
+
+function existingFiles(target, names) {
+  return names.filter((name) => existsSync(join(target, name)));
+}
+
+function inspectConfig(target, names, canonical, label, issues) {
+  const files = existingFiles(target, names);
+  if (files.length > 1) {
+    issues.push(`multiple ${label} files found: ${files.join(", ")}`);
     return null;
   }
+
+  const file = files[0] ?? null;
+  if (
+    file &&
+    canonical !== null &&
+    normaliseSource(readFileSync(join(target, file), "utf8")) !==
+      normaliseSource(canonical)
+  ) {
+    issues.push(`${file} contains a custom ${label}`);
+  }
+  return file;
+}
+
+/** Inspect everything before writing: a failed --here setup is a no-op. */
+function inspectExistingProject(target) {
+  const issues = [];
+  const { manifest, issue: manifestIssue } = readManifest(target);
+  if (manifestIssue) issues.push(manifestIssue);
+
+  const astroConfig = inspectConfig(
+    target,
+    ASTRO_CONFIG_NAMES,
+    ASTRO_CONFIG,
+    "Astro configuration",
+    issues,
+  );
+  const contentConfig = inspectConfig(
+    target,
+    CONTENT_CONFIG_NAMES,
+    CONTENT_CONFIG,
+    "content configuration",
+    issues,
+  );
+  const jaadConfig = inspectConfig(
+    target,
+    JAAD_CONFIG_NAMES,
+    null,
+    "JAAD configuration",
+    issues,
+  );
+
+  if (issues.length > 0) {
+    fail(
+      `cannot safely update this project:\n${issues.map((item) => `  - ${item}`).join("\n")}\n` +
+        `No files were changed. Integrate JAAD manually: ${MANUAL_SETUP_URL}`,
+    );
+  }
+
+  return { manifest, astroConfig, contentConfig, jaadConfig };
 }
 
 /**
@@ -143,11 +252,21 @@ function writeManifest(target, existing, name) {
     preview: "astro preview",
     ...manifest.scripts,
   };
-  manifest.dependencies = {
-    ...manifest.dependencies,
-    astro: manifest.dependencies?.astro ?? ASTRO,
-    "@lancher-dev/jaad": manifest.dependencies?.["@lancher-dev/jaad"] ?? JAAD,
-  };
+  const dependencies = { ...manifest.dependencies };
+  if (
+    !("astro" in dependencies) &&
+    !("astro" in (manifest.devDependencies ?? {}))
+  ) {
+    dependencies.astro = ASTRO;
+  }
+  if (
+    !("@lancher-dev/jaad" in dependencies) &&
+    !("@lancher-dev/jaad" in (manifest.devDependencies ?? {}))
+  ) {
+    dependencies["@lancher-dev/jaad"] = JAAD;
+  }
+  if (Object.keys(dependencies).length > 0)
+    manifest.dependencies = dependencies;
 
   writeFileSync(manifestPath(target), JSON.stringify(manifest, null, 2) + "\n");
 }
@@ -217,6 +336,16 @@ async function collectAnswers(args) {
   const target = resolve(args.here ? "." : args.dir);
   assertTargetAvailable(args, target);
 
+  const existing = args.here
+    ? inspectExistingProject(target)
+    : {
+        manifest: null,
+        astroConfig: null,
+        contentConfig: null,
+        jaadConfig: null,
+      };
+  const manifest = existing.manifest;
+
   if (!args.template) {
     const template = answer(
       await p.select({
@@ -240,7 +369,6 @@ async function collectAnswers(args) {
     args.template = template;
   }
 
-  const manifest = readManifest(target);
   const suggested =
     typeof manifest?.name === "string" && manifest.name
       ? titleFrom(manifest.name)
@@ -268,7 +396,7 @@ async function collectAnswers(args) {
     args.install = install;
   }
 
-  return { ...args, target, manifest };
+  return { ...args, target, manifest, existing };
 }
 
 function jaadConfig(title, template) {
@@ -387,33 +515,30 @@ const docsHref = base + "/docs";
 }
 
 function scaffold(request) {
-  const { target, manifest, title, template } = request;
+  const { target, manifest, title, template, existing } = request;
   mkdirSync(target, { recursive: true });
 
   const written = [];
   const skipped = [];
 
-  write(
-    target,
-    "astro.config.mjs",
-    'export { default } from "@lancher-dev/jaad/site";\n',
-    written,
-    skipped,
-  );
-  write(
-    target,
-    "jaad.config.ts",
-    jaadConfig(title, template),
-    written,
-    skipped,
-  );
-  write(
-    target,
-    "src/content.config.ts",
-    'export { collections } from "@lancher-dev/jaad/content";\n',
-    written,
-    skipped,
-  );
+  if (existing.astroConfig) skipped.push(existing.astroConfig);
+  else write(target, "astro.config.mjs", ASTRO_CONFIG, written, skipped);
+
+  if (existing.jaadConfig) skipped.push(existing.jaadConfig);
+  else {
+    write(
+      target,
+      "jaad.config.ts",
+      jaadConfig(title, template),
+      written,
+      skipped,
+    );
+  }
+
+  if (existing.contentConfig) skipped.push(existing.contentConfig);
+  else {
+    write(target, "src/content.config.ts", CONTENT_CONFIG, written, skipped);
+  }
 
   const ownsRoot = INDEX_PAGE_NAMES.some((name) =>
     existsSync(join(target, "src", "pages", name)),

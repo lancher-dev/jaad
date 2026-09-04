@@ -28,6 +28,29 @@ function useLocalJaad(project, tarball) {
 let tarball;
 const pack = () => (tarball ??= packPackage(PKG));
 
+function snapshotFiles(directory) {
+  return walk(directory).map((file) => [
+    file.slice(directory.length),
+    readFileSync(file).toString("base64"),
+  ]);
+}
+
+function runScaffolderHere(project) {
+  return spawnSync(
+    "node",
+    [
+      CLI,
+      "--here",
+      "--template",
+      "site",
+      "--title",
+      "Existing Project",
+      "--no-install",
+    ],
+    { cwd: project, encoding: "utf8" },
+  );
+}
+
 after(cleanupTemporaryDirectories);
 
 test(
@@ -234,6 +257,135 @@ test(
     );
   },
 );
+
+test("--here changes nothing when existing configurations need a manual merge", () => {
+  const project = temporaryDirectory("jaad-here-config-conflict-");
+  mkdirSync(join(project, "src"), { recursive: true });
+  writeFileSync(
+    join(project, "package.json"),
+    JSON.stringify({ name: "existing-astro-project", private: true }, null, 2),
+  );
+  writeFileSync(
+    join(project, "astro.config.mjs"),
+    'import { defineConfig } from "astro/config";\nexport default defineConfig({});\n',
+  );
+  writeFileSync(
+    join(project, "src", "content.config.ts"),
+    "export const collections = {};\n",
+  );
+
+  const before = snapshotFiles(project);
+  const result = runScaffolderHere(project);
+  const output = `${result.stdout}\n${result.stderr}`;
+
+  assert.equal(result.status, 1);
+  assert.match(output, /cannot safely update this project/);
+  assert.match(output, /astro\.config\.mjs/);
+  assert.match(output, /src\/content\.config\.ts/);
+  assert.match(output, /No files were changed/);
+  assert.match(output, /existing-astro-project/);
+  assert.deepEqual(snapshotFiles(project), before);
+});
+
+test("--here recognizes canonical JAAD configurations on rerun", () => {
+  const project = temporaryDirectory("jaad-here-rerun-");
+  mkdirSync(join(project, "src"), { recursive: true });
+  writeFileSync(
+    join(project, "package.json"),
+    JSON.stringify(
+      {
+        name: "configured-project",
+        private: true,
+        devDependencies: {
+          astro: "^7.3.1",
+          "@lancher-dev/jaad": "^0.6.1",
+        },
+      },
+      null,
+      2,
+    ),
+  );
+  writeFileSync(
+    join(project, "astro.config.ts"),
+    'export { default } from "@lancher-dev/jaad/site";\r\n',
+  );
+  writeFileSync(
+    join(project, "src", "content.config.js"),
+    'export { collections } from "@lancher-dev/jaad/content";\n',
+  );
+  writeFileSync(
+    join(project, "jaad.config.mjs"),
+    'export default { title: "Already configured" };\n',
+  );
+
+  const result = runScaffolderHere(project);
+  const output = `${result.stdout}\n${result.stderr}`;
+  assert.equal(result.status, 0, output);
+  assert.match(output, /kept\s+astro\.config\.ts/);
+  assert.match(output, /kept\s+src\/content\.config\.js/);
+  assert.match(output, /kept\s+jaad\.config\.mjs/);
+  assert.equal(existsSync(join(project, "astro.config.mjs")), false);
+  assert.equal(existsSync(join(project, "src", "content.config.ts")), false);
+  assert.equal(existsSync(join(project, "jaad.config.ts")), false);
+
+  const manifest = JSON.parse(
+    readFileSync(join(project, "package.json"), "utf8"),
+  );
+  assert.equal(manifest.dependencies, undefined);
+  assert.equal(manifest.devDependencies.astro, "^7.3.1");
+  assert.equal(manifest.devDependencies["@lancher-dev/jaad"], "^0.6.1");
+});
+
+test("--here recognizes every supported custom configuration filename", () => {
+  const candidates = [
+    "astro.config.ts",
+    "astro.config.mjs",
+    "astro.config.js",
+    "src/content.config.ts",
+    "src/content.config.mjs",
+    "src/content.config.js",
+  ];
+
+  for (const candidate of candidates) {
+    const project = temporaryDirectory("jaad-here-config-name-");
+    mkdirSync(dirname(join(project, candidate)), { recursive: true });
+    writeFileSync(join(project, candidate), "export default {};\n");
+    const before = snapshotFiles(project);
+
+    const result = runScaffolderHere(project);
+    const output = `${result.stdout}\n${result.stderr}`;
+    assert.equal(result.status, 1, candidate);
+    assert.match(output, new RegExp(candidate.replaceAll(".", "\\.")));
+    assert.deepEqual(snapshotFiles(project), before, candidate);
+  }
+});
+
+test("--here preserves an invalid package manifest when it stops", () => {
+  const project = temporaryDirectory("jaad-here-invalid-manifest-");
+  writeFileSync(join(project, "package.json"), "{ not json }\n");
+  const before = snapshotFiles(project);
+
+  const result = runScaffolderHere(project);
+  const output = `${result.stdout}\n${result.stderr}`;
+  assert.equal(result.status, 1);
+  assert.match(output, /package\.json is not valid JSON/);
+  assert.match(output, /No files were changed/);
+  assert.deepEqual(snapshotFiles(project), before);
+});
+
+test("--here rejects multiple JAAD configuration files without writing", () => {
+  const project = temporaryDirectory("jaad-here-multiple-config-");
+  writeFileSync(join(project, "jaad.config.ts"), "export default {};\n");
+  writeFileSync(join(project, "jaad.config.js"), "export default {};\n");
+  const before = snapshotFiles(project);
+
+  const result = runScaffolderHere(project);
+  const output = `${result.stdout}\n${result.stderr}`;
+  assert.equal(result.status, 1);
+  assert.match(output, /multiple JAAD configuration files/);
+  assert.match(output, /jaad\.config\.ts, jaad\.config\.js/);
+  assert.deepEqual(snapshotFiles(project), before);
+});
 
 test("non-interactive requests are complete before files are written", () => {
   const cases = [
