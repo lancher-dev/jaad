@@ -1,0 +1,47 @@
+---
+import "../styles/site.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title,
+  description = "JAAD - Just Another Astro Docs. A clean, minimalist documentation framework.",
+} = Astro.props;
+const pageTitle = title ? `${title} | JAAD` : "JAAD";
+const canonical = Astro.url.href;
+const ogImage = Astro.site ? new URL("/og-image.png", Astro.site) : null;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <title>{pageTitle}</title>
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+  </head>
+  <body data-site-layout>
+    <header class="site-chrome site-header">
+      <a class="font-brand text-primary text-xl no-underline" href="/">JAAD</a>
+      <nav aria-label="Main navigation">
+        <a class="text-sm no-underline" href="/docs">Documentation</a>
+      </nav>
+    </header>
+
+    <main class="site-main"><slot /></main>
+
+    <footer class="site-chrome site-footer">
+      JAAD is released under the MIT License.
+    </footer>
+  </body>
+</html>

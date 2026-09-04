@@ -16,14 +16,12 @@ test("dual-theme code colours reach the built CSS", () => {
   );
 });
 
-// The 404 route used to hardcode the framework's own name.
 test("no page title names the framework instead of the site", () => {
   const offenders = distFiles(".html")
     .map((f) => [f.split("/dist/")[1], readFileSync(f, "utf8")])
     .filter(([, html]) => /<title>[^<]*\bJAAD\b[^<]*\bJAAD\b/.test(html))
     .map(([name]) => name);
   assert.deepEqual(offenders, []);
-  assert.match(page("404.html"), /<title>404 \| JAAD<\/title>/);
 });
 
 // Fonts are shipped with the package
@@ -42,7 +40,7 @@ test("no third-party host on the critical path", () => {
 });
 
 test("the fonts are served from the site itself", () => {
-  const faces = page("index.html").match(/@font-face\{[^}]*\}/g) ?? [];
+  const faces = page("docs/index.html").match(/@font-face\{[^}]*\}/g) ?? [];
   const withFile = faces.filter((f) => f.includes("url("));
   assert.ok(withFile.length > 0, "no font-face carries a file");
   for (const face of withFile) {
@@ -51,7 +49,7 @@ test("the fonts are served from the site itself", () => {
 });
 
 test("the inferred repository is a single icon, with no menu to repeat it", () => {
-  const home = page("index.html");
+  const home = page("docs/index.html");
   const repo = home.match(/href="(https:\/\/github\.com\/[\w-]+\/[\w-]+)"/)[1];
 
   assert.equal(
@@ -62,9 +60,11 @@ test("the inferred repository is a single icon, with no menu to repeat it", () =
   assert.doesNotMatch(home, /<jaad-nav-mobile/, "an empty mobile menu shipped");
 });
 
-// www sets no `footer`, which is the bare default: the credit on its own.
+// The docs config sets no `footer`, so the credit appears on its own.
 test("an unset footer renders the credit, not its placeholder", () => {
-  const footer = page("index.html").match(/<footer[\s\S]*?<\/footer>/)?.[0];
+  const footer = page("docs/index.html").match(
+    /<footer[\s\S]*?<\/footer>/,
+  )?.[0];
   assert.ok(footer, "no footer in the built page");
   assert.match(footer, /jaad\.lancher\.dev/);
   assert.doesNotMatch(footer, /:credit/, ":credit reached the page unexpanded");
@@ -116,9 +116,10 @@ test("the chrome is measured against the content, not against a second number", 
     /<header[^>]*class="[^"]*jaad-chrome/,
     "the header does not use the shared measure",
   );
+  assert.match(page("docs/index.html"), /data-jaad-default-frame/);
 });
 
-test("docs and base pages share one padding token", () => {
+test("docs and the deprecated base layout share one padding token", () => {
   const css = allCss().replace(/\s+/g, "");
 
   for (const rule of [".jaad-main", ".docs-page-main"]) {

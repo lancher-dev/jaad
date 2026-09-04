@@ -154,14 +154,35 @@ export default defineJaadConfig({
     );
   });
 
-  test("a page of the consumer's own runs on the exported layout", () => {
+  test("a page of the consumer's own keeps its local layout", () => {
     const custom = built.read("about/index.html");
     assert.match(custom, /<title>About \| Consumer Test<\/title>/);
-    assert.match(custom, /<header[^>]*class="[^"]*jaad-chrome/, "no chrome");
+    assert.match(custom, /<body data-site-layout>/);
+    assert.doesNotMatch(custom, /jaad-chrome/);
+  });
+
+  test("the deprecated Base export remains compatible for one cycle", () => {
+    const legacy = built.read("legacy/index.html");
+    assert.match(legacy, /<title>Legacy \| Consumer Test<\/title>/);
+    assert.match(legacy, /data-legacy-layout/);
+    assert.match(legacy, /<main class="jaad-main-bare">/);
+  });
+
+  test("the conventional docs frame receives and arranges semantic slots", () => {
+    const home = built.read("index.html");
     assert.match(
-      custom,
-      /<main class="jaad-main-bare">/,
-      "bare did not drop the page spacing",
+      home,
+      /data-custom-docs-frame[^>]*data-page-id="01-getting-started"/,
+    );
+    assert.ok(
+      home.indexOf("data-copy-page") < home.indexOf('aria-label="Breadcrumb"'),
+      "the custom frame did not move page actions before breadcrumbs",
+    );
+    assert.doesNotMatch(home, /<footer/, "the omitted footer was rendered");
+    assert.match(
+      built.css.replace(/\s+/g, ""),
+      /\[data-jaad-default-frame\]\.docs-sidebar-left[^}]*position:fixed/,
+      "default positioning is not scoped away from custom frames",
     );
   });
 
@@ -217,6 +238,10 @@ export default defineJaadConfig({
     assert.ok(
       remounted.pages.includes("/docs/index.html"),
       "no index at the nested docs root",
+    );
+    assert.ok(
+      !remounted.pages.includes("/404.html"),
+      "JAAD still owns the site's global 404 when docs are nested",
     );
     assert.match(
       remounted.read("docs/index.html"),

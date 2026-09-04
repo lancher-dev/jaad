@@ -111,10 +111,22 @@ test(
       built.includes("/docs/introduction/index.html"),
       "no compatibility redirect for the sample page",
     );
+    const landing = readFileSync(join(project, "dist", "index.html"), "utf8");
     assert.match(
-      readFileSync(join(project, "dist", "index.html"), "utf8"),
+      landing,
       /href="\/docs"[^>]*>\s*Read the documentation/,
       "the landing page does not link to the docs",
+    );
+    assert.doesNotMatch(landing, /jaad-chrome|jaad-theme-toggle/);
+    const landingSource = readFileSync(
+      join(project, "src", "pages", "index.astro"),
+      "utf8",
+    );
+    assert.match(landingSource, /layouts\/SiteLayout\.astro/);
+    assert.doesNotMatch(landingSource, /@lancher-dev\/jaad\/layouts/);
+    assert.ok(
+      existsSync(join(project, "src", "layouts", "SiteLayout.astro")),
+      "the site template did not create a local layout",
     );
     assert.match(
       readFileSync(join(project, "jaad.config.ts"), "utf8"),
@@ -194,6 +206,11 @@ test(
     assert.equal(manifest.dependencies["left-pad"], "^1.3.0", "a dep was lost");
     // Adding this to someone's library changes how node reads every file in it.
     assert.equal(manifest.type, undefined, "type: module was forced on");
+    assert.equal(
+      existsSync(join(project, "src", "layouts", "SiteLayout.astro")),
+      false,
+      "an unused site layout was added beside an existing landing page",
+    );
 
     useLocalJaad(project, tarball);
     run("npm", ["install", "--no-audit", "--no-fund"], project);
