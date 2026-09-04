@@ -1,4 +1,10 @@
 import { z } from "astro/zod";
+import type {
+  AstroUserConfig,
+  FontProvider,
+  Locales,
+  SessionDriverConfig,
+} from "astro";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import {
@@ -89,10 +95,16 @@ export type JaadConfig = z.output<typeof jaadConfigSchema>;
 
 /** Out of the schema on purpose, so `parse` strips them: the resolved config
  *  is serialised, and an Astro integration is not serialisable. */
+type AstroPassthroughConfig = AstroUserConfig<
+  Locales,
+  string | SessionDriverConfig | undefined,
+  FontProvider[]
+>;
+
 export type JaadUserConfig = z.input<typeof jaadConfigSchema> & {
   site?: string;
   base?: string;
-  astro?: Record<string, unknown>;
+  astro?: AstroPassthroughConfig;
 };
 
 /** What the components actually read: the user's options plus whatever the

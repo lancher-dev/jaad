@@ -3,7 +3,10 @@ import assert from "node:assert/strict";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { resolveConfig } from "../../packages/jaad/src/config.ts";
+import {
+  defineJaadConfig,
+  resolveConfig,
+} from "../../packages/jaad/src/config.ts";
 
 // Resolved outside a repository, so nothing is inferred and the defaults show.
 const bare = (over = {}) => resolveConfig({ title: "T", ...over }, "/");
@@ -17,6 +20,23 @@ test("title is the only thing you must supply", () => {
   assert.equal(config.lang, "en");
   assert.deepEqual(config.nav, []);
   assert.deepEqual(config.social, {});
+});
+
+test("astro passthrough keeps Astro's option types", () => {
+  const config = defineJaadConfig({
+    title: "T",
+    astro: { output: "static", redirects: { "/old": "/new" } },
+  });
+
+  assert.equal(config.astro?.output, "static");
+
+  defineJaadConfig({
+    title: "T",
+    astro: {
+      // @ts-expect-error Unknown Astro options must not pass type checking.
+      notAnAstroOption: true,
+    },
+  });
 });
 
 test("a missing title is rejected rather than defaulted", () => {
