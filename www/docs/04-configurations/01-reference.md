@@ -51,10 +51,10 @@ a route conflict and JAAD reports the required `routeBase` setting.
 
 ## Navigation
 
-| Option   | Type                                   | Default  | Description       |
-| -------- | -------------------------------------- | -------- | ----------------- |
-| `nav`    | `{ label: string; href: string }[]`    | `[]`     | Header text links |
-| `social` | `Record<string, string \| SocialLink>` | inferred | Header icon links |
+| Option   | Type                                | Default  | Description       |
+| -------- | ----------------------------------- | -------- | ----------------- |
+| `nav`    | `{ label: string; href: string }[]` | `[]`     | Header text links |
+| `social` | `Record<string, string \| object>`  | inferred | Header icon links |
 
 For example:
 
@@ -75,6 +75,8 @@ defineJaadConfig({
 
 Bundled forge icons are available for `github`, `gitlab`, `codeberg`, `gitea`,
 `forgejo`, `bitbucket` and `sourcehut`. Other keys require an `svg`.
+
+Object entries accept `href`, with optional `label` and `svg` fields.
 
 When `social` is omitted, JAAD derives the repository link and forge icon from
 the git remote. An explicit forge entry overrides that inference.
@@ -114,13 +116,14 @@ resolved safely.
 
 | Option    | Type              | Default          | Description                       |
 | --------- | ----------------- | ---------------- | --------------------------------- |
-| `head`    | `HeadTag[]`       | `[]`             | Extra elements in `<head>`        |
+| `head`    | `object[]`        | `[]`             | Extra elements in `<head>`        |
 | `ogImage` | `string \| false` | detected or none | Social image path, URL or `false` |
 
 JAAD detects `public/og-image.png`, `.jpg`, `.jpeg` or `.webp`, in that order.
 Local images and canonical URLs require `site`; absolute image URLs do not.
 
-Use `head` for analytics, verification tags and preconnects:
+Each `head` entry accepts `tag`, optional `attrs`, and optional `content`. Use
+it for analytics, verification tags and preconnects:
 
 ```ts
 defineJaadConfig({
@@ -160,9 +163,9 @@ dark }` object changes only the Shiki code themes. See
 
 ## Extending Astro
 
-| Option  | Type                      | Default |
-| ------- | ------------------------- | ------- |
-| `astro` | `Record<string, unknown>` | `{}`    |
+| Option  | Type              | Default |
+| ------- | ----------------- | ------- |
+| `astro` | `AstroUserConfig` | `{}`    |
 
 Pass additional Astro options through `astro`. Extra integrations are appended
 to JAAD's integrations:

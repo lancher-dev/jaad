@@ -1,8 +1,9 @@
 # Markdown
 
 JAAD supports [CommonMark](https://commonmark.org/help/) and
-[GitHub Flavored Markdown](https://github.github.com/gfm/). JAAMD adds the
-features below automatically.
+[GitHub Flavored Markdown](https://github.github.com/gfm/).
+[JAAMD](https://github.com/lancher-dev/jaamd) adds the features below
+automatically.
 
 ## Code tabs
 

@@ -12,5 +12,5 @@ The build includes every Markdown page and indexes its:
 The index is emitted at `<routeBase>/search-index.json`, loaded on first use
 and cached for the session. It requires no configuration.
 
-The single-file index suits documentation with up to a few hundred pages. For
-larger collections, use a dedicated search service.
+The index is a single file containing the searchable text, so its size grows
+with the documentation.

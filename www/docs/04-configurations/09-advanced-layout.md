@@ -80,5 +80,19 @@ const { page, headings } = Astro.props;
 `DocsFrameProps` exposes the current page, headings and navigation model for
 conditional placement. JAAD's internal components are not part of this API.
 
+| Property                  | Contents                                     |
+| ------------------------- | -------------------------------------------- |
+| `page.id`                 | Content collection ID                        |
+| `page.slug`               | File-derived slug, including the opening one |
+| `page.title`              | Resolved page title                          |
+| `page.chapter`            | Chapter name, when present                   |
+| `headings`                | `{ depth, slug, text }[]` for levels 2 and 3 |
+| `navigation.sections`     | Ordered top-level pages and chapter groups   |
+| `navigation.previousPage` | Previous navigation item or `null`           |
+| `navigation.nextPage`     | Next navigation item or `null`               |
+
+`DocsFrameProps`, `DocsNavigation`, `NavSection`, `DocsHeadings` and
+`DocsNavItem` are exported from `@lancher-dev/jaad/advanced`.
+
 For colours, fonts, widths and spacing, use
 [`src/jaad.css`](/docs/configurations/styles) instead.

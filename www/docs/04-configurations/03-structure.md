@@ -28,19 +28,20 @@ source files.
 
 ## Page titles
 
-Use optional frontmatter when the navigation label should differ from the first
-heading:
+Use optional frontmatter to set the navigation label and page description:
 
 ```markdown
 ---
 title: Images & Videos
+description: Add accessible images and embedded videos.
 ---
 
 # Images and videos
 ```
 
-The title affects navigation and metadata. The filename still determines the
-URL.
+`title` affects navigation and metadata; the filename still determines the
+URL. `description` is used for page metadata and structured data. Without it,
+JAAD uses an excerpt from the page, followed by the site description.
 
 The same structure generates the sidebar, mobile selectors, breadcrumbs and
 previous/next links; no navigation configuration is required.
