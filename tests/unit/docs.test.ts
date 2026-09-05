@@ -206,6 +206,11 @@ test("markdown syntax is stripped down to prose", () => {
   assert.ok(!stripped.includes("img.png"));
 });
 
+test("an image leaves neither its alt text nor a stray bang", () => {
+  assert.equal(stripMarkdown("Look ![a diagram](/x.png) here."), "Look  here.");
+  assert.equal(stripMarkdown("Empty ![](/x.png) alt."), "Empty  alt.");
+});
+
 test("fenced code blocks are removed entirely", () => {
   const stripped = stripMarkdown(
     "before\n\n```js\nconst secret = 1;\n```\n\nafter",
