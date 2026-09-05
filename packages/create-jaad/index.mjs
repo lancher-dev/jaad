@@ -156,7 +156,7 @@ function readManifest(target) {
 
   let manifest;
   try {
-    manifest = JSON.parse(readFileSync(file, "utf8"));
+    manifest = JSON.parse(readFileSync(file, "utf8").replace(/^\uFEFF/, ""));
   } catch {
     return {
       manifest: null,
@@ -298,8 +298,15 @@ function answer(value) {
   return value;
 }
 
+const IGNORED_WHEN_EMPTY = [".git", ".gitignore", ".DS_Store", "Thumbs.db"];
+
 function assertTargetAvailable(args, target) {
-  if (!args.here && existsSync(target) && readdirSync(target).length > 0) {
+  if (args.here || !existsSync(target)) return;
+
+  const entries = readdirSync(target).filter(
+    (entry) => !IGNORED_WHEN_EMPTY.includes(entry),
+  );
+  if (entries.length > 0) {
     fail(`${args.dir} exists and is not empty. Use --here to add JAAD to it.`);
   }
 }
