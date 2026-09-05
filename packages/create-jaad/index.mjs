@@ -93,6 +93,11 @@ function parseArgs(argv) {
   if (args.here && args.dir) {
     fail("--here cannot be used together with a directory.");
   }
+  // A path naming the current directory is --here.
+  if (args.dir && resolve(args.dir) === resolve(".")) {
+    args.here = true;
+    args.dir = null;
+  }
   if (args.template && !TEMPLATES.includes(args.template)) {
     fail(
       `unknown template ${args.template}; available: ${TEMPLATES.join(", ")}.`,
