@@ -48,7 +48,7 @@ const NOT_FOUND_PAGE_NAMES = [
 ];
 
 const routeEntrypoint = (file: string) =>
-  new URL(`./routes/${file}`, import.meta.url).pathname;
+  fileURLToPath(new URL(`./routes/${file}`, import.meta.url));
 
 export function shouldInjectNotFound(docsBase: string, srcDir: URL): boolean {
   return (
@@ -94,8 +94,9 @@ export function createIntegrationState(base = ""): IntegrationState {
   return {
     deploymentBase: normaliseBasePath(base),
     openingSlug: null,
-    docsFrame: new URL("./layouts/DefaultDocsFrame.astro", import.meta.url)
-      .pathname,
+    docsFrame: fileURLToPath(
+      new URL("./layouts/DefaultDocsFrame.astro", import.meta.url),
+    ),
   };
 }
 

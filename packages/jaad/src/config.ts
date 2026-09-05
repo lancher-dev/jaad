@@ -7,6 +7,7 @@ import type {
 } from "astro";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   inferRepo,
   inferDescription,
@@ -214,7 +215,7 @@ export function resolveStylesheets(
   return {
     user: existsSync(userCss) ? userCss : null,
     theme: preset
-      ? new URL(`./themes/${preset}`, import.meta.url).pathname
+      ? fileURLToPath(new URL(`./themes/${preset}`, import.meta.url))
       : null,
   };
 }
