@@ -107,6 +107,12 @@ function parseArgs(argv) {
   return args;
 }
 
+/** Quotes a path for the commands we print. */
+const quoteArg = (value) =>
+  /^[\w./@-]+$/.test(value)
+    ? value
+    : `"${value.replace(/(["\\$`])/g, "\\$1")}"`;
+
 /** "my-docs" becomes "My Docs", which is right often enough to offer. */
 const titleFrom = (name) =>
   name
@@ -725,7 +731,7 @@ async function main() {
   }
 
   const next = [];
-  if (!request.here) next.push(`cd ${request.dir}`);
+  if (!request.here) next.push(`cd ${quoteArg(request.dir)}`);
   if (!request.install) next.push(`${pm} install`);
   next.push(`${pm} run dev`);
 
