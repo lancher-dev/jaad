@@ -7,6 +7,10 @@ on:
       - "v*"
       - "create-v*"
 
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+
 permissions:
   id-token: write
   contents: read
