@@ -6,7 +6,7 @@ type Props = DocsFrameProps;
 const { page } = Astro.props;
 ---
 
-<div data-custom-docs-frame data-page-id={page.id}>
+<div data-custom-docs-frame data-page-id={page.id} data-page-title={page.title}>
   <slot name="header" />
 
   <div class="docs-container relative">

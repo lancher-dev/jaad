@@ -140,7 +140,9 @@ export default defineJaadConfig({
 
   test("the repository is listed once, and the mobile menu does not repeat it", () => {
     const home = built.read("index.html");
-    const menu = home.match(/<jaad-nav-mobile[\s\S]*?<\/jaad-nav-mobile>/)[0];
+    const found = home.match(/<jaad-nav-mobile[\s\S]*?<\/jaad-nav-mobile>/);
+    assert.ok(found, "the mobile menu was not rendered at all");
+    const menu = found[0];
 
     assert.match(menu, />API</, "the mobile menu lost the nav links");
     assert.doesNotMatch(menu, /github\.com/, "the mobile menu repeats an icon");
@@ -181,6 +183,7 @@ export default defineJaadConfig({
       home,
       /data-custom-docs-frame[^>]*data-page-id="01-getting-started"/,
     );
+    assert.match(home, /data-page-title="Frontmatter Wins"/);
     assert.ok(
       home.indexOf("data-copy-page") < home.indexOf('aria-label="Breadcrumb"'),
       "the custom frame did not move page actions before breadcrumbs",

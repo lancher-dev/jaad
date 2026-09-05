@@ -6,11 +6,7 @@ import DocsSidebarLeft from "../components/docs/DocsSidebarLeft.astro";
 import TableOfContents from "../components/docs/TableOfContents.astro";
 import StructuredData from "../components/docs/StructuredData.astro";
 import DocsFrame from "virtual:jaad/docs-frame";
-import {
-  extractDescription,
-  extractTitleFromMarkdown,
-  getCleanSlug,
-} from "../utils/docs.ts";
+import { docTitle, extractDescription, getCleanSlug } from "../utils/docs.ts";
 import type { DocsEntry, DocsHeadings } from "../@types/docs.ts";
 import type { DocsNavigation } from "../navigation.ts";
 import type { DocsFrameProps } from "../advanced.ts";
@@ -36,10 +32,8 @@ const { title, chapter, entry, headings = [], navigation } = Astro.props;
 
 const pageTitle = title ? `${title} | ${config.title}` : config.title;
 
-// Fall back to the page's own h1: without it the first paragraph of the
-// stripped body *is* the heading, and it becomes the meta description.
-const entryTitle =
-  title ?? (entry ? extractTitleFromMarkdown(entry.body || "") : null) ?? "";
+// The opening page gets no `title`; resolve it from the entry.
+const entryTitle = entry ? docTitle(entry) : (title ?? "");
 
 const pageDescription =
   entry?.data.description ??

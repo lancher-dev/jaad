@@ -1,5 +1,6 @@
 ---
 slug: this-frontmatter-field-must-not-own-the-url
+title: Frontmatter Wins
 ---
 
 # Getting Started
