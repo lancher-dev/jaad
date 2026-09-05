@@ -9,4 +9,9 @@
 | Page    | `←`              | Open the previous page  |
 | Page    | `→`              | Open the next page      |
 
-Page shortcuts are disabled while an input, textarea or select has focus.
+Page shortcuts are disabled when:
+
+- an input, textarea, select or editable element has focus;
+- the focused element is inside a sideways-scrollable area, such as a wide table
+  or code block;
+- any modifier is held.
