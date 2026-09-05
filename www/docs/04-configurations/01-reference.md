@@ -180,6 +180,8 @@ defineJaadConfig({
 });
 ```
 
+`astro` is read by `@lancher-dev/jaad/site`. `jaad(config)` ignores it.
+
 For full control, use a regular Astro configuration and add `jaad(config)` to
 its integrations, as shown in
 [Existing Astro project](/docs/getting-started/installation#existing-astro-project).

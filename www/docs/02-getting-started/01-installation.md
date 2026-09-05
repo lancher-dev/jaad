@@ -119,6 +119,10 @@ export default defineConfig({
 });
 ```
 
+`jaad()` returns integrations only. `site` and `base` are lifted above, and the
+[`astro`](/docs/configurations/reference#extending-astro) field is ignored here.
+Write those options in `defineConfig`.
+
 If the project defines content collections, add JAAD's collection without
 replacing them:
 
