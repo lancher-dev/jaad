@@ -82,7 +82,9 @@ test("the fonts are served from the site itself", () => {
 
 test("the inferred repository is a single icon, with no menu to repeat it", () => {
   const home = page("docs/index.html");
-  const repo = home.match(/href="(https:\/\/github\.com\/[\w-]+\/[\w-]+)"/)[1];
+  const match = home.match(/href="(https:\/\/github\.com\/[\w-]+\/[\w-]+)"/);
+  assert.ok(match, "no repository link was rendered at all");
+  const repo = match[1];
 
   assert.equal(
     home.split(`href="${repo}"`).length - 1,
@@ -113,15 +115,20 @@ test("the sidebar follows the numeric prefixes", () => {
     ...page("docs/index.html").matchAll(/href="(\/docs(?:\/[^"#]*)?)"/g),
   ].map((m) => m[1]);
 
+  const at = (href) => {
+    const index = links.indexOf(href);
+    assert.notEqual(index, -1, `${href} is missing from the sidebar`);
+    return index;
+  };
+
   assert.equal(links[0], "/docs", "the opening page should own routeBase");
   assert.ok(
-    links.indexOf("/docs/getting-started/installation") <
-      links.indexOf("/docs/markdown"),
+    at("/docs/getting-started/installation") < at("/docs/markdown"),
     "getting started must come before markdown",
   );
   assert.ok(
-    links.indexOf("/docs/getting-started/installation") <
-      links.indexOf("/docs/getting-started/deployment"),
+    at("/docs/getting-started/installation") <
+      at("/docs/getting-started/deployment"),
     "files inside a chapter must follow their own numbers",
   );
 });
