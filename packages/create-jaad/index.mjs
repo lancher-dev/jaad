@@ -715,9 +715,21 @@ async function main() {
     process.exitCode = 1;
     return;
   }
-  if (!request) return;
+  if (!request) {
+    process.exitCode = 1;
+    return;
+  }
 
-  const { written, skipped, found } = scaffold(request);
+  let result;
+  try {
+    result = scaffold(request);
+  } catch (error) {
+    p.log.error(`could not write the project: ${error.message}`);
+    process.exitCode = 1;
+    return;
+  }
+
+  const { written, skipped, found } = result;
   p.log.success(request.title);
   for (const file of written) p.log.step(`created  ${file}`);
   for (const file of skipped) p.log.info(`kept     ${file}`);
@@ -726,12 +738,18 @@ async function main() {
 
   const pm = packageManager();
   if (request.install) {
-    const result = spawnSync(pm, ["install"], {
+    const installed = spawnSync(pm, ["install"], {
       cwd: request.target,
       stdio: "inherit",
+      // npm and pnpm are .cmd shims on Windows.
+      shell: process.platform === "win32",
     });
-    if (result.status !== 0) {
-      p.log.error(`${pm} install failed.`);
+    if (installed.status !== 0) {
+      p.log.error(
+        installed.error
+          ? `could not run ${pm}: ${installed.error.message}`
+          : `${pm} install failed.`,
+      );
       process.exitCode = 1;
       return;
     }
