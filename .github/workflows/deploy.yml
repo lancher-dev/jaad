@@ -3,6 +3,11 @@ name: Deploy to GitHub Pages
 on:
   release:
     types: [published]
+  workflow_dispatch:
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
 
 permissions:
   contents: read
