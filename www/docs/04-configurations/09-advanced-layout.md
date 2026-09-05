@@ -42,14 +42,20 @@ const { page, headings } = Astro.props;
   <slot name="mobile-navigation" />
 
   <div class="docs-grid">
-    <slot name="sidebar" />
+    <aside class="docs-aside"><slot name="sidebar" /></aside>
     <main>
       <slot name="breadcrumbs" />
       <slot name="page-actions" />
       <slot name="content" />
       <slot name="page-navigation" />
     </main>
-    {headings.length > 0 && <slot name="table-of-contents" />}
+    {
+      headings.length > 0 && (
+        <aside class="docs-aside">
+          <slot name="table-of-contents" />
+        </aside>
+      )
+    }
   </div>
 
   <slot name="footer" />
@@ -62,20 +68,23 @@ const { page, headings } = Astro.props;
     justify-content: center;
   }
 
+  .docs-aside {
+    display: none;
+  }
+
   @media (min-width: 64rem) {
     .docs-grid {
       grid-template-columns: 16rem minmax(0, 56rem) 16rem;
     }
-  }
 
-  @media (max-width: 63.999rem) {
-    :global(.docs-sidebar-left),
-    :global(.docs-sidebar-right) {
-      display: none;
+    .docs-aside {
+      display: block;
     }
   }
 </style>
 ```
+
+Wrap the slots you need to position in elements of your own, and style those.
 
 `DocsFrameProps` exposes the current page, headings and navigation model for
 conditional placement. JAAD's internal components are not part of this API.
@@ -85,14 +94,38 @@ conditional placement. JAAD's internal components are not part of this API.
 | `page.id`                 | Content collection ID                        |
 | `page.slug`               | File-derived slug, including the opening one |
 | `page.title`              | Resolved page title                          |
-| `page.chapter`            | Chapter name, when present                   |
+| `page.chapter`            | Chapter slug, when present                   |
 | `headings`                | `{ depth, slug, text }[]` for levels 2 and 3 |
 | `navigation.sections`     | Ordered top-level pages and chapter groups   |
 | `navigation.previousPage` | Previous navigation item or `null`           |
 | `navigation.nextPage`     | Next navigation item or `null`               |
 
-`DocsFrameProps`, `DocsNavigation`, `NavSection`, `DocsHeadings` and
-`DocsNavItem` are exported from `@lancher-dev/jaad/advanced`.
+`page.chapter` and `NavSection.chapter` are directory slugs, such as
+`getting-started`. Title-case them for display.
+
+### Navigation shapes
+
+`NavSection` is a union discriminated on `type`.
+
+```ts
+type NavSection =
+  | { type: "page"; order: number; item: DocsNavItem }
+  | { type: "chapter"; order: number; chapter: string; items: DocsNavItem[] };
+
+interface DocsNavItem {
+  title: string;
+  chapter: string | undefined;
+  primaryOrder: number;
+  href: string;
+  isActive: boolean;
+}
+```
+
+`href` already carries `routeBase` and the deployment `base`. `isActive` marks
+the current page.
+
+`DocsFrameProps`, `DocsNavigation`, `NavSection`, `DocsHeadings`, `DocsNavItem`
+and `DocsEntry` are exported from `@lancher-dev/jaad/advanced`.
 
 For colours, fonts, widths and spacing, use
 [`src/jaad.css`](/docs/configurations/styles) instead.
