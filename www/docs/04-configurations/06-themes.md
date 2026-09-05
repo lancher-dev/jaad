@@ -71,3 +71,32 @@ html.dark {
 Use `:root` for light mode and `html.dark` for dark mode. Override individual
 `--jaamd-` tokens only when a palette needs values that cannot derive from the
 seeds.
+
+## Sharing the theme with your own pages
+
+[Pages of your own](/docs/configurations/custom-pages) use your layout, not
+JAAD's. Two values keep both halves of a site in step:
+
+| What                      | Value                         |
+| ------------------------- | ----------------------------- |
+| Class on `<html>` in dark | `dark`                        |
+| Stored preference         | `localStorage["theme"]`       |
+| Stored values             | `"dark"` / `"light"`          |
+| No stored value           | follow `prefers-color-scheme` |
+
+Apply the class in the `<head>`, before anything paints:
+
+```astro
+<script is:inline>
+  (function () {
+    var t = localStorage.getItem("theme");
+    var dark =
+      t === "dark" ||
+      (!t && matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.classList.toggle("dark", dark);
+  })();
+</script>
+```
+
+Write `"dark"` or `"light"` to that key from your own switcher. JAAD reads it
+again on the next documentation page.
