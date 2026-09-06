@@ -7,19 +7,19 @@ npm create @lancher-dev/jaad@latest
 ```
 
 The CLI asks for a destination, template, title and whether to install
-dependencies. Choose `docs` for documentation at `/`, or `site` for a landing
-page at `/` and documentation at `/docs`.
+dependencies. The `docs` template puts documentation at `/` and is the default;
+`site` adds a landing page at `/` and moves documentation to `/docs`.
 
 To provide every answer as flags:
 
 ```bash
-npm create @lancher-dev/jaad@latest my-docs -- --template docs --title "My Docs" --install
+npm create @lancher-dev/jaad@latest my-docs -- --title "My Docs" --install
 ```
 
 Use `--here` inside an existing repository:
 
 ```bash
-npm create @lancher-dev/jaad@latest -- --here --template site
+npm create @lancher-dev/jaad@latest -- --here
 ```
 
 The command keeps the existing `package.json` and Markdown files. It stops
@@ -28,8 +28,8 @@ merge, and when `--template site` meets a `jaad.config.*` it did not write:
 the landing page needs `routeBase: "/docs"`, which only you can set.
 
 > [!NOTE]
-> Non-interactive environments require a destination or `--here`, `--template`,
-> `--title`, and either `--install` or `--no-install`.
+> Non-interactive environments require a destination or `--here`, `--title`,
+> and either `--install` or `--no-install`.
 
 ## Run locally
 

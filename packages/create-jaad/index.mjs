@@ -10,6 +10,7 @@ import { styleText } from "node:util";
 const JAAD = "^0.7.1";
 const ASTRO = "^7.3.1";
 const TEMPLATES = ["docs", "site"];
+const DEFAULT_TEMPLATE = "docs";
 const ASTRO_CONFIG_NAMES = [
   "astro.config.ts",
   "astro.config.mjs",
@@ -42,7 +43,8 @@ const INDEX_PAGE_NAMES = [
 const HELP = `Usage: npm create @lancher-dev/jaad@latest [directory] [options]
 
   --here                    Set up JAAD in the current directory.
-  --template <docs|site>    Docs at /, or a landing page with docs at /docs.
+  --template <docs|site>    Docs at / (default), or a landing page with
+                            docs at /docs.
   --title <title>           Site title.
   --install                 Install dependencies.
   --no-install              Write the files and stop.
@@ -335,7 +337,6 @@ function missingAnswers(args) {
   const missing = [];
   if (!args.here && !args.dir)
     missing.push("directory ([directory] or --here)");
-  if (!args.template) missing.push("template (--template docs|site)");
   if (!args.title) missing.push("title (--title <title>)");
   if (args.install === null) {
     missing.push("installation (--install or --no-install)");
@@ -383,6 +384,8 @@ async function collectAnswers(args) {
         jaadConfig: null,
       };
   const manifest = existing.manifest;
+
+  if (!args.template && !interactive) args.template = DEFAULT_TEMPLATE;
 
   if (!args.template) {
     const template = answer(

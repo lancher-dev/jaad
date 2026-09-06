@@ -352,6 +352,26 @@ test("the published scaffolder carries its templates", () => {
   }
 });
 
+test("the docs template is the one you get without asking", () => {
+  const parent = temporaryDirectory("jaad-default-template-");
+  const result = spawnSync(
+    "node",
+    [CLI, "project", "--title", "Defaulted", "--no-install"],
+    { cwd: parent, encoding: "utf8" },
+  );
+
+  assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
+
+  const project = join(parent, "project");
+  const config = readFileSync(join(project, "jaad.config.ts"), "utf8");
+  assert.doesNotMatch(config, /routeBase/, "the site template was scaffolded");
+  assert.equal(
+    existsSync(join(project, "src", "layouts", "SiteLayout.astro")),
+    false,
+  );
+  assert.equal(existsSync(join(project, "docs", "01-introduction.md")), true);
+});
+
 test("--here recognizes canonical JAAD configurations on rerun", () => {
   const project = temporaryDirectory("jaad-here-rerun-");
   mkdirSync(join(project, "src"), { recursive: true });
@@ -458,8 +478,8 @@ test("non-interactive requests are complete before files are written", () => {
   const cases = [
     {
       name: "missing answers",
-      args: ["project", "--title", "Incomplete", "--no-install"],
-      message: /missing answers.*template/s,
+      args: ["project", "--no-install"],
+      message: /missing answers.*title/s,
       target: "project",
     },
     {

@@ -7,9 +7,9 @@
 npm create @lancher-dev/jaad@latest my-docs
 ```
 
-The `docs` template writes the minimal documentation setup. The `site` template
-also writes a local Astro layout and landing page; those files belong to the
-application and do not inherit JAAD's documentation layout.
+This is the `docs` template: the minimal documentation setup, and the default.
+`--template site` adds a local Astro layout and landing page instead; those
+files belong to the application and do not inherit JAAD's documentation layout.
 
 ## A repository you already have
 
@@ -29,18 +29,19 @@ the [manual integration steps](https://jaad.lancher.dev/docs/getting-started/ins
 
 ## Options
 
-|                           |                                                         |
-| ------------------------- | ------------------------------------------------------- |
-| `[directory]`             | Create the project in this directory.                   |
-| `--here`                  | Use the current directory instead of a new one.         |
-| `--template <docs\|site>` | Put docs at `/`, or add a landing with docs at `/docs`. |
-| `--title <title>`         | Set the site title.                                     |
-| `--install`               | Install dependencies after writing the files.           |
-| `--no-install`            | Write the files and stop.                               |
+|                           |                                                           |
+| ------------------------- | --------------------------------------------------------- |
+| `[directory]`             | Create the project in this directory.                     |
+| `--here`                  | Use the current directory instead of a new one.           |
+| `--template <docs\|site>` | Docs at `/` (default), or a landing with docs at `/docs`. |
+| `--title <title>`         | Set the site title.                                       |
+| `--install`               | Install dependencies after writing the files.             |
+| `--no-install`            | Write the files and stop.                                 |
 
 Interactive prompts offer useful defaults. In CI and other non-interactive
-environments every answer must be provided explicitly: a directory or
-`--here`, a template, a title, and either `--install` or `--no-install`.
+environments the rest must be provided explicitly: a directory or `--here`, a
+title, and either `--install` or `--no-install`. The template defaults to
+`docs`.
 
 ## Documentation
 
