@@ -1,0 +1,17 @@
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+
+const title = "__JAAD_TITLE__";
+const base = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL.slice(0, -1)
+  : import.meta.env.BASE_URL;
+const docsHref = base + "/docs";
+---
+
+<SiteLayout pageTitle="Home">
+  <section class="hero">
+    <h1>{title}</h1>
+    <p>Welcome. Start here, then explore the documentation.</p>
+    <a href={docsHref}> Read the documentation </a>
+  </section>
+</SiteLayout>

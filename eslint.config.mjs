@@ -8,7 +8,14 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default defineConfig([
-  { ignores: ["**/dist/**", "**/.astro/**", "tests/consumer/fixture/**"] },
+  {
+    ignores: [
+      "**/dist/**",
+      "**/.astro/**",
+      "tests/consumer/fixture/**",
+      "packages/create-jaad/templates/**",
+    ],
+  },
 
   {
     files: ["**/*.{js,mjs,cjs}"],

@@ -15,7 +15,8 @@ import {
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "..", "..");
 const PKG = join(ROOT, "packages", "jaad");
-const CLI = join(ROOT, "packages", "create-jaad", "index.mjs");
+const CREATE_PKG = join(ROOT, "packages", "create-jaad");
+const CLI = join(CREATE_PKG, "index.mjs");
 
 /** The generated manifest asks npm for the published jaad; point it at ours. */
 function useLocalJaad(project, tarball) {
@@ -309,6 +310,23 @@ test("--here changes nothing when existing configurations need a manual merge", 
   assert.match(output, /No files were changed/);
   assert.match(output, /existing-astro-project/);
   assert.deepEqual(snapshotFiles(project), before);
+});
+
+// The templates are only files on disk: nothing fails locally when `files`
+// forgets them, and everything fails once published.
+test("the published scaffolder carries its templates", () => {
+  const output = run("npm", ["pack", "--dry-run", "--json"], CREATE_PKG);
+  const packed = JSON.parse(output)[0].files.map((entry) => entry.path);
+
+  for (const file of [
+    "templates/docs/jaad.config.ts",
+    "templates/docs/docs/01-introduction.md",
+    "templates/site/jaad.config.ts",
+    "templates/site/src/layouts/SiteLayout.astro",
+    "templates/site/src/pages/index.astro",
+  ]) {
+    assert.ok(packed.includes(file), `${file} is missing from the tarball`);
+  }
 });
 
 test("--here recognizes canonical JAAD configurations on rerun", () => {

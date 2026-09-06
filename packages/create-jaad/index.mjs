@@ -148,6 +148,24 @@ function write(target, relative, contents, written, skipped) {
   written.push(relative);
 }
 
+// Resolved against this file: `npm create` runs the bin from a cache.
+const templateRoot = (template) =>
+  join(import.meta.dirname, "templates", template);
+
+function templateFiles(root, prefix = "") {
+  const entries = readdirSync(join(root, prefix), { withFileTypes: true }).sort(
+    (a, b) => a.name.localeCompare(b.name),
+  );
+  return entries.flatMap((entry) => {
+    const relative = prefix ? `${prefix}/${entry.name}` : entry.name;
+    return entry.isDirectory() ? templateFiles(root, relative) : [relative];
+  });
+}
+
+/** Replaces the whole literal, so the title keeps its JSON escaping. */
+const withTitle = (source, title) =>
+  source.replaceAll('"__JAAD_TITLE__"', JSON.stringify(title));
+
 const manifestPath = (target) => join(target, "package.json");
 
 function readManifest(target) {
@@ -417,222 +435,6 @@ async function collectAnswers(args) {
   return { ...args, target, manifest, existing };
 }
 
-function jaadConfig(title, template) {
-  const additions =
-    template === "site"
-      ? '\n  routeBase: "/docs",\n  nav: [{ label: "Docs", href: "/docs" }],'
-      : "";
-  return `import { defineJaadConfig } from "@lancher-dev/jaad";\n\nexport default defineJaadConfig({\n  title: ${JSON.stringify(title)},${additions}\n});\n`;
-}
-
-function landingPage(title) {
-  return `---
-import SiteLayout from "../layouts/SiteLayout.astro";
-
-const title = ${JSON.stringify(title)};
-const base = import.meta.env.BASE_URL.endsWith("/")
-  ? import.meta.env.BASE_URL.slice(0, -1)
-  : import.meta.env.BASE_URL;
-const docsHref = base + "/docs";
----
-
-<SiteLayout pageTitle="Home">
-  <section class="hero">
-    <h1>{title}</h1>
-    <p>
-      Welcome. Start here, then explore the documentation.
-    </p>
-    <a href={docsHref}>
-      Read the documentation
-    </a>
-  </section>
-</SiteLayout>
-`;
-}
-
-function siteLayout(title) {
-  return `---
-interface Props {
-  pageTitle?: string;
-  description?: string;
-}
-
-const siteTitle = ${JSON.stringify(title)};
-const {
-  pageTitle,
-  description = "A website with its own JAAD documentation.",
-} = Astro.props;
-const title = pageTitle ? \`\${pageTitle} | \${siteTitle}\` : siteTitle;
-const base = import.meta.env.BASE_URL.endsWith("/")
-  ? import.meta.env.BASE_URL.slice(0, -1)
-  : import.meta.env.BASE_URL;
-const homeHref = base + "/";
-const docsHref = base + "/docs";
----
-
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="description" content={description} />
-    <title>{title}</title>
-  </head>
-  <body>
-    <header class="site-chrome site-header">
-      <a class="site-name" href={homeHref}>{siteTitle}</a>
-      <nav aria-label="Main navigation">
-        <a href={docsHref}>Documentation</a>
-      </nav>
-    </header>
-    <main><slot /></main>
-    <footer class="site-chrome site-footer">Built with JAAD.</footer>
-  </body>
-</html>
-
-<style is:global>
-  :root {
-    color-scheme: light;
-    --color-background: #faf8f5;
-    --color-surface: #ffffff;
-    --color-foreground: #3a3a3a;
-    --color-foreground-bright: #1a1a1a;
-    --color-primary: #2d2d2d;
-    --color-foreground-muted: color-mix(
-      in oklab,
-      var(--color-foreground) 55%,
-      var(--color-background)
-    );
-    --color-foreground-secondary: color-mix(
-      in oklab,
-      var(--color-foreground) 72%,
-      var(--color-background)
-    );
-    --color-border-dark: color-mix(
-      in oklab,
-      var(--color-foreground) 25%,
-      var(--color-background)
-    );
-    --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
-    --font-serif: Merriweather, Georgia, serif;
-    --site-content-width: 56rem;
-    --site-page-padding: 2rem;
-  }
-
-  * { box-sizing: border-box; }
-  html {
-    background: var(--color-background);
-    color: var(--color-foreground);
-    font-family: var(--font-sans);
-  }
-  body {
-    display: flex;
-    min-height: 100vh;
-    flex-direction: column;
-    margin: 0;
-  }
-  h1, h2, h3 {
-    color: var(--color-foreground-bright);
-    font-family: var(--font-serif);
-  }
-  a { color: var(--color-primary); }
-  .site-chrome {
-    width: 100%;
-    max-width: var(--site-content-width);
-    margin-inline: auto;
-  }
-  .site-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1rem;
-  }
-  .site-header nav a {
-    color: var(--color-foreground-secondary);
-    font-size: 0.875rem;
-    text-decoration: none;
-  }
-  .site-header nav a:hover { color: var(--color-foreground-bright); }
-  .site-name {
-    font-family: var(--font-serif);
-    font-size: 1.25rem;
-    font-style: italic;
-    font-weight: 300;
-    line-height: 1;
-    text-decoration: none;
-  }
-  main {
-    width: 100%;
-    max-width: var(--site-content-width);
-    flex: 1;
-    margin-inline: auto;
-    padding-inline: var(--site-page-padding);
-  }
-  .hero {
-    max-width: 44rem;
-    margin: 7rem auto;
-    text-align: center;
-  }
-  .hero h1 {
-    margin: 0;
-    font-size: clamp(2.5rem, 8vw, 5rem);
-    font-weight: 600;
-  }
-  .hero p {
-    margin: 1.5rem 0 2rem;
-    color: var(--color-foreground-secondary);
-    font-size: 1.125rem;
-  }
-  .hero a {
-    display: inline-block;
-    border-radius: 0.25rem;
-    padding: 0.75rem 1.5rem;
-    background: var(--color-primary);
-    color: var(--color-background);
-    text-decoration: none;
-  }
-  .site-footer {
-    margin-top: 1rem;
-    border-top: 1px solid var(--color-border-dark);
-    padding: 0.5rem 1rem 0.25rem;
-    color: var(--color-foreground-muted);
-    font-size: 0.95rem;
-    font-style: italic;
-    line-height: 1.6;
-    text-align: center;
-  }
-  @media (min-width: 1024px) {
-    main { padding-inline: calc(var(--site-page-padding) * 2); }
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      color-scheme: dark;
-      --color-background: #0d1117;
-      --color-surface: #21262d;
-      --color-foreground: #c9d1d9;
-      --color-foreground-bright: #e6edf3;
-      --color-primary: #c9d1d9;
-      --color-foreground-muted: color-mix(
-        in oklab,
-        var(--color-foreground) 57%,
-        var(--color-background)
-      );
-      --color-foreground-secondary: color-mix(
-        in oklab,
-        var(--color-foreground) 71%,
-        var(--color-background)
-      );
-      --color-border-dark: color-mix(
-        in oklab,
-        var(--color-foreground) 36%,
-        var(--color-background)
-      );
-    }
-  }
-</style>
-`;
-}
-
 function scaffold(request) {
   const { target, manifest, title, template, existing } = request;
   mkdirSync(target, { recursive: true });
@@ -643,17 +445,6 @@ function scaffold(request) {
   if (existing.astroConfig) skipped.push(existing.astroConfig);
   else write(target, "astro.config.mjs", ASTRO_CONFIG, written, skipped);
 
-  if (existing.jaadConfig) skipped.push(existing.jaadConfig);
-  else {
-    write(
-      target,
-      "jaad.config.ts",
-      jaadConfig(title, template),
-      written,
-      skipped,
-    );
-  }
-
   if (existing.contentConfig) skipped.push(existing.contentConfig);
   else {
     write(target, "src/content.config.ts", CONTENT_CONFIG, written, skipped);
@@ -662,34 +453,19 @@ function scaffold(request) {
   const ownsRoot = INDEX_PAGE_NAMES.some((name) =>
     existsSync(join(target, "src", "pages", name)),
   );
-
-  if (template === "site" && !ownsRoot) {
-    write(
-      target,
-      "src/layouts/SiteLayout.astro",
-      siteLayout(title),
-      written,
-      skipped,
-    );
-    write(
-      target,
-      "src/pages/index.astro",
-      landingPage(title),
-      written,
-      skipped,
-    );
-  }
-
   const found = markdownUnder(join(target, "docs"));
-  if (found === 0) {
-    const opening = template === "site" ? "/docs" : "/";
-    write(
-      target,
-      "docs/01-introduction.md",
-      `# Introduction\n\nWrite markdown in \`docs/\`. The first page opens at \`${opening}\`; numbers set the order and are stripped from later URLs, folders become chapters, and the first heading becomes the page title.\n`,
-      written,
-      skipped,
-    );
+
+  const root = templateRoot(template);
+  for (const relative of templateFiles(root)) {
+    if (relative === "jaad.config.ts" && existing.jaadConfig) {
+      skipped.push(existing.jaadConfig);
+      continue;
+    }
+    if (relative.startsWith("src/") && ownsRoot) continue;
+    if (relative.startsWith("docs/") && found > 0) continue;
+
+    const source = readFileSync(join(root, relative), "utf8");
+    write(target, relative, withTitle(source, title), written, skipped);
   }
 
   writeManifest(target, manifest, basename(target));
