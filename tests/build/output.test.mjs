@@ -150,6 +150,19 @@ test("the chrome is measured against the content, not against a second number", 
     "a hardcoded chrome width is back",
   );
 
+  // The gutters used to be lg:ml-64/lg:mr-64, so widening the sidebar token
+  // moved the sidebars without moving the room reserved for them.
+  assert.match(
+    css,
+    /\.docs-main-gutters\{margin-inline:var\(--jaad-sidebar-width\)\}/,
+    "the content gutters no longer follow the sidebar token",
+  );
+  assert.match(
+    css,
+    /\.docs-sidebar-left\{left:max\(1rem,var\(--jaad-sidebar-offset\)\)\}/,
+    "a widened sidebar can be pushed off screen again",
+  );
+
   assert.match(
     page("docs/index.html"),
     /<header[^>]*class="[^"]*jaad-chrome/,

@@ -31,6 +31,13 @@
   position: relative;
 }
 
+/* The room the sidebars need, so widening them widens the gutters too. */
+@media (min-width: 1024px) {
+  .docs-main-gutters {
+    margin-inline: var(--jaad-sidebar-width);
+  }
+}
+
 /* Derived from the content, so one token moves the whole layout. */
 @media (min-width: 1024px) {
   [data-jaad-default-frame] .docs-sidebar-left,
@@ -42,22 +49,14 @@
     padding: 6rem 1.5rem 2rem;
   }
 
+  /* max() keeps the sidebar on screen when the centred offset would be
+     negative, whatever the content and sidebar tokens are set to. */
   [data-jaad-default-frame] .docs-sidebar-left {
-    left: var(--jaad-sidebar-offset);
+    left: max(1rem, var(--jaad-sidebar-offset));
   }
 
   [data-jaad-default-frame] .docs-sidebar-right {
-    right: var(--jaad-sidebar-offset);
-  }
-
-  @media (max-width: 1536px) {
-    [data-jaad-default-frame] .docs-sidebar-left {
-      left: 1rem;
-    }
-
-    [data-jaad-default-frame] .docs-sidebar-right {
-      right: 1rem;
-    }
+    right: max(1rem, var(--jaad-sidebar-offset));
   }
 }
 
