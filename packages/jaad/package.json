@@ -24,7 +24,7 @@
     ".": "./index.ts",
     "./advanced": "./src/advanced.ts",
     "./content": "./src/content.ts",
-    "./layouts/Base.astro": "./src/layouts/Base.astro",
+    "./layouts/Page.astro": "./src/layouts/Page.astro",
     "./site": "./site.ts"
   },
   "files": [

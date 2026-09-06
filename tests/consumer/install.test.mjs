@@ -170,11 +170,14 @@ export default defineJaadConfig({
     assert.doesNotMatch(custom, /jaad-chrome/);
   });
 
-  test("the deprecated Base export remains compatible for one cycle", () => {
-    const legacy = built.read("legacy/index.html");
-    assert.match(legacy, /<title>Legacy \| Consumer Test<\/title>/);
-    assert.match(legacy, /data-legacy-layout/);
-    assert.match(legacy, /<main class="jaad-main-bare">/);
+  test("the page layout puts the site chrome around a page of your own", () => {
+    const page = built.read("page/index.html");
+    assert.match(page, /<title>Changelog \| Consumer Test<\/title>/);
+    assert.match(page, /data-page-layout/);
+    assert.match(page, /<main class="jaad-main-bare">/);
+    assert.match(page, /<header[^>]*class="jaad-chrome"/, "no header chrome");
+    assert.match(page, /aria-label="GitHub"/, "no configured social links");
+    assert.doesNotMatch(page, /<body data-docs/, "the docs body leaked in");
   });
 
   test("the conventional docs frame receives and arranges semantic slots", () => {
