@@ -193,7 +193,7 @@ test("the landing page shares the docs measure without using its frame", () => {
   assert.match(home, /<site-theme-toggle>/);
 });
 
-test("docs and the deprecated base layout share one padding token", () => {
+test("docs and the page layout share one padding token", () => {
   const css = allCss().replace(/\s+/g, "");
 
   for (const rule of [".jaad-main", ".docs-page-main"]) {
