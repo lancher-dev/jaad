@@ -4,15 +4,15 @@ import SiteThemeToggle from "../components/SiteThemeToggle.astro";
 import "../styles/site.css";
 
 interface Props {
-  title?: string;
+  pageTitle?: string;
   description?: string;
 }
 
 const {
-  title,
+  pageTitle,
   description = "An Astro integration that turns a folder of Markdown into a documentation site.",
 } = Astro.props;
-const pageTitle = title ? `${title} | JAAD` : "JAAD";
+const title = pageTitle ? `${pageTitle} | JAAD` : "JAAD";
 const canonical = Astro.url.href;
 const ogImage = Astro.site ? new URL("/og-image.png", Astro.site) : null;
 const base = import.meta.env.BASE_URL.endsWith("/")
@@ -36,13 +36,13 @@ const themeScript = `(function () {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
-    <title>{pageTitle}</title>
+    <title>{title}</title>
     <link rel="canonical" href={canonical} />
     <link rel="icon" href={favicon} />
     <Font cssVariable="--font-inter" preload />
     <Font cssVariable="--font-merriweather" preload />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content={pageTitle} />
+    <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     {ogImage && <meta property="og:image" content={ogImage} />}
