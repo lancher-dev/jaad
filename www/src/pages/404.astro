@@ -1,0 +1,25 @@
+---
+import SiteLayout from "@/layouts/SiteLayout.astro";
+
+const base = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL.slice(0, -1)
+  : import.meta.env.BASE_URL;
+---
+
+<SiteLayout
+  pageTitle="404"
+  description="The page you are looking for does not exist."
+>
+  <section class="mx-auto max-w-2xl py-24 text-center">
+    <p class="font-brand text-primary mb-4 text-7xl">404</p>
+    <h1 class="text-foreground-bright mb-4 text-2xl">Page not found</h1>
+    <p class="text-foreground-secondary mb-8 text-base leading-relaxed">
+      The page you are looking for does not exist, or it moved.
+    </p>
+    <p>
+      <a href={base + "/"}>Home</a>
+      <span class="text-foreground-muted mx-2">·</span>
+      <a href={base + "/docs"}>Documentation</a>
+    </p>
+  </section>
+</SiteLayout>

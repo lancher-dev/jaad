@@ -171,6 +171,14 @@ test("the chrome is measured against the content, not against a second number", 
   assert.match(page("docs/index.html"), /data-jaad-default-frame/);
 });
 
+// With routeBase set, JAAD injects no 404: the site has to bring its own.
+test("the site answers a wrong url with its own page", () => {
+  const missing = page("404.html");
+  assert.match(missing, /<title>404 \| JAAD<\/title>/);
+  assert.match(missing, /<body[^>]*data-site-layout/);
+  assert.match(missing, /href="\/docs"/, "no way back into the documentation");
+});
+
 test("the landing page shares the docs measure without using its frame", () => {
   const home = page("index.html");
   const css = allCss().replace(/\s+/g, "");
