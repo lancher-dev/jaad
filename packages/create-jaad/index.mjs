@@ -229,6 +229,13 @@ function inspectConfig(target, names, canonical, label, issues) {
   return file;
 }
 
+function failSetup(issues) {
+  fail(
+    `cannot safely update this project:\n${issues.map((item) => `  - ${item}`).join("\n")}\n` +
+      `No files were changed. Integrate JAAD manually: ${MANUAL_SETUP_URL}`,
+  );
+}
+
 /** Inspect everything before writing: a failed --here setup is a no-op. */
 function inspectExistingProject(target) {
   const issues = [];
@@ -257,12 +264,7 @@ function inspectExistingProject(target) {
     issues,
   );
 
-  if (issues.length > 0) {
-    fail(
-      `cannot safely update this project:\n${issues.map((item) => `  - ${item}`).join("\n")}\n` +
-        `No files were changed. Integrate JAAD manually: ${MANUAL_SETUP_URL}`,
-    );
-  }
+  if (issues.length > 0) failSetup(issues);
 
   return { manifest, astroConfig, contentConfig, jaadConfig };
 }
@@ -403,6 +405,13 @@ async function collectAnswers(args) {
     );
     if (template === null) return null;
     args.template = template;
+  }
+
+  if (args.template === "site" && existing.jaadConfig) {
+    failSetup([
+      `${existing.jaadConfig} already configures JAAD, so the site template ` +
+        'cannot add a landing page: it needs routeBase: "/docs"',
+    ]);
   }
 
   const suggested =

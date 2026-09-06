@@ -24,7 +24,8 @@ npm create @lancher-dev/jaad@latest -- --here --template site
 
 The command keeps the existing `package.json` and Markdown files. It stops
 without writing when a custom Astro or Content configuration requires a manual
-merge.
+merge, and when `--template site` meets a `jaad.config.*` it did not write:
+the landing page needs `routeBase: "/docs"`, which only you can set.
 
 > [!NOTE]
 > Non-interactive environments require a destination or `--here`, `--template`,

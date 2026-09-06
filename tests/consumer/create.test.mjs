@@ -36,14 +36,14 @@ function snapshotFiles(directory) {
   ]);
 }
 
-function runScaffolderHere(project) {
+function runScaffolderHere(project, template = "site") {
   return spawnSync(
     "node",
     [
       CLI,
       "--here",
       "--template",
-      "site",
+      template,
       "--title",
       "Existing Project",
       "--no-install",
@@ -312,6 +312,29 @@ test("--here changes nothing when existing configurations need a manual merge", 
   assert.deepEqual(snapshotFiles(project), before);
 });
 
+test("--here refuses the site template over a configuration it cannot read", () => {
+  const project = temporaryDirectory("jaad-here-site-conflict-");
+  writeFileSync(
+    join(project, "package.json"),
+    JSON.stringify({ name: "configured", private: true }, null, 2),
+  );
+  writeFileSync(
+    join(project, "jaad.config.ts"),
+    'export default { title: "Docs at the root" };\n',
+  );
+
+  const before = snapshotFiles(project);
+  const result = runScaffolderHere(project, "site");
+  const output = `${result.stdout}\n${result.stderr}`;
+
+  assert.equal(result.status, 1, output);
+  assert.match(output, /jaad\.config\.ts already configures JAAD/);
+  assert.match(output, /routeBase/);
+  assert.match(output, /No files were changed/);
+  assert.equal(existsSync(join(project, "src", "pages", "index.astro")), false);
+  assert.deepEqual(snapshotFiles(project), before);
+});
+
 // The templates are only files on disk: nothing fails locally when `files`
 // forgets them, and everything fails once published.
 test("the published scaffolder carries its templates", () => {
@@ -360,7 +383,9 @@ test("--here recognizes canonical JAAD configurations on rerun", () => {
     'export default { title: "Already configured" };\n',
   );
 
-  const result = runScaffolderHere(project);
+  // The site template refuses a configuration it cannot read routeBase from,
+  // so recognition is exercised with the docs template.
+  const result = runScaffolderHere(project, "docs");
   const output = `${result.stdout}\n${result.stderr}`;
   assert.equal(result.status, 0, output);
   assert.match(output, /kept\s+astro\.config\.ts/);
