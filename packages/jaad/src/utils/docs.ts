@@ -1,4 +1,4 @@
-import { slug as githubSlug } from "github-slugger";
+import GithubSlugger, { slug as githubSlug } from "github-slugger";
 import { ucfirst } from "./helpers.ts";
 import type { DocsHeadings, ParsedDocsCollectionId } from "../@types/docs.ts";
 
@@ -166,6 +166,8 @@ export function extractTitleFromMarkdown(body: string): string | null {
 /** Skips fenced blocks, so headings written as code samples stay out of the TOC. */
 export function extractHeadingsFromMarkdown(markdown: string): DocsHeadings[] {
   const headings: DocsHeadings[] = [];
+  // Per page, like the renderer: repeated headings get -1, -2 suffixes.
+  const slugger = new GithubSlugger();
   let insideFence = false;
 
   for (const line of markdown.split("\n")) {
@@ -179,7 +181,7 @@ export function extractHeadingsFromMarkdown(markdown: string): DocsHeadings[] {
     if (!match) continue;
     const depth = match[1].length as 2 | 3;
     const text = match[2].trim();
-    headings.push({ depth, text, slug: generateHeadingSlug(text) });
+    headings.push({ depth, text, slug: slugger.slug(text) });
   }
 
   return headings;

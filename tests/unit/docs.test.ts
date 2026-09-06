@@ -184,6 +184,16 @@ test("only h2 and h3 reach the table of contents", () => {
   );
 });
 
+// The renderer numbers repeated ids; a stateless slug pointed every duplicate
+// entry at the first heading.
+test("repeated headings get the same suffixes the renderer gives them", () => {
+  const headings = extractHeadingsFromMarkdown("## Setup\n## Setup\n### Setup");
+  assert.deepEqual(
+    headings.map((h) => h.slug),
+    ["setup", "setup-1", "setup-2"],
+  );
+});
+
 test("headings written inside a code sample are not table-of-contents entries", () => {
   const headings = extractHeadingsFromMarkdown(
     ["## Real", "```md", "## Example", "```", "## Also real"].join("\n"),
