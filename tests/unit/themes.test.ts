@@ -1,7 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { createRequire } from "node:module";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { PRESETS } from "../../packages/jaad/src/themes/index.ts";
@@ -15,18 +14,14 @@ const THEMES = join(
   "../../packages/jaad/src/themes",
 );
 
-const requireFrom = createRequire(import.meta.url);
-
 test("every preset resolves to a stylesheet JAAMD actually ships", () => {
-  for (const [name, preset] of Object.entries(PRESETS)) {
-    if (preset.theme === null) continue;
-    const path = requireFrom.resolve(
-      `@lancher-dev/jaamd/themes/${preset.theme}.css`,
+  for (const name of Object.keys(PRESETS)) {
+    if (PRESETS[name].theme === null) continue;
+    const { theme } = resolveStylesheets(
+      resolveConfig({ title: "T", theme: name }, "/"),
+      "/",
     );
-    assert.ok(
-      existsSync(path),
-      `${name} points at ${path}, which is not there`,
-    );
+    assert.ok(theme && existsSync(theme), `${name} points at ${theme}`);
   }
 });
 
