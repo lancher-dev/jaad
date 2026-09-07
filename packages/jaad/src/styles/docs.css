@@ -71,10 +71,6 @@ html {
   scroll-padding-top: 8rem;
 }
 
-.markdown-content h2[id] {
-  scroll-margin-top: 8rem;
-}
-
 .docs-sidebar-left::-webkit-scrollbar,
 .docs-sidebar-right::-webkit-scrollbar {
   width: 6px;

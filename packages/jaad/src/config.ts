@@ -6,6 +6,7 @@ import type {
   SessionDriverConfig,
 } from "astro";
 import { existsSync } from "node:fs";
+import { createRequire } from "node:module";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -203,20 +204,28 @@ export function resolveConfig(
   };
 }
 
+const requireFrom = createRequire(import.meta.url);
+
+const styleInPackage = (name: string) =>
+  fileURLToPath(new URL(`./styles/${name}`, import.meta.url));
+
 /** Absolute paths, kept off the resolved config, which gets serialised. */
 export function resolveStylesheets(
   config: JaadConfig,
   cwd: string = process.cwd(),
-): { user: string | null; theme: string | null } {
+): { user: string | null; theme: string | null; bridge: string } {
   const userCss = join(cwd, "src", "jaad.css");
-  const preset =
-    typeof config.theme === "string" ? PRESETS[config.theme].css : null;
+  const slug =
+    typeof config.theme === "string" ? PRESETS[config.theme].theme : null;
 
   return {
     user: existsSync(userCss) ? userCss : null,
-    theme: preset
-      ? fileURLToPath(new URL(`./themes/${preset}`, import.meta.url))
+    // Resolved through JAAMD's export map rather than by path.
+    theme: slug
+      ? requireFrom.resolve(`@lancher-dev/jaamd/themes/${slug}.css`)
       : null,
+    // A preset supplies the palette, so the colours travel the other way.
+    bridge: styleInPackage(slug ? "jaamd-reverse.css" : "jaamd-forward.css"),
   };
 }
 

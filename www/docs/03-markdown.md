@@ -5,6 +5,30 @@ JAAD supports [CommonMark](https://commonmark.org/help/) and
 [JAAMD](https://github.com/lancher-dev/jaamd) adds the features below
 automatically.
 
+## Table of contents
+
+Use `:::toc` to generate a table of contents:
+
+```markdown
+:::toc[Components]
+
+- [Table of contents](#table-of-contents)
+- [Code tabs](#code-tabs)
+- [Alerts](#alerts)
+- [Spoilers](#spoilers)
+
+:::
+```
+
+:::toc[Components]
+
+- [Table of contents](#table-of-contents)
+- [Code tabs](#code-tabs)
+- [Alerts](#alerts)
+- [Spoilers](#spoilers)
+
+:::
+
 ## Code tabs
 
 Use `:::code-tabs` and add the tab label after each language identifier:
