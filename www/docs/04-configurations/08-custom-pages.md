@@ -1,4 +1,4 @@
-# Pages outside the documentation
+# Custom pages
 
 Files in `src/pages/` are regular Astro pages. They keep their own layouts,
 styles and metadata; JAAD options affect only documentation below `routeBase`.

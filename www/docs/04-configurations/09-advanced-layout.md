@@ -1,4 +1,4 @@
-# Advanced documentation layout
+# Advanced layout
 
 Use the default layout unless the documentation needs a different structure.
 To replace it, create:
