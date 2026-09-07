@@ -21,6 +21,7 @@ import {
 interface Stylesheets {
   user: string | null;
   theme: string | null;
+  bridge: string;
 }
 
 export interface IntegrationState {
@@ -124,6 +125,7 @@ export function createCoreIntegration(
                 config,
                 stylesheets.user,
                 stylesheets.theme,
+                stylesheets.bridge,
                 () => state.docsFrame,
               ),
             ],

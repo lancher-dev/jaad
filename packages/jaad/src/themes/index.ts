@@ -1,32 +1,30 @@
+import { themes } from "@lancher-dev/jaamd/themes";
+
 export interface Preset {
   /** Shiki theme, or a light/dark pair, for code blocks. */
   shiki: string | { light: string; dark: string };
-  /** Stylesheet next to this file, or null when the defaults already apply. */
-  css: string | null;
+  /** JAAMD theme slug, or null when JAAD's own identity already applies. */
+  theme: string | null;
+  /** `dual` carries a light and a dark palette; the others apply in both modes. */
+  mode: "light" | "dark" | "dual";
 }
 
+/**
+ * The palettes come from JAAMD, which ships them with a manifest; JAAD adds only
+ * `default`, its own identity, which needs no stylesheet.
+ */
 export const PRESETS: Record<string, Preset> = {
-  default: { shiki: { light: "github-light", dark: "github-dark" }, css: null },
-  dracula: { shiki: "dracula", css: "dracula.css" },
-  nord: { shiki: "nord", css: "nord.css" },
-  "one-dark": { shiki: "one-dark-pro", css: "one-dark.css" },
-  "tokyo-night": { shiki: "tokyo-night", css: "tokyo-night.css" },
-  gruvbox: {
-    shiki: { light: "gruvbox-light-medium", dark: "gruvbox-dark-medium" },
-    css: "gruvbox.css",
+  default: {
+    shiki: { light: "github-light", dark: "github-dark" },
+    theme: null,
+    mode: "dual",
   },
-  "rose-pine": {
-    shiki: { light: "rose-pine-dawn", dark: "rose-pine" },
-    css: "rose-pine.css",
-  },
-  "rose-pine-moon": {
-    shiki: { light: "rose-pine-dawn", dark: "rose-pine-moon" },
-    css: "rose-pine-moon.css",
-  },
-  catppuccin: {
-    shiki: { light: "catppuccin-latte", dark: "catppuccin-mocha" },
-    css: "catppuccin.css",
-  },
+  ...Object.fromEntries(
+    themes.map((theme) => [
+      theme.slug,
+      { shiki: theme.shiki, theme: theme.slug, mode: theme.mode },
+    ]),
+  ),
 };
 
 export const PRESET_NAMES = Object.keys(PRESETS);
