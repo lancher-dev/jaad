@@ -14,9 +14,18 @@ npm create @lancher-dev/jaad@latest my-site -- --template site
 src/
   layouts/SiteLayout.astro
   pages/index.astro
+  styles/site.css
+  utils/base.ts
+public/
+  favicon.svg
 docs/
   01-introduction.md
+tsconfig.json
 ```
+
+`utils/base.ts` exports `withBase()`, which applies Astro's deployment base to
+a root-relative href. Use it for every link the layout writes, so the site keeps
+working when it moves to a subpath.
 
 Use the generated layout for other application pages:
 
@@ -57,6 +66,11 @@ It renders the documentation header and footer, the theme, and your
 configuration's title, navigation and social links around whatever you put
 inside. `title` and `description` set the metadata for the page; `bare` drops
 the default spacing when the content needs the full width.
+
+Search comes with the header. A documentation page shows the full search field;
+a page outside the documentation shows the magnifier alone, because
+<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd> opens the palette there too and the
+icon is what says so. Clicking it opens the same palette.
 
 This is the site chrome, not the reading layout: there is no sidebar and no
 table of contents, because a page outside the documentation has no place in

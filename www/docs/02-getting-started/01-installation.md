@@ -96,6 +96,13 @@ export { default } from "@lancher-dev/jaad/site";
 export { collections } from "@lancher-dev/jaad/content";
 ```
 
+```json
+// tsconfig.json
+{
+  "extends": "astro/tsconfigs/strict"
+}
+```
+
 Only `title` is required. See the
 [configuration reference](/docs/configurations/reference) for the remaining
 options.

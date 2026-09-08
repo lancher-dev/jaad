@@ -36,14 +36,20 @@ permissions:
   pages: write
   id-token: write
 
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: withastro/action@v5
-        with:
-          node-version: 24
+      - uses: actions/checkout@v7
+      - uses: withastro/action@v6
+        # with:
+        #   path: .                     # the Astro project, if not the root
+        #   node-version: 24
+        #   package-manager: npm@latest
 
   deploy:
     needs: build
@@ -53,12 +59,12 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
 ```
 
 ## Other hosts
 
-For Netlify, Vercel, Cloudflare Pages or another static host, use
+For [Netlify](https://docs.astro.build/en/guides/integrations-guide/netlify/), [Vercel](https://docs.astro.build/en/guides/integrations-guide/vercel/), [Cloudflare Pages](https://docs.astro.build/en/guides/integrations-guide/cloudflare/) or another static host, use
 `npm run build` as the build command and `dist` as the publish directory.
 
 ## Generated files
