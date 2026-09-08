@@ -53,9 +53,11 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
   </button>
 
   <button
-    data-trigger-mobile
-    hidden={!inDocs}
-    class="text-foreground-secondary hover:text-foreground-bright flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg transition-colors md:hidden"
+    data-trigger-icon
+    class:list={[
+      "text-foreground-secondary hover:text-foreground-bright flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg transition-colors",
+      inDocs && "md:hidden",
+    ]}
     aria-label="Search documentation"
   >
     <svg
@@ -180,7 +182,7 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
         this.querySelector("[data-shortcut]")!.textContent = "⌘K";
       }
 
-      for (const sel of ["[data-trigger-desktop]", "[data-trigger-mobile]"]) {
+      for (const sel of ["[data-trigger-desktop]", "[data-trigger-icon]"]) {
         const trigger = this.querySelector<HTMLElement>(sel)!;
         trigger.addEventListener("click", () => this.#setOpen(true));
         trigger.addEventListener("mouseenter", () => void this.#loadIndex());
@@ -206,13 +208,17 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
       document.removeEventListener("astro:after-swap", this.#syncInDocs);
     }
 
-    /** The header persists across navigations; the triggers must not. */
+    /**
+     * The header persists across navigations; the triggers must not.
+     */
     #syncInDocs = () => {
       const inDocs = document.body.hasAttribute("data-docs");
-      this.querySelectorAll<HTMLElement>(
-        "[data-trigger-desktop],[data-trigger-mobile]",
-      ).forEach((el) => (el.hidden = !inDocs));
-      if (!inDocs) this.#setOpen(false);
+      this.querySelector<HTMLElement>("[data-trigger-desktop]")!.hidden =
+        !inDocs;
+      this.querySelector("[data-trigger-icon]")!.classList.toggle(
+        "md:hidden",
+        inDocs,
+      );
     };
 
     #onGlobalKey = (e: KeyboardEvent) => {
