@@ -1,6 +1,6 @@
 {
   "name": "@lancher-dev/create-jaad",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "description": "Scaffold a JAAD documentation site, or add one to a repository that already has a docs folder.",
   "type": "module",
   "license": "MIT",
