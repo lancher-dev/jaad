@@ -39,6 +39,7 @@ const INDEX_PAGE_NAMES = [
   "index.js",
   "index.ts",
 ];
+const FAVICON_NAMES = ["favicon.svg", "favicon.ico", "favicon.png"];
 
 const HELP = `Usage: npm create @lancher-dev/jaad@latest [directory] [options]
 
@@ -153,6 +154,11 @@ function write(target, relative, contents, written, skipped) {
 // Resolved against this file: `npm create` runs the bin from a cache.
 const templateRoot = (template) =>
   join(import.meta.dirname, "templates", template);
+
+// npm strips `.gitignore` from published tarballs, so it ships renamed.
+const TEMPLATE_RENAMES = {
+  _gitignore: ".gitignore",
+};
 
 function templateFiles(root, prefix = "") {
   const entries = readdirSync(join(root, prefix), { withFileTypes: true }).sort(
@@ -364,6 +370,7 @@ async function collectAnswers(args) {
     const dir = answer(
       await p.text({
         message: "Where should we create the project?",
+        placeholder: ".",
         defaultValue: ".",
       }),
     );
@@ -426,6 +433,7 @@ async function collectAnswers(args) {
     const title = answer(
       await p.text({
         message: "Site title",
+        placeholder: suggested,
         defaultValue: suggested,
       }),
     );
@@ -466,6 +474,10 @@ function scaffold(request) {
     existsSync(join(target, "src", "pages", name)),
   );
   const found = markdownUnder(join(target, "docs"));
+  // JAAD prefers the .svg, so ours would quietly outrank an existing icon.
+  const hasFavicon = FAVICON_NAMES.some((name) =>
+    existsSync(join(target, "public", name)),
+  );
 
   const root = templateRoot(template);
   for (const relative of templateFiles(root)) {
@@ -475,9 +487,11 @@ function scaffold(request) {
     }
     if (relative.startsWith("src/") && ownsRoot) continue;
     if (relative.startsWith("docs/") && found > 0) continue;
+    if (relative === "public/favicon.svg" && hasFavicon) continue;
 
     const source = readFileSync(join(root, relative), "utf8");
-    write(target, relative, withTitle(source, title), written, skipped);
+    const destination = TEMPLATE_RENAMES[relative] ?? relative;
+    write(target, destination, withTitle(source, title), written, skipped);
   }
 
   writeManifest(target, manifest, basename(target));
@@ -519,10 +533,18 @@ async function main() {
 
   const { written, skipped, found } = result;
   p.log.success(request.title);
-  for (const file of written) p.log.step(`created  ${file}`);
-  for (const file of skipped) p.log.info(`kept     ${file}`);
-  if (found > 0) p.log.info(`found    ${found} markdown file(s) in docs/`);
-  p.log.step("updated  package.json");
+  p.log.step(
+    [
+      ...written.map((file) => `created  ${file}`),
+      "updated  package.json",
+    ].join("\n"),
+  );
+
+  const kept = [
+    ...skipped.map((file) => `kept     ${file}`),
+    ...(found > 0 ? [`found    ${found} markdown file(s) in docs/`] : []),
+  ];
+  if (kept.length > 0) p.log.info(kept.join("\n"));
 
   const pm = packageManager();
   if (request.install) {

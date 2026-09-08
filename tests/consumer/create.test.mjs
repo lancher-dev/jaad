@@ -172,14 +172,30 @@ test(
       "utf8",
     );
     assert.doesNotMatch(siteLayout, /@lancher-dev\/jaad/);
-    assert.match(siteLayout, /--site-content-width: 56rem/);
-    assert.match(siteLayout, /--color-background: #faf8f5/);
-    assert.match(siteLayout, /--color-background: #0d1117/);
+    assert.match(siteLayout, /import "\.\.\/styles\/site\.css"/);
     assert.match(siteLayout, /<footer class="site-chrome site-footer">/);
+
+    const siteCss = readFileSync(
+      join(project, "src", "styles", "site.css"),
+      "utf8",
+    );
+    assert.match(siteCss, /--site-content-width: 56rem/);
+    assert.match(siteCss, /--color-background: #faf8f5/);
+    assert.match(siteCss, /--color-background: #0d1117/);
+
     assert.match(
       readFileSync(join(project, "jaad.config.ts"), "utf8"),
       /routeBase: "\/docs"/,
     );
+
+    // The favicon is picked up from `public/`, not named in the config.
+    assert.ok(built.includes("/favicon.svg"), "the favicon was not published");
+    assert.match(landing, /rel="icon" href="\/favicon\.svg"/);
+    const docsPage = readFileSync(
+      join(project, "dist", "docs", "index.html"),
+      "utf8",
+    );
+    assert.match(docsPage, /rel="icon" href="\/favicon\.svg"/);
   },
 );
 
@@ -344,12 +360,110 @@ test("the published scaffolder carries its templates", () => {
   for (const file of [
     "templates/docs/jaad.config.ts",
     "templates/docs/docs/01-introduction.md",
+    "templates/docs/public/favicon.svg",
+    "templates/docs/tsconfig.json",
     "templates/site/jaad.config.ts",
+    "templates/site/public/favicon.svg",
+    "templates/site/tsconfig.json",
     "templates/site/src/layouts/SiteLayout.astro",
     "templates/site/src/pages/index.astro",
+    "templates/site/src/styles/site.css",
+    "templates/site/src/utils/base.ts",
   ]) {
     assert.ok(packed.includes(file), `${file} is missing from the tarball`);
   }
+
+  // npm drops every `.gitignore` from a tarball, so the templates carry the
+  // file under a name it cannot recognise.
+  for (const template of ["docs", "site"]) {
+    assert.ok(
+      packed.includes(`templates/${template}/_gitignore`),
+      `the ${template} template ships no gitignore`,
+    );
+    assert.ok(
+      !packed.includes(`templates/${template}/.gitignore`),
+      `the ${template} template ships a .gitignore npm would strip`,
+    );
+  }
+});
+
+test("a scaffolded project ignores what it should not commit", () => {
+  for (const template of ["docs", "site"]) {
+    const parent = temporaryDirectory(`jaad-gitignore-${template}-`);
+    const result = spawnSync(
+      "node",
+      [
+        CLI,
+        "project",
+        "--template",
+        template,
+        "--title",
+        "Ignored",
+        "--no-install",
+      ],
+      { cwd: parent, encoding: "utf8" },
+    );
+    assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
+
+    const project = join(parent, "project");
+    assert.equal(
+      existsSync(join(project, "_gitignore")),
+      false,
+      "the shipped name reached the project",
+    );
+
+    const ignored = readFileSync(join(project, ".gitignore"), "utf8");
+    for (const entry of ["dist/", ".astro/", "node_modules/"]) {
+      assert.ok(ignored.includes(entry), `${entry} is not ignored`);
+    }
+  }
+});
+
+// Astro reads `.astro/types.d.ts` only through a tsconfig, so without one the
+// editor loses `import.meta.env`, `astro:*` and the collection types.
+test("a scaffolded project is set up for the editor", () => {
+  for (const template of ["docs", "site"]) {
+    const parent = temporaryDirectory(`jaad-tsconfig-${template}-`);
+    const result = spawnSync(
+      "node",
+      [
+        CLI,
+        "project",
+        "--template",
+        template,
+        "--title",
+        "Typed",
+        "--no-install",
+      ],
+      { cwd: parent, encoding: "utf8" },
+    );
+    assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
+
+    const tsconfig = JSON.parse(
+      readFileSync(join(parent, "project", "tsconfig.json"), "utf8"),
+    );
+    assert.equal(tsconfig.extends, "astro/tsconfigs/strict");
+  }
+});
+
+// The preset prefers the .svg, so ours would outrank an icon already there.
+test("--here leaves an existing favicon in charge", () => {
+  const project = temporaryDirectory("jaad-favicon-");
+  mkdirSync(join(project, "public"), { recursive: true });
+  writeFileSync(join(project, "public", "favicon.ico"), "not really an icon");
+  writeFileSync(
+    join(project, "package.json"),
+    JSON.stringify({ name: "mine" }),
+  );
+
+  const result = runScaffolderHere(project, "docs");
+  assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
+
+  assert.equal(
+    existsSync(join(project, "public", "favicon.svg")),
+    false,
+    "the template favicon took over an existing one",
+  );
 });
 
 test("the docs template is the one you get without asking", () => {
