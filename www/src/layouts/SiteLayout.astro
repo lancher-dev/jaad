@@ -1,6 +1,7 @@
 ---
 import { Font } from "astro:assets";
 import SiteThemeToggle from "../components/SiteThemeToggle.astro";
+import { withBase } from "@/utils/base";
 import "../styles/site.css";
 
 interface Props {
@@ -15,12 +16,9 @@ const {
 const title = pageTitle ? `${pageTitle} | JAAD` : "JAAD";
 const canonical = Astro.url.href;
 const ogImage = Astro.site ? new URL("/og-image.png", Astro.site) : null;
-const base = import.meta.env.BASE_URL.endsWith("/")
-  ? import.meta.env.BASE_URL.slice(0, -1)
-  : import.meta.env.BASE_URL;
-const homeHref = base + "/";
-const docsHref = base + "/docs";
-const favicon = base + "/favicon.svg";
+const homeHref = withBase("/");
+const docsHref = withBase("/docs");
+const favicon = withBase("/favicon.svg");
 const themeScript = `(function () {
   function isDark() {
     var theme = localStorage.getItem("theme");

@@ -1,9 +1,6 @@
 ---
 import SiteLayout from "@/layouts/SiteLayout.astro";
-
-const base = import.meta.env.BASE_URL.endsWith("/")
-  ? import.meta.env.BASE_URL.slice(0, -1)
-  : import.meta.env.BASE_URL;
+import { withBase } from "@/utils/base";
 ---
 
 <SiteLayout
@@ -17,9 +14,9 @@ const base = import.meta.env.BASE_URL.endsWith("/")
       The page you are looking for does not exist, or it moved.
     </p>
     <p>
-      <a href={base + "/"}>Home</a>
+      <a href={withBase("/")}>Home</a>
       <span class="text-foreground-muted mx-2">·</span>
-      <a href={base + "/docs"}>Documentation</a>
+      <a href={withBase("/docs")}>Documentation</a>
     </p>
   </section>
 </SiteLayout>
