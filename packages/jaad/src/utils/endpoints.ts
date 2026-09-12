@@ -1,6 +1,7 @@
 import config from "virtual:jaad/config";
 import { getSortedDocsPages } from "../collection.ts";
 import { docsMarkdownHref } from "../urls.ts";
+import { docsUrls } from "../docs-config.ts";
 import {
   buildSearchIndex,
   extractDescription,
@@ -33,12 +34,7 @@ export async function llmsResponse(
   const sortedPages = await getSortedDocsPages(locale);
 
   const markdownHref = (slug: string): string => {
-    const href = docsMarkdownHref(slug, {
-      docsBase: config.docsBase,
-      deploymentBase: import.meta.env.BASE_URL,
-      locale,
-      defaultLocale: config.defaultLocale,
-    });
+    const href = docsMarkdownHref(slug, docsUrls(locale));
     return site ? new URL(href, site.origin).href : href;
   };
 

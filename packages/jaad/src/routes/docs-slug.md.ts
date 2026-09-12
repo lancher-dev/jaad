@@ -1,8 +1,7 @@
 import type { APIRoute, GetStaticPaths } from "astro";
-import config from "virtual:jaad/config";
 import { getSortedDocsPages } from "../collection.ts";
 import { getCleanSlug, routedId } from "../utils/docs.ts";
-import { routedLocales } from "../urls.ts";
+import { buildLocales, localePrefix } from "../docs-config.ts";
 
 /** Raw markdown at the page's own url plus `.md`, for readers and for LLMs. */
 export const getStaticPaths: GetStaticPaths = async () => {
@@ -11,10 +10,9 @@ export const getStaticPaths: GetStaticPaths = async () => {
     props: { id: string; locale?: string };
   }[] = [];
 
-  for (const locale of routedLocales(config)) {
+  for (const locale of buildLocales()) {
     const sortedPages = await getSortedDocsPages(locale);
-    const prefix =
-      locale && locale !== config.defaultLocale ? `${locale}/` : "";
+    const prefix = localePrefix(locale);
 
     for (const page of sortedPages) {
       paths.push({

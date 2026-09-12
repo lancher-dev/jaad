@@ -8,8 +8,8 @@ import {
   routedId,
 } from "../utils/docs.ts";
 import DocsPage from "../components/docs/DocsPage.astro";
-import config from "virtual:jaad/config";
-import { docsPageHref, routedLocales, withDeploymentBase } from "../urls.ts";
+import { docsPageHref, withDeploymentBase } from "../urls.ts";
+import { buildLocales, docsUrls, localePrefix } from "../docs-config.ts";
 
 interface DocsPath {
   params: { slug: string };
@@ -19,10 +19,9 @@ interface DocsPath {
 export async function getStaticPaths() {
   const paths: DocsPath[] = [];
 
-  for (const locale of routedLocales(config)) {
+  for (const locale of buildLocales()) {
     const sortedPages = await getSortedDocsPages(locale);
-    const prefix =
-      locale && locale !== config.defaultLocale ? `${locale}/` : "";
+    const prefix = localePrefix(locale);
 
     sortedPages.forEach((page, index) => {
       const isOpening = getCanonicalDocSlug(page, index) === "";
@@ -47,15 +46,7 @@ export async function getStaticPaths() {
 const { id, locale, isOpening } = Astro.props;
 
 if (isOpening) {
-  return Astro.redirect(
-    docsPageHref("", {
-      docsBase: config.docsBase,
-      deploymentBase: import.meta.env.BASE_URL,
-      locale,
-      defaultLocale: config.defaultLocale,
-    }),
-    301,
-  );
+  return Astro.redirect(docsPageHref("", docsUrls(locale)), 301);
 }
 
 const sortedPages = await getSortedDocsPages(locale);

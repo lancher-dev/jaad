@@ -13,6 +13,7 @@ import {
   routedId,
 } from "../utils/docs.ts";
 import { getLocaleAlternates } from "../collection.ts";
+import { DEFAULT_LOCALE, LOCALES } from "../docs-config.ts";
 import type { DocsEntry, DocsHeadings } from "../@types/docs.ts";
 import type { DocsNavigation } from "../navigation.ts";
 import type { DocsFrameProps } from "../advanced.ts";
@@ -48,9 +49,9 @@ const pageDescription =
   config.description ??
   config.title;
 
-const locale = entry?.locale ?? config.defaultLocale;
+const locale = entry?.locale ?? DEFAULT_LOCALE;
 const language =
-  config.docsLocales.find((known) => known.code === locale)?.tag ?? config.lang;
+  LOCALES.find((known) => known.code === locale)?.tag ?? config.lang;
 
 const switcherAlternates = await getLocaleAlternates(
   entry ? getCleanSlug(routedId(entry)) : "",

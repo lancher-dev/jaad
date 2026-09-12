@@ -2,6 +2,7 @@
 import config from "virtual:jaad/config";
 import { editUrl } from "../../infer.ts";
 import { docsMarkdownHref } from "../../urls.ts";
+import { docsUrls } from "../../docs-config.ts";
 
 interface Props {
   /** Content collection entry id, e.g. "03-markdown/12-inner-html". */
@@ -13,12 +14,7 @@ interface Props {
 
 const { id, cleanSlug, locale } = Astro.props;
 
-const mdHref = docsMarkdownHref(cleanSlug, {
-  docsBase: config.docsBase,
-  deploymentBase: import.meta.env.BASE_URL,
-  locale,
-  defaultLocale: config.defaultLocale,
-});
+const mdHref = docsMarkdownHref(cleanSlug, docsUrls(locale));
 const editHref = config.editBase ? editUrl(config.editBase, `${id}.md`) : null;
 ---
 

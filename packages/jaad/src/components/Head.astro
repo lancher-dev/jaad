@@ -2,6 +2,7 @@
 import { Font } from "astro:assets";
 import config from "virtual:jaad/config";
 import { withDeploymentBase } from "../urls.ts";
+import { DEFAULT_LOCALE } from "../docs-config.ts";
 
 interface Props {
   title: string;
@@ -28,7 +29,7 @@ const {
   alternates = [],
 } = Astro.props;
 const defaultAlternate = alternates.find(
-  (alternate) => alternate.code === config.defaultLocale,
+  (alternate) => alternate.code === DEFAULT_LOCALE,
 );
 const canonical = Astro.site ? Astro.url.href : null;
 

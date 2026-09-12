@@ -14,7 +14,7 @@ import DocsMobileNav from "./DocsMobileNav.astro";
 import DocsPageNav from "./DocsPageNav.astro";
 import Breadcrumbs from "./Breadcrumbs.astro";
 import PageActions from "./PageActions.astro";
-import config from "virtual:jaad/config";
+import { docsUrls } from "../../docs-config.ts";
 
 interface Props {
   entry: DocsEntry;
@@ -29,12 +29,7 @@ const cleanSlug = getCleanSlug(routedId(entry));
 const { chapter } = parseDocCollectionId(routedId(entry));
 const title = docTitle(entry);
 const headings = extractHeadingsFromMarkdown(entry.body || "");
-const urls = {
-  docsBase: config.docsBase,
-  deploymentBase: import.meta.env.BASE_URL,
-  locale: entry.locale,
-  defaultLocale: config.defaultLocale,
-};
+const urls = docsUrls(entry.locale);
 const navigation = buildDocsNavigation(sortedPages, entry.id, urls);
 ---
 

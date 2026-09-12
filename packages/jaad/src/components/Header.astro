@@ -8,6 +8,7 @@ import LocaleSwitcher from "./LocaleSwitcher.astro";
 import config from "virtual:jaad/config";
 import { getLocaleAlternates, type LocaleAlternate } from "../collection.ts";
 import { withDeploymentBase } from "../urls.ts";
+import { DEFAULT_LOCALE } from "../docs-config.ts";
 
 interface Props {
   /** Whether this page is part of the docs, where search is available. */
@@ -16,7 +17,7 @@ interface Props {
   alternates?: LocaleAlternate[];
 }
 
-const { inDocs = false, locale = config.defaultLocale } = Astro.props;
+const { inDocs = false, locale = DEFAULT_LOCALE } = Astro.props;
 // A page of the reader's own has no translations: offer each locale's opener.
 const alternates = Astro.props.alternates ?? (await getLocaleAlternates(""));
 const homeHref = withDeploymentBase("/", import.meta.env.BASE_URL);
