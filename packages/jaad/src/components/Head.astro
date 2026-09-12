@@ -2,6 +2,7 @@
 import { Font } from "astro:assets";
 import config from "virtual:jaad/config";
 import { withDeploymentBase } from "../urls.ts";
+import { DEFAULT_LOCALE } from "../docs-config.ts";
 
 interface Props {
   title: string;
@@ -11,6 +12,10 @@ interface Props {
   author?: string;
   image?: string | false;
   modified?: Date;
+  /** BCP-47 tag of this page's locale. */
+  language?: string;
+  /** Every locale that has this page, for hreflang and og:locale:alternate. */
+  alternates?: { code: string; tag: string; href: string }[];
 }
 
 const {
@@ -20,7 +25,12 @@ const {
   author,
   image,
   modified,
+  language = config.lang,
+  alternates = [],
 } = Astro.props;
+const defaultAlternate = alternates.find(
+  (alternate) => alternate.code === DEFAULT_LOCALE,
+);
 const canonical = Astro.site ? Astro.url.href : null;
 
 // Open Graph rejects relative paths, so these have to be absolute.
@@ -72,6 +82,25 @@ const themeScript = `(function () {
 {author && <meta name="author" content={author} />}
 <title>{title}</title>
 {canonical && <link rel="canonical" href={canonical} />}
+{
+  Astro.site &&
+    alternates.map((alternate) => (
+      <link
+        rel="alternate"
+        hreflang={alternate.tag}
+        href={new URL(alternate.href, Astro.site).href}
+      />
+    ))
+}
+{
+  Astro.site && defaultAlternate && (
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href={new URL(defaultAlternate.href, Astro.site).href}
+    />
+  )
+}
 
 {favicon && <link rel="icon" href={favicon} />}
 
@@ -81,7 +110,14 @@ const themeScript = `(function () {
 {canonical && <meta property="og:url" content={canonical} />}
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content={config.title} />
-<meta property="og:locale" content={config.lang} />
+<meta property="og:locale" content={language} />
+{
+  alternates
+    .filter((alternate) => alternate.tag !== language)
+    .map((alternate) => (
+      <meta property="og:locale:alternate" content={alternate.tag} />
+    ))
+}
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 {

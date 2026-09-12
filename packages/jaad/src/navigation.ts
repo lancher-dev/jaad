@@ -4,6 +4,7 @@ import {
   docOrder,
   getCanonicalDocSlug,
   parseDocCollectionId,
+  routedId,
   type DocsPageLike,
 } from "./utils/docs.ts";
 import { docsPageHref, type DocsUrlOptions } from "./urls.ts";
@@ -52,7 +53,7 @@ export function buildDocsNavigation<T extends DocsPageLike>(
   urls: DocsUrlOptions,
 ): DocsNavigation {
   const items = sortedPages.map((page, index): DocsNavItem => {
-    const parsed = parseDocCollectionId(page.id);
+    const parsed = parseDocCollectionId(routedId(page));
     return {
       title: docLabel(page),
       chapter: parsed.chapter,

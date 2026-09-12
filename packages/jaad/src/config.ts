@@ -16,6 +16,13 @@ import {
   type RepoInfo,
 } from "./infer.ts";
 import { PRESETS, PRESET_NAMES, isPreset } from "./themes/index.ts";
+import {
+  describeLocale,
+  detectLocales,
+  isLocale,
+  validateLocaleTree,
+  type Locale,
+} from "./locales.ts";
 import { normaliseBasePath } from "./urls.ts";
 
 export const jaadConfigSchema = z.object({
@@ -91,6 +98,14 @@ export const jaadConfigSchema = z.object({
       error: "unknown appearance; available: auto, light, dark",
     })
     .default("auto"),
+
+  /** Only when detection guesses wrong: pin the set, or false to switch it off. */
+  locales: z
+    .union([
+      z.array(z.string().refine(isLocale, { message: "not a locale code" })),
+      z.literal(false),
+    ])
+    .optional(),
 });
 
 export type JaadConfig = z.output<typeof jaadConfigSchema>;
@@ -121,6 +136,10 @@ export interface JaadResolvedConfig extends JaadConfig {
   favicon: string | null;
   /** Explicit, inferred from public/, or false when no valid image exists. */
   ogImage: string | false;
+  /** Empty when the docs are not localised. */
+  docsLocales: Locale[];
+  /** `lang` when the docs are not localised. */
+  defaultLocale: string;
 }
 
 const FAVICONS = ["favicon.svg", "favicon.ico", "favicon.png"];
@@ -188,6 +207,7 @@ export function resolveConfig(
 ): JaadResolvedConfig {
   const config = parseConfig(options);
   const repo = inferRepo(cwd);
+  const locales = resolveLocales(config, cwd);
 
   return {
     ...config,
@@ -201,7 +221,21 @@ export function resolveConfig(
         ? PRESETS[config.theme].shiki
         : config.theme,
     editBase: resolveEditBase(config.editLink, repo, config.docsDir),
+    docsLocales: locales.map(describeLocale),
+    defaultLocale: locales.length > 0 ? config.lang.toLowerCase() : config.lang,
   };
+}
+
+/** Directory names win; `locales` only overrides what detection found. */
+function resolveLocales(config: JaadConfig, cwd: string): string[] {
+  if (config.locales === false) return [];
+
+  const docsDir = join(cwd, config.docsDir);
+  const locales = config.locales ?? detectLocales(docsDir, config.lang);
+  if (locales.length === 0) return [];
+
+  validateLocaleTree(docsDir, locales, config.lang);
+  return locales.map((locale) => locale.toLowerCase()).sort();
 }
 
 const requireFrom = createRequire(import.meta.url);

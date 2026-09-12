@@ -27,7 +27,7 @@ their own layout, styles and metadata.
 | ------------- | -------- | -------------- | ------------------------------------------------- |
 | `title`       | `string` | none           | **Required.** Site name and metadata              |
 | `description` | `string` | `package.json` | Site description                                  |
-| `lang`        | `string` | `"en"`         | Value for `<html lang>` and `og:locale`           |
+| `lang`        | `string` | `"en"`         | Site language, and the default when localised     |
 | `logo`        | `string` | none           | Public path or URL shown instead of the site name |
 
 A source file path passed to `logo` produces a build error. Use a public path
@@ -35,10 +35,14 @@ such as `/logo.svg`.
 
 ## Content
 
-| Option      | Type     | Default    | Description                          |
-| ----------- | -------- | ---------- | ------------------------------------ |
-| `docsDir`   | `string` | `"./docs"` | Directory containing Markdown files  |
-| `routeBase` | `string` | `"/"`      | Route where documentation is mounted |
+| Option      | Type                | Default    | Description                              |
+| ----------- | ------------------- | ---------- | ---------------------------------------- |
+| `docsDir`   | `string`            | `"./docs"` | Directory containing Markdown files      |
+| `routeBase` | `string`            | `"/"`      | Route where documentation is mounted     |
+| `locales`   | `string[] \| false` | detected   | Override the detected locale directories |
+
+Locale directories under `docsDir` are detected on their own; `locales` only
+overrides that. See [Languages](/docs/configurations/i18n).
 
 To keep a landing page at `/`, mount documentation below it:
 
@@ -158,6 +162,7 @@ dark }` object changes only the Shiki code themes. See
 | Favicon                                   | `public/favicon.svg`, `.ico` or `.png`            |
 | Social image                              | `public/og-image.png`, `.jpg`, `.jpeg` or `.webp` |
 | Custom styles                             | `src/jaad.css`                                    |
+| Locales                                   | Directory names under `docsDir`                   |
 | Sitemap                                   | Generated when `site` is set                      |
 | Search index, `llms.txt` and raw Markdown | Generated below `routeBase`                       |
 

@@ -10,6 +10,8 @@ interface Props {
   keywords?: string[];
   author?: string;
   modified?: Date;
+  /** BCP-47 tag of this page's locale. */
+  language?: string;
 }
 
 const {
@@ -19,6 +21,7 @@ const {
   keywords = [],
   author,
   modified,
+  language = config.lang,
 } = Astro.props;
 
 // Relative ids are worthless to a crawler, so without `site` emit nothing.
@@ -43,7 +46,7 @@ const data = base && {
   "@type": "TechArticle",
   headline: title,
   description,
-  inLanguage: config.lang,
+  inLanguage: language,
   ...(keywords.length > 0 ? { keywords } : {}),
   ...(author ? { author: { "@type": "Person", name: author } } : {}),
   ...(modified ? { dateModified: modified.toISOString() } : {}),

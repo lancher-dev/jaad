@@ -6,6 +6,24 @@ import type {
   ParsedDocsCollectionId,
 } from "../@types/docs.ts";
 
+/** The id without its locale directory: what routing and ordering read. */
+export function routedId(page: DocsPageLike): string {
+  return page.localeId ?? page.id;
+}
+
+/** "it/02-guides/01-setup" becomes locale "it" and "02-guides/01-setup". */
+export function splitDocLocale(
+  id: string,
+  locales: string[],
+): { locale: string | null; id: string } {
+  const slash = id.indexOf("/");
+  if (slash === -1) return { locale: null, id };
+
+  const first = id.slice(0, slash);
+  if (!locales.includes(first)) return { locale: null, id };
+  return { locale: first, id: id.slice(slash + 1) };
+}
+
 /** Matches a numeric order prefix, e.g. "01-" or "123-" */
 const NUMBERED_PREFIX_RE = /^(\d+)-(.+)$/;
 
@@ -64,7 +82,7 @@ export function docOrder(page: DocsPageLike): {
   primary: number;
   secondary: number;
 } {
-  const parsed = parseDocCollectionId(page.id);
+  const parsed = parseDocCollectionId(routedId(page));
   const order = page.data?.order ?? parsed.order;
   return { primary: parsed.orderChapter ?? order, secondary: order };
 }
@@ -88,16 +106,21 @@ export function getDocCollectionId(filePath: string): string {
 
 /** Fail before route generation when the file tree cannot produce one clear
  * navigation and URL for every page. */
-export function validateDocsStructure(pages: { id: string }[]): void {
+export function validateDocsStructure(
+  pages: DocsPageLike[],
+  locale?: string,
+): void {
   const idsBySlug = new Map<string, string[]>();
   const directoriesByChapter = new Map<string, Set<string>>();
   const issues: string[] = [];
+  // Messages name the file on disk, locale directory included.
+  const named = (id: string) => (locale ? `${locale}/${id}` : id);
 
-  for (const id of pages.map((page) => page.id).sort()) {
+  for (const id of pages.map(routedId).sort()) {
     const parts = id.split("/");
     if (parts.length > 2) {
       issues.push(
-        `${id}: only one chapter directory is supported inside docs/`,
+        `${named(id)}: only one chapter directory is supported inside docs/`,
       );
     }
 
@@ -117,14 +140,14 @@ export function validateDocsStructure(pages: { id: string }[]): void {
 
   for (const [slug, ids] of idsBySlug) {
     if (ids.length > 1) {
-      issues.push(`${ids.join(", ")} all resolve to /${slug}`);
+      issues.push(`${ids.map(named).join(", ")} all resolve to /${slug}`);
     }
   }
 
   for (const [chapter, directories] of directoriesByChapter) {
     if (directories.size > 1) {
       issues.push(
-        `${[...directories].join(", ")} all resolve to chapter /${chapter}`,
+        `${[...directories].map(named).join(", ")} all resolve to chapter /${chapter}`,
       );
     }
   }
@@ -137,11 +160,8 @@ export function validateDocsStructure(pages: { id: string }[]): void {
 }
 
 /** The opening page owns routeBase; every later page keeps its named slug. */
-export function getCanonicalDocSlug(
-  page: { id: string },
-  index: number,
-): string {
-  return index === 0 ? "" : getCleanSlug(page.id);
+export function getCanonicalDocSlug(page: DocsPageLike, index: number): string {
+  return index === 0 ? "" : getCleanSlug(routedId(page));
 }
 
 /** Decodes percent-escapes, so "detail_%26_summary" → "Detail & Summary". */
@@ -197,6 +217,8 @@ export function extractHeadingsFromMarkdown(markdown: string): DocsHeadings[] {
 
 export interface DocsPageLike {
   id: string;
+  /** Set when the docs are localised; the id without its locale directory. */
+  localeId?: string;
   body?: string;
   data?: Partial<DocsPageData>;
 }
@@ -206,7 +228,7 @@ export function docTitle(page: DocsPageLike): string {
   return (
     page.data?.title ??
     (page.body ? extractTitleFromMarkdown(page.body) : null) ??
-    parseDocCollectionId(page.id).title
+    parseDocCollectionId(routedId(page)).title
   );
 }
 
@@ -273,7 +295,7 @@ export function buildSearchIndex<T extends DocsPageLike>(
   return sortedPages.map((page, index) => ({
     title: docTitle(page),
     slug: getCanonicalDocSlug(page, index),
-    chapter: formatChapterTitle(parseDocCollectionId(page.id).chapter),
+    chapter: formatChapterTitle(parseDocCollectionId(routedId(page)).chapter),
     keywords: page.data?.keywords ?? [],
     body: stripMarkdown(page.body || ""),
   }));

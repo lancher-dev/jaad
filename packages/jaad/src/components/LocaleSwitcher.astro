@@ -1,0 +1,133 @@
+---
+import type { LocaleAlternate } from "../collection.ts";
+
+interface Props {
+  alternates: LocaleAlternate[];
+  current: string;
+}
+
+const { alternates, current } = Astro.props;
+const active = alternates.find((entry) => entry.locale.code === current);
+---
+
+<jaad-locale-switcher class="relative">
+  <button
+    type="button"
+    data-trigger
+    aria-expanded="false"
+    aria-label="Change language"
+    title="Change language"
+    class="text-foreground-secondary hover:text-foreground-bright flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-lg px-2 transition-colors"
+  >
+    {
+      active?.locale.flag && (
+        <span aria-hidden="true">{active.locale.flag}</span>
+      )
+    }
+    <span class="text-xs font-medium uppercase">{current}</span>
+    <svg
+      class="h-3 w-3 shrink-0"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M19 9l-7 7-7-7"></path>
+    </svg>
+  </button>
+
+  <div
+    data-menu
+    hidden
+    class="bg-surface border-border absolute top-full right-0 z-40 mt-2 w-44 overflow-hidden rounded-xl border p-1 shadow-lg"
+  >
+    {
+      alternates.map((entry) => (
+        <a
+          href={entry.href}
+          hreflang={entry.locale.tag}
+          lang={entry.locale.tag}
+          aria-current={entry.locale.code === current ? "true" : undefined}
+          class="text-foreground-secondary hover:text-foreground-bright hover:bg-primary/5 flex items-center gap-2 rounded-lg px-3 py-2 text-sm no-underline transition-colors aria-[current]:font-semibold"
+        >
+          {entry.locale.flag && (
+            <span aria-hidden="true">{entry.locale.flag}</span>
+          )}
+          <span>{entry.locale.name}</span>
+        </a>
+      ))
+    }
+  </div>
+</jaad-locale-switcher>
+
+<script>
+  class JaadLocaleSwitcher extends HTMLElement {
+    #onDocumentPointerDown = (event: PointerEvent) => {
+      if (!this.contains(event.target as Node)) this.#close();
+    };
+
+    #onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") this.#close();
+    };
+
+    /** The header persists across navigations; the links in it must not. */
+    #onBeforeSwap = (event: Event) => {
+      const next = (
+        event as Event & { newDocument: Document }
+      ).newDocument.querySelector("jaad-locale-switcher");
+      if (next) this.innerHTML = next.innerHTML;
+    };
+
+    /** Delegated: #onBeforeSwap replaces the button, and the element it is
+     *  bound to has to outlive that. connectedCallback runs once. */
+    #onClick = (event: MouseEvent) => {
+      const target = event.target as Element | null;
+      if (!target?.closest("[data-trigger]")) return;
+      this.#menu()?.hidden ? this.#open() : this.#close();
+    };
+
+    connectedCallback() {
+      this.addEventListener("click", this.#onClick);
+      document.addEventListener("pointerdown", this.#onDocumentPointerDown);
+      document.addEventListener("keydown", this.#onKeyDown);
+      document.addEventListener("astro:before-swap", this.#onBeforeSwap);
+    }
+
+    disconnectedCallback() {
+      this.removeEventListener("click", this.#onClick);
+      document.removeEventListener("pointerdown", this.#onDocumentPointerDown);
+      document.removeEventListener("keydown", this.#onKeyDown);
+      document.removeEventListener("astro:before-swap", this.#onBeforeSwap);
+    }
+
+    #menu() {
+      return this.querySelector<HTMLElement>("[data-menu]");
+    }
+
+    #open() {
+      const menu = this.#menu();
+      if (menu) menu.hidden = false;
+      this.querySelector("[data-trigger]")?.setAttribute(
+        "aria-expanded",
+        "true",
+      );
+    }
+
+    #close() {
+      const menu = this.#menu();
+      if (menu) menu.hidden = true;
+      this.querySelector("[data-trigger]")?.setAttribute(
+        "aria-expanded",
+        "false",
+      );
+    }
+  }
+
+  if (!customElements.get("jaad-locale-switcher")) {
+    customElements.define("jaad-locale-switcher", JaadLocaleSwitcher);
+  }
+</script>

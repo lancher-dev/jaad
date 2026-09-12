@@ -3,6 +3,7 @@ import { defineJaadConfig } from "@lancher-dev/jaad";
 export default defineJaadConfig({
   site: "https://jaad.lancher.dev",
   title: "JAAD",
+  lang: "en",
   routeBase: "/docs",
   description:
     "An Astro integration that turns a folder of Markdown into a documentation site.",

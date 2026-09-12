@@ -4,15 +4,22 @@ import SocialLinks from "./SocialLinks.astro";
 import NavMobile from "./NavMobile.astro";
 import ThemeSwitcher from "./ThemeSwitcher.astro";
 import SearchPalette from "./SearchPalette.astro";
+import LocaleSwitcher from "./LocaleSwitcher.astro";
 import config from "virtual:jaad/config";
+import { getLocaleAlternates, type LocaleAlternate } from "../collection.ts";
 import { withDeploymentBase } from "../urls.ts";
+import { DEFAULT_LOCALE } from "../docs-config.ts";
 
 interface Props {
   /** Whether this page is part of the docs, where search is available. */
   inDocs?: boolean;
+  locale?: string;
+  alternates?: LocaleAlternate[];
 }
 
-const { inDocs = false } = Astro.props;
+const { inDocs = false, locale = DEFAULT_LOCALE } = Astro.props;
+// A page of the reader's own has no translations: offer each locale's opener.
+const alternates = Astro.props.alternates ?? (await getLocaleAlternates(""));
 const homeHref = withDeploymentBase("/", import.meta.env.BASE_URL);
 const logoSrc = config.logo
   ? withDeploymentBase(config.logo, import.meta.env.BASE_URL)
@@ -35,10 +42,15 @@ const logoSrc = config.logo
       </span>
 
       <div class="ml-auto flex items-center gap-2">
-        <SearchPalette inDocs={inDocs} />
+        <SearchPalette inDocs={inDocs} locale={locale} />
         <Nav />
         <SocialLinks />
         {config.appearance === "auto" && <ThemeSwitcher />}
+        {
+          alternates.length > 1 && (
+            <LocaleSwitcher {alternates} current={locale} />
+          )
+        }
         <NavMobile />
       </div>
     </div>

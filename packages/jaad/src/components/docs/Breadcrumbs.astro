@@ -2,21 +2,20 @@
 import { formatChapterTitle } from "../../utils/docs.ts";
 import config from "virtual:jaad/config";
 import { docsPageHref } from "../../urls.ts";
+import { docsUrls } from "../../docs-config.ts";
 
 interface Props {
   chapter?: string;
   title: string;
+  locale?: string;
 }
 
-const { chapter, title } = Astro.props;
+const { chapter, title, locale } = Astro.props;
 const chapterTitle = formatChapterTitle(chapter);
 
 const rootSegment = config.docsBase.split("/").filter(Boolean).at(-1);
 const rootLabel = formatChapterTitle(rootSegment) ?? "Docs";
-const rootHref = docsPageHref("", {
-  docsBase: config.docsBase,
-  deploymentBase: import.meta.env.BASE_URL,
-});
+const rootHref = docsPageHref("", docsUrls(locale));
 ---
 
 <nav

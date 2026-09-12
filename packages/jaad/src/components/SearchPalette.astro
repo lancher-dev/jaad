@@ -1,21 +1,18 @@
 ---
-import config from "virtual:jaad/config";
 import { docsPageHref } from "../urls.ts";
+import { DEFAULT_LOCALE, docsUrls } from "../docs-config.ts";
 
 interface Props {
   /** Whether this page is part of the docs, where search is available. */
   inDocs?: boolean;
+  /** Search covers one locale: the one the reader is in. */
+  locale?: string;
 }
 
-const { inDocs = false } = Astro.props;
-const base = docsPageHref("", {
-  docsBase: config.docsBase,
-  deploymentBase: import.meta.env.BASE_URL,
-});
-const indexUrl = docsPageHref("search-index.json", {
-  docsBase: config.docsBase,
-  deploymentBase: import.meta.env.BASE_URL,
-});
+const { inDocs = false, locale = DEFAULT_LOCALE } = Astro.props;
+const urls = docsUrls(locale);
+const base = docsPageHref("", urls);
+const indexUrl = docsPageHref("search-index.json", urls);
 
 const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
 ---
@@ -201,12 +198,30 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
 
       document.addEventListener("keydown", this.#onGlobalKey);
       document.addEventListener("astro:after-swap", this.#syncInDocs);
+      document.addEventListener("astro:before-swap", this.#syncLocale);
     }
 
     disconnectedCallback() {
       document.removeEventListener("keydown", this.#onGlobalKey);
       document.removeEventListener("astro:after-swap", this.#syncInDocs);
+      document.removeEventListener("astro:before-swap", this.#syncLocale);
     }
+
+    /** Each locale has its own index, so a language switch drops the cache. */
+    #syncLocale = (event: Event) => {
+      const next = (
+        event as Event & { newDocument: Document }
+      ).newDocument.querySelector<HTMLElement>("jaad-search");
+      if (!next) return;
+
+      const indexUrl = next.dataset.indexUrl;
+      if (indexUrl && indexUrl !== this.dataset.indexUrl) {
+        this.dataset.indexUrl = indexUrl;
+        this.#index = null;
+        this.#request = null;
+      }
+      if (next.dataset.base) this.dataset.base = next.dataset.base;
+    };
 
     /**
      * The header persists across navigations; the triggers must not.

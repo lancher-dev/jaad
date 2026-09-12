@@ -1,22 +1,34 @@
 import type { APIRoute, GetStaticPaths } from "astro";
-import { getEntry } from "astro:content";
 import { getSortedDocsPages } from "../collection.ts";
-import { getCleanSlug } from "../utils/docs.ts";
-import type { DocsEntry } from "../@types/docs.ts";
+import { getCleanSlug, routedId } from "../utils/docs.ts";
+import { buildLocales, localePrefix } from "../docs-config.ts";
 
 /** Raw markdown at the page's own url plus `.md`, for readers and for LLMs. */
 export const getStaticPaths: GetStaticPaths = async () => {
-  const sortedPages = await getSortedDocsPages();
+  const paths: {
+    params: { slug: string };
+    props: { id: string; locale?: string };
+  }[] = [];
 
-  return sortedPages.map((page) => ({
-    params: { slug: getCleanSlug(page.id) },
-    props: { id: page.id },
-  }));
+  for (const locale of buildLocales()) {
+    const sortedPages = await getSortedDocsPages(locale);
+    const prefix = localePrefix(locale);
+
+    for (const page of sortedPages) {
+      paths.push({
+        params: { slug: `${prefix}${getCleanSlug(routedId(page))}` },
+        props: { id: page.id, locale },
+      });
+    }
+  }
+
+  return paths;
 };
 
 export const GET: APIRoute = async ({ props }) => {
-  const { id } = props as { id: string };
-  const entry = (await getEntry("docsPages", id)) as DocsEntry | undefined;
+  const { id, locale } = props as { id: string; locale?: string };
+  const pages = await getSortedDocsPages(locale);
+  const entry = pages.find((page) => page.id === id);
   if (!entry) return new Response("Not found", { status: 404 });
 
   return new Response(entry.body ?? "", {

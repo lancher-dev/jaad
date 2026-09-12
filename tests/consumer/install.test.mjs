@@ -1,6 +1,12 @@
 import { after, before, describe, test } from "node:test";
 import assert from "node:assert/strict";
-import { cpSync, writeFileSync, readFileSync } from "node:fs";
+import {
+  cpSync,
+  mkdirSync,
+  rmSync,
+  writeFileSync,
+  readFileSync,
+} from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { walk, packageClasses, missingFrom } from "../dist.mjs";
@@ -48,6 +54,7 @@ describe("a project that installed the published tarball", () => {
   let project;
   let built;
   let remounted;
+  let localised;
 
   before(() => {
     const tarball = packPackage(PKG);
@@ -92,6 +99,38 @@ export default defineJaadConfig({
     );
     run("npx", ["astro", "build"], project);
     remounted = snapshot(join(project, "dist"));
+
+    // Locale directories under docs/: the same pages, in two languages.
+    const docs = join(project, "docs");
+    rmSync(docs, { recursive: true });
+    mkdirSync(join(docs, "en", "02-guides"), { recursive: true });
+    mkdirSync(join(docs, "it"), { recursive: true });
+    // Created but never written: it must not reach the switcher or the routes.
+    mkdirSync(join(docs, "fr"), { recursive: true });
+    writeFileSync(
+      join(docs, "en", "01-getting-started.md"),
+      "---\ntitle: Getting Started\n---\n\n# Getting Started\n\nEnglish.\n",
+    );
+    writeFileSync(
+      join(docs, "en", "02-guides", "01-deep-dive.md"),
+      "# Deep Dive\n\nOnly in English.\n",
+    );
+    writeFileSync(
+      join(docs, "it", "01-per-iniziare.md"),
+      "---\ntitle: Per iniziare\n---\n\n# Per iniziare\n\nItaliano.\n",
+    );
+    writeFileSync(
+      join(project, "jaad.config.ts"),
+      `import { defineJaadConfig } from "@lancher-dev/jaad";
+export default defineJaadConfig({
+  site: "https://example.dev",
+  title: "Consumer Test",
+  lang: "en",
+});
+`,
+    );
+    run("npx", ["astro", "build"], project);
+    localised = snapshot(join(project, "dist"));
   });
 
   after(cleanupTemporaryDirectories);
@@ -158,6 +197,78 @@ export default defineJaadConfig({
     );
     assert.doesNotMatch(built.read("llms.txt"), /\/draft/);
     assert.deepEqual(index[0].keywords, ["alpha", "beta"]);
+  });
+
+  test("locale directories build one documentation site per language", () => {
+    // The default locale keeps the urls it had before the second language.
+    assert.ok(localised.pages.includes("/index.html"), "no default index");
+    assert.ok(
+      localised.pages.includes("/guides/deep-dive/index.html"),
+      "the default locale lost its chaptered page",
+    );
+    // Three directory levels, which were a structure error before i18n.
+    assert.ok(localised.pages.includes("/it/index.html"), "no /it index");
+
+    assert.ok(
+      !localised.pages.includes("/it/guides/deep-dive/index.html"),
+      "an untranslated page was built anyway",
+    );
+
+    assert.ok(
+      !localised.files.some((file) => file.startsWith("/fr")),
+      "an empty locale directory was built anyway",
+    );
+
+    const italian = JSON.parse(localised.read("it/search-index.json"));
+    assert.deepEqual(
+      italian.map((entry) => entry.slug),
+      [""],
+      "the italian index is not scoped to italian",
+    );
+    assert.match(localised.read("it/llms.txt"), /\/it\//);
+  });
+
+  test("a localised page declares its own language and its alternates", () => {
+    const italian = localised.read("it/index.html");
+    assert.match(italian, /<html lang="it"/);
+    assert.match(italian, /<meta property="og:locale" content="it"/);
+    assert.match(
+      italian,
+      /<link rel="alternate" hreflang="it" href="https:\/\/example\.dev\/it"/,
+    );
+
+    const english = localised.read("index.html");
+    assert.match(english, /<html lang="en"/);
+    assert.match(
+      english,
+      /<link rel="alternate" hreflang="x-default" href="https:\/\/example\.dev\/"/,
+    );
+
+    // An untranslated page advertises no alternate it does not have. The
+    // switcher still links to Italian, so this looks only at <head>.
+    const deepDive = localised.read("guides/deep-dive/index.html");
+    assert.doesNotMatch(deepDive, /<link rel="alternate" hreflang="it"/);
+  });
+
+  test("the switcher ships with two locales and falls back per page", () => {
+    const deepDive = localised.read("guides/deep-dive/index.html");
+    assert.match(deepDive, /<jaad-locale-switcher/);
+    assert.match(deepDive, /Italiano/);
+    assert.doesNotMatch(
+      deepDive,
+      /hreflang="fr"/,
+      "an empty locale was offered",
+    );
+    // No Italian deep dive, so Italian lands on the Italian opening page.
+    assert.match(deepDive, /<a href="\/it" hreflang="it"/);
+  });
+
+  test("a single-locale site renders no switcher at all", () => {
+    assert.doesNotMatch(built.read("index.html"), /<jaad-locale-switcher/);
+    assert.doesNotMatch(
+      remounted.read("docs/index.html"),
+      /jaad-locale-switcher/,
+    );
   });
 
   test("the config reaches the head of the page", () => {

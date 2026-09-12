@@ -18,7 +18,7 @@ This produces `/`, `/guides/setup`, `/guides/deployment` and `/reference`.
 - Numeric prefixes control order and are removed from URLs.
 - Files without a prefix sort after numbered files.
 - A folder becomes a collapsible chapter.
-- Only one folder level is supported.
+- Only one folder level is supported, per language.
 - The first `# Heading` becomes the page title.
 - The first sorted page owns `routeBase`; its named URL redirects there.
 - Removing prefixes must leave every page and chapter with a unique path.
@@ -42,3 +42,9 @@ order: 5
 draft: true
 ---
 ```
+
+## More than one language
+
+Directories named after language codes turn the tree into one site per
+language, and the nesting limit then applies inside each of them. See
+[Languages](/docs/configurations/i18n).
