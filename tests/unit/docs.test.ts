@@ -15,6 +15,8 @@ import {
   docTitle,
   docLabel,
   docOrder,
+  splitDocLocale,
+  routedId,
   buildSearchIndex,
   validateDocsStructure,
 } from "../../packages/jaad/src/utils/docs.ts";
@@ -406,4 +408,49 @@ test("keywords are indexed for search, and default to none", () => {
   ]);
   assert.deepEqual(index[0].keywords, ["media", "markdown"]);
   assert.deepEqual(index[1].keywords, []);
+});
+
+// ── The locale directory is split off before anything else reads the id ──────
+
+test("a locale directory is split off the collection id", () => {
+  assert.deepEqual(splitDocLocale("it/02-guides/01-setup", ["en", "it"]), {
+    locale: "it",
+    id: "02-guides/01-setup",
+  });
+});
+
+test("a directory that is not a configured locale is left in place", () => {
+  assert.deepEqual(splitDocLocale("guides/01-setup", ["en", "it"]), {
+    locale: null,
+    id: "guides/01-setup",
+  });
+  assert.deepEqual(splitDocLocale("it", ["en", "it"]), {
+    locale: null,
+    id: "it",
+  });
+});
+
+test("ordering and chapters read the id without its locale", () => {
+  const page = { id: "it/02-guides/01-setup", localeId: "02-guides/01-setup" };
+  assert.equal(routedId(page), "02-guides/01-setup");
+  assert.deepEqual(docOrder(page), { primary: 2, secondary: 1 });
+  assert.equal(parseDocCollectionId(routedId(page)).chapter, "guides");
+});
+
+// Three segments are only legal because the locale is gone by the time the
+// structure is checked.
+test("a chaptered page inside a locale is a valid structure", () => {
+  assert.doesNotThrow(() =>
+    validateDocsStructure(
+      [{ id: "it/02-guides/01-setup", localeId: "02-guides/01-setup" }],
+      "it",
+    ),
+  );
+});
+
+test("a structure error names the file on disk, locale included", () => {
+  assert.throws(
+    () => validateDocsStructure([{ id: "it/a/b/c", localeId: "a/b/c" }], "it"),
+    /it\/a\/b\/c: only one chapter directory/,
+  );
 });
