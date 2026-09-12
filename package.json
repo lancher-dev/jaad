@@ -13,7 +13,7 @@
     "format:fix": "prettier --write .",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "test": "node --test \"tests/unit/**/*.test.ts\"",
+    "test": "node --test \"tests/unit/**/*.test.ts\" \"tests/unit/**/*.test.mjs\"",
     "test:build": "node --test \"tests/build/**/*.test.mjs\"",
     "test:consumer": "node --test \"tests/consumer/**/*.test.mjs\""
   },

@@ -24,6 +24,7 @@
   },
   "files": [
     "index.mjs",
+    "lib.mjs",
     "templates",
     "README.md",
     "LICENSE"

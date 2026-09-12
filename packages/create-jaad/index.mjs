@@ -5,12 +5,20 @@ import { existsSync, mkdirSync, readdirSync, readFileSync } from "node:fs";
 import { writeFileSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
 import { styleText } from "node:util";
+import {
+  DEFAULT_TEMPLATE,
+  HELP,
+  fail,
+  missingAnswers,
+  packageManager,
+  parseArgs,
+  quoteArg,
+  titleFrom,
+} from "./lib.mjs";
 
 // Bumped together with the package they install.
 const JAAD = "^0.8.3";
 const ASTRO = "^7.3.1";
-const TEMPLATES = ["docs", "site"];
-const DEFAULT_TEMPLATE = "docs";
 const ASTRO_CONFIG_NAMES = [
   "astro.config.ts",
   "astro.config.mjs",
@@ -40,90 +48,6 @@ const INDEX_PAGE_NAMES = [
   "index.ts",
 ];
 const FAVICON_NAMES = ["favicon.svg", "favicon.ico", "favicon.png"];
-
-const HELP = `Usage: npm create @lancher-dev/jaad@latest [directory] [options]
-
-  --here                    Set up JAAD in the current directory.
-  --template <docs|site>    Docs at / (default), or a landing page with
-                            docs at /docs.
-  --title <title>           Site title.
-  --install                 Install dependencies.
-  --no-install              Write the files and stop.
-  -h, --help                Show this.
-`;
-
-function fail(message) {
-  throw new Error(`create-jaad: ${message}`);
-}
-
-function takeValue(argv, index, option) {
-  const value = argv[index + 1];
-  if (!value || value.startsWith("-")) fail(`${option} needs a value.`);
-  return value;
-}
-
-function parseArgs(argv) {
-  const args = {
-    here: false,
-    install: null,
-    template: null,
-    title: null,
-    dir: null,
-    help: false,
-  };
-
-  for (let i = 0; i < argv.length; i++) {
-    const arg = argv[i];
-    if (arg === "--here") args.here = true;
-    else if (arg === "--template") args.template = takeValue(argv, i++, arg);
-    else if (arg === "--title") args.title = takeValue(argv, i++, arg);
-    else if (arg === "--install") {
-      if (args.install === false) {
-        fail("--install and --no-install cannot be used together.");
-      }
-      args.install = true;
-    } else if (arg === "--no-install") {
-      if (args.install === true) {
-        fail("--install and --no-install cannot be used together.");
-      }
-      args.install = false;
-    } else if (arg === "-h" || arg === "--help") args.help = true;
-    else if (arg.startsWith("-")) fail(`unknown option ${arg}.`);
-    else if (args.dir) fail("only one directory can be provided.");
-    else args.dir = arg;
-  }
-
-  if (args.here && args.dir) {
-    fail("--here cannot be used together with a directory.");
-  }
-  // A path naming the current directory is --here.
-  if (args.dir && resolve(args.dir) === resolve(".")) {
-    args.here = true;
-    args.dir = null;
-  }
-  if (args.template && !TEMPLATES.includes(args.template)) {
-    fail(
-      `unknown template ${args.template}; available: ${TEMPLATES.join(", ")}.`,
-    );
-  }
-
-  return args;
-}
-
-/** Quotes a path for the commands we print. */
-const quoteArg = (value) =>
-  /^[\w./@-]+$/.test(value)
-    ? value
-    : `"${value.replace(/(["\\$`])/g, "\\$1")}"`;
-
-/** "my-docs" becomes "My Docs", which is right often enough to offer. */
-const titleFrom = (name) =>
-  name
-    .replace(/^@[^/]+\//, "")
-    .split(/[-_.\s]+/)
-    .filter(Boolean)
-    .map((word) => word[0].toUpperCase() + word.slice(1))
-    .join(" ") || "Documentation";
 
 function markdownUnder(dir) {
   if (!existsSync(dir)) return 0;
@@ -310,14 +234,6 @@ function writeManifest(target, existing, name) {
   writeFileSync(manifestPath(target), JSON.stringify(manifest, null, 2) + "\n");
 }
 
-function packageManager() {
-  const agent = process.env.npm_config_user_agent ?? "";
-  for (const name of ["pnpm", "yarn", "bun"]) {
-    if (agent.startsWith(name)) return name;
-  }
-  return "npm";
-}
-
 function answer(value) {
   if (p.isCancel(value)) {
     p.cancel("Setup cancelled.");
@@ -337,17 +253,6 @@ function assertTargetAvailable(args, target) {
   if (entries.length > 0) {
     fail(`${args.dir} exists and is not empty. Use --here to add JAAD to it.`);
   }
-}
-
-function missingAnswers(args) {
-  const missing = [];
-  if (!args.here && !args.dir)
-    missing.push("directory ([directory] or --here)");
-  if (!args.title) missing.push("title (--title <title>)");
-  if (args.install === null) {
-    missing.push("installation (--install or --no-install)");
-  }
-  return missing;
 }
 
 async function collectAnswers(args) {
