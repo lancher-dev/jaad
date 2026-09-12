@@ -42,6 +42,19 @@ function snapshot(dist) {
       .filter(([f]) => f.endsWith(".css") || f.endsWith(".html"))
       .map(([, body]) => body)
       .join("\n"),
+    /** Only the stylesheets one page links, so a layout's set is testable. */
+    cssOf: (relative) => {
+      const html = contents.get("/" + relative);
+      assert.ok(html !== undefined, `${relative} was not built`);
+      const linked = [
+        ...html.matchAll(/<link rel="stylesheet" href="([^"]+)"/g),
+        // The href carries Astro's base; dist keys do not.
+      ].map((m) => contents.get(m[1].slice(m[1].indexOf("/_astro/"))) ?? "");
+      const inline = [...html.matchAll(/<style>([\s\S]*?)<\/style>/g)].map(
+        (m) => m[1],
+      );
+      return [...linked, ...inline].join("\n");
+    },
   };
 }
 
@@ -94,6 +107,7 @@ export default defineJaadConfig({
   routeBase: "/docs",
   logo: "/logo.svg",
   appearance: "dark",
+  theme: "dracula",
 });
 `,
     );
@@ -268,6 +282,22 @@ export default defineJaadConfig({
     assert.doesNotMatch(
       remounted.read("docs/index.html"),
       /jaad-locale-switcher/,
+    );
+  });
+
+  // A preset's palette reaches JAAD's tokens only through the reverse bridge.
+  // Without it a page renders the default palette while the docs render dracula.
+  test("a preset palette reaches pages of your own, not just the docs", () => {
+    const bridge = /--color-background:\s*var\(--jaamd-bg\)/;
+    assert.match(
+      remounted.cssOf("docs/index.html"),
+      bridge,
+      "the docs lost the preset bridge",
+    );
+    assert.match(
+      remounted.cssOf("page/index.html"),
+      bridge,
+      "a page built on the exported Page.astro has no preset palette",
     );
   });
 
