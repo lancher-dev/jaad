@@ -7,9 +7,19 @@ interface Props {
   title: string;
   description: string;
   chapter?: string;
+  keywords?: string[];
+  author?: string;
+  modified?: Date;
 }
 
-const { title, description, chapter } = Astro.props;
+const {
+  title,
+  description,
+  chapter,
+  keywords = [],
+  author,
+  modified,
+} = Astro.props;
 
 // Relative ids are worthless to a crawler, so without `site` emit nothing.
 const site = Astro.site;
@@ -34,6 +44,9 @@ const data = base && {
   headline: title,
   description,
   inLanguage: config.lang,
+  ...(keywords.length > 0 ? { keywords } : {}),
+  ...(author ? { author: { "@type": "Person", name: author } } : {}),
+  ...(modified ? { dateModified: modified.toISOString() } : {}),
   isPartOf: { "@type": "WebSite", name: config.title },
   breadcrumb: {
     "@type": "BreadcrumbList",

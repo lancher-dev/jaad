@@ -86,3 +86,23 @@ test("regex metacharacters in the query are literal", () => {
     1,
   );
 });
+
+test("a keyword match outranks a body match and loses to a chapter", () => {
+  const index = [
+    item({ slug: "body", body: "mentions media in passing" }),
+    item({ slug: "keyworded", body: "unrelated", keywords: ["media"] }),
+    item({ slug: "chapter", body: "unrelated", chapter: "Media" }),
+  ];
+  assert.deepEqual(
+    scoreItems(index, "media").map((i) => i.slug),
+    ["chapter", "keyworded", "body"],
+  );
+});
+
+test("an item without keywords is scored, not skipped", () => {
+  const index = [item({ slug: "a", body: "deployment" })];
+  assert.deepEqual(
+    scoreItems(index, "deployment").map((i) => i.slug),
+    ["a"],
+  );
+});

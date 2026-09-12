@@ -13,6 +13,9 @@ import {
   stripMarkdown,
   extractDescription,
   docTitle,
+  docLabel,
+  docOrder,
+  buildSearchIndex,
   validateDocsStructure,
 } from "../../packages/jaad/src/utils/docs.ts";
 import { buildDocsNavigation } from "../../packages/jaad/src/navigation.ts";
@@ -345,4 +348,62 @@ test("frontmatter wins over the h1, which wins over the slug", () => {
   );
   assert.equal(docTitle({ id: "01-a", body }), "From the body");
   assert.equal(docTitle({ id: "01-getting-started" }), "Getting Started");
+});
+
+test("a short label replaces the title in navigation only", () => {
+  const page = { id: "01-a", data: { title: "A Very Long Page Title" } };
+  assert.equal(docLabel(page), "A Very Long Page Title");
+  assert.equal(
+    docLabel({ ...page, data: { ...page.data, label: "Short" } }),
+    "Short",
+  );
+  assert.equal(
+    docTitle({ ...page, data: { ...page.data, label: "Short" } }),
+    "A Very Long Page Title",
+  );
+});
+
+// ── Frontmatter order ───────────────────────────────────────────────────────
+
+test("frontmatter order replaces the number the filename supplies", () => {
+  assert.deepEqual(docOrder({ id: "05-a" }), { primary: 5, secondary: 5 });
+  assert.deepEqual(docOrder({ id: "05-a", data: { order: 1 } }), {
+    primary: 1,
+    secondary: 1,
+  });
+});
+
+test("inside a chapter, frontmatter order moves the page, not the chapter", () => {
+  assert.deepEqual(docOrder({ id: "02-guides/05-a", data: { order: 1 } }), {
+    primary: 2,
+    secondary: 1,
+  });
+});
+
+test("frontmatter order re-sorts pages against their filenames", () => {
+  const pages = [
+    { id: "01-first" },
+    { id: "02-second", data: { order: 99 } },
+    { id: "03-third" },
+  ];
+  assert.deepEqual(
+    sortDocPages(pages).map((page) => page.id),
+    ["01-first", "03-third", "02-second"],
+  );
+});
+
+test("an ordered page can take the opening route from the first file", () => {
+  const pages = [{ id: "01-intro" }, { id: "02-welcome", data: { order: 0 } }];
+  assert.equal(sortDocPages(pages)[0].id, "02-welcome");
+});
+
+// ── Keywords ────────────────────────────────────────────────────────────────
+
+test("keywords are indexed for search, and default to none", () => {
+  const index = buildSearchIndex([
+    { id: "01-a", body: "# A", data: { keywords: ["media", "markdown"] } },
+    { id: "02-b", body: "# B" },
+  ]);
+  assert.deepEqual(index[0].keywords, ["media", "markdown"]);
+  assert.deepEqual(index[1].keywords, []);
 });

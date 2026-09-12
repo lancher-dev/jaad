@@ -26,22 +26,19 @@ This produces `/`, `/guides/setup`, `/guides/deployment` and `/reference`.
 Invalid nesting or duplicate paths stop the build and list the conflicting
 source files.
 
-## Page titles
+The same structure generates the sidebar, mobile selectors, breadcrumbs and
+previous/next links; no navigation configuration is required.
 
-Use optional frontmatter to set the navigation label and page description:
+## Overriding the file tree
+
+Optional [frontmatter](/docs/configurations/frontmatter) renames a page, moves
+it without renaming the file, or keeps it out of the build:
 
 ```markdown
 ---
 title: Images & Videos
-description: Add accessible images and embedded videos.
+label: Media
+order: 5
+draft: true
 ---
-
-# Images and videos
 ```
-
-`title` affects navigation and metadata; the filename still determines the
-URL. `description` is used for page metadata and structured data. Without it,
-JAAD uses an excerpt from the page, followed by the site description.
-
-The same structure generates the sidebar, mobile selectors, breadcrumbs and
-previous/next links; no navigation configuration is required.

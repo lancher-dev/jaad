@@ -8,8 +8,11 @@ let cached: DocsEntry[] | null = null;
 export async function getSortedDocsPages(): Promise<DocsEntry[]> {
   if (import.meta.env.PROD && cached) return cached;
   const pages = (await getCollection("docsPages")) as unknown as DocsEntry[];
+  // Validated before filtering: a draft's slug conflict still surfaces in dev.
   validateDocsStructure(pages);
-  const sorted = sortDocPages(pages);
+  const sorted = sortDocPages(
+    import.meta.env.PROD ? pages.filter((page) => !page.data.draft) : pages,
+  );
   if (import.meta.env.PROD) cached = sorted;
   return sorted;
 }

@@ -115,6 +115,51 @@ export default defineJaadConfig({
     assert.equal(index[0].slug, "", "search does not point at the docs root");
   });
 
+  test("frontmatter renames, reorders and describes a page", () => {
+    const deepDive = built.read("guides/deep-dive/index.html");
+
+    assert.match(deepDive, /<title>A Deep Dive Into Everything \| /);
+    assert.match(
+      deepDive,
+      /<a[^>]+href="\/guides\/deep-dive"[^>]*>[\s\S]{0,200}?Deep Dive</,
+      "the sidebar does not use the short label",
+    );
+
+    assert.match(deepDive, /<meta name="author" content="Ada Lovelace"/);
+    assert.match(
+      deepDive,
+      /<meta property="article:modified_time" content="2026-09-12T/,
+    );
+    assert.match(
+      deepDive,
+      /<meta property="og:image" content="https:\/\/example\.dev\/logo\.svg"/,
+      "a page-level ogImage did not override the site's",
+    );
+    assert.match(
+      deepDive,
+      /"author":\{"@type":"Person","name":"Ada Lovelace"\}/,
+    );
+
+    const home = built.read("index.html");
+    assert.match(home, /<meta name="keywords" content="alpha, beta"/);
+    assert.match(home, /"keywords":\["alpha","beta"\]/);
+  });
+
+  test("a draft is left out of the production build entirely", () => {
+    assert.ok(
+      !built.pages.some((file) => file.includes("draft")),
+      "a draft page was routed",
+    );
+
+    const index = JSON.parse(built.read("search-index.json"));
+    assert.ok(
+      !index.some((entry) => entry.slug === "draft"),
+      "a draft page reached the search index",
+    );
+    assert.doesNotMatch(built.read("llms.txt"), /\/draft/);
+    assert.deepEqual(index[0].keywords, ["alpha", "beta"]);
+  });
+
   test("the config reaches the head of the page", () => {
     const home = built.read("index.html");
     // `site` arrives through the wrapper, so urls are absolute.

@@ -2,6 +2,7 @@ export interface SearchItem {
   title: string;
   slug: string;
   chapter: string | null;
+  keywords?: string[];
   body: string;
 }
 
@@ -11,6 +12,7 @@ const EMPTY_QUERY_RESULTS = 8;
 interface Folded {
   title: string;
   chapter: string;
+  keywords: string;
   body: string;
 }
 
@@ -23,6 +25,7 @@ function fold(item: SearchItem): Folded {
     f = {
       title: item.title.toLowerCase(),
       chapter: item.chapter?.toLowerCase() ?? "",
+      keywords: (item.keywords ?? []).join(" ").toLowerCase(),
       body: item.body.toLowerCase(),
     };
     folded.set(item, f);
@@ -30,7 +33,7 @@ function fold(item: SearchItem): Folded {
   return f;
 }
 
-/** Rank by where the query appears: title beats chapter beats body. */
+/** Rank by where the query appears: title, chapter, keywords, then body. */
 export function scoreItems(index: SearchItem[], query: string): SearchItem[] {
   const q = query.trim().toLowerCase();
   if (!q) return index.slice(0, EMPTY_QUERY_RESULTS);
@@ -42,6 +45,7 @@ export function scoreItems(index: SearchItem[], query: string): SearchItem[] {
       if (f.title.includes(q)) score += 10;
       if (f.title.startsWith(q)) score += 5;
       if (f.chapter.includes(q)) score += 3;
+      if (f.keywords.includes(q)) score += 2;
       if (f.body.includes(q)) score += 1;
       return { item, score };
     })

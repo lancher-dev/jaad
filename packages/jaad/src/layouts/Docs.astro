@@ -48,6 +48,7 @@ const frameProps: DocsFrameProps = {
     slug: entry ? getCleanSlug(entry.id) : "",
     title: entryTitle,
     chapter,
+    data: entry?.data ?? { draft: false, keywords: [] },
   },
   headings,
   navigation,
@@ -60,11 +61,21 @@ const frameProps: DocsFrameProps = {
   class={config.appearance === "dark" ? "dark" : undefined}
 >
   <head>
-    <Head title={pageTitle} description={pageDescription} />
+    <Head
+      title={pageTitle}
+      description={pageDescription}
+      keywords={entry?.data.keywords}
+      author={entry?.data.author}
+      image={entry?.data.ogImage}
+      modified={entry?.data.lastUpdated}
+    />
     <StructuredData
       title={entryTitle || config.title}
       description={pageDescription}
       chapter={chapter}
+      keywords={entry?.data.keywords}
+      author={entry?.data.author}
+      modified={entry?.data.lastUpdated}
     />
     <ClientRouter />
   </head>
