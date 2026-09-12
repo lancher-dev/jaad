@@ -264,6 +264,27 @@ export default defineJaadConfig({
     assert.doesNotMatch(deepDive, /<link rel="alternate" hreflang="it"/);
   });
 
+  test("structured data roots the breadcrumb in the page's own locale", () => {
+    const ld = (html) =>
+      JSON.parse(
+        html.match(
+          /<script type="application\/ld\+json">([\s\S]*?)<\/script>/,
+        )[1],
+      );
+
+    const italian = ld(localised.read("it/index.html"));
+    assert.equal(
+      italian.breadcrumb.itemListElement[0].item,
+      "https://example.dev/it",
+    );
+
+    const english = ld(localised.read("index.html"));
+    assert.equal(
+      english.breadcrumb.itemListElement[0].item,
+      "https://example.dev/",
+    );
+  });
+
   test("the switcher ships with two locales and falls back per page", () => {
     const deepDive = localised.read("guides/deep-dive/index.html");
     assert.match(deepDive, /<jaad-locale-switcher/);
