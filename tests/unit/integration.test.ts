@@ -27,6 +27,42 @@ test("opening-page discovery follows collection slugging and numeric order", () 
   }
 });
 
+// The opening page is whatever the collection sorts first, and the sitemap
+// filter has to agree with it or it drops the wrong url.
+test("a draft never counts as the opening page", () => {
+  const docsDir = mkdtempSync(join(tmpdir(), "jaad-opening-draft-"));
+  try {
+    writeFileSync(
+      join(docsDir, "00-scratch.md"),
+      "---\ndraft: true\n---\n\n# Scratch",
+    );
+    writeFileSync(join(docsDir, "01-intro.md"), "# Intro");
+
+    assert.deepEqual(findOpeningPages(docsDir), [
+      { locale: undefined, slug: "intro" },
+    ]);
+  } finally {
+    rmSync(docsDir, { recursive: true });
+  }
+});
+
+test("frontmatter order moves the opening page", () => {
+  const docsDir = mkdtempSync(join(tmpdir(), "jaad-opening-order-"));
+  try {
+    writeFileSync(join(docsDir, "01-intro.md"), "# Intro");
+    writeFileSync(
+      join(docsDir, "02-welcome.md"),
+      "---\norder: 0\n---\n\n# Welcome",
+    );
+
+    assert.deepEqual(findOpeningPages(docsDir), [
+      { locale: undefined, slug: "welcome" },
+    ]);
+  } finally {
+    rmSync(docsDir, { recursive: true });
+  }
+});
+
 test("the sitemap omits only the opening page's named redirect", () => {
   const filter = createSitemapFilter("/docs", {
     deploymentBase: "/repo",

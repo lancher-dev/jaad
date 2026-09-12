@@ -1,6 +1,6 @@
 import type { AstroIntegration } from "astro";
 import tailwindcss from "@tailwindcss/vite";
-import { existsSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -68,13 +68,33 @@ export function shouldInjectNotFound(docsBase: string, srcDir: URL): boolean {
   );
 }
 
+/** The two fields that move the opening page. The content collection is not
+ *  available this early, so `order` and `draft` are read from the file. */
+function readFrontmatter(source: string): { order?: number; draft?: boolean } {
+  const block = /^---\r?\n([\s\S]*?)\r?\n---/.exec(source);
+  if (!block) return {};
+
+  const order = /^order:\s*(-?\d+)\s*$/m.exec(block[1]);
+  const draft = /^draft:\s*(true|false)\s*$/m.exec(block[1]);
+  return {
+    order: order ? Number(order[1]) : undefined,
+    draft: draft ? draft[1] === "true" : undefined,
+  };
+}
+
 export function findOpeningPages(
   dir: string,
   locales: string[] = [],
 ): OpeningPage[] {
   if (!existsSync(dir)) return [];
 
-  const pages: { id: string; localeId: string; locale: string | null }[] = [];
+  const pages: {
+    id: string;
+    localeId: string;
+    locale: string | null;
+    data: { order?: number };
+  }[] = [];
+
   const visit = (current: string) => {
     for (const entry of readdirSync(current, { withFileTypes: true }).sort(
       (a, b) => a.name.localeCompare(b.name),
@@ -82,9 +102,17 @@ export function findOpeningPages(
       const file = join(current, entry.name);
       if (entry.isDirectory()) visit(file);
       else if (entry.isFile() && entry.name.endsWith(".md")) {
+        const front = readFrontmatter(readFileSync(file, "utf8"));
+        if (front.draft) continue;
+
         const id = getDocCollectionId(relative(dir, file));
         const split = splitDocLocale(id, locales);
-        pages.push({ id, localeId: split.id, locale: split.locale });
+        pages.push({
+          id,
+          localeId: split.id,
+          locale: split.locale,
+          data: { order: front.order },
+        });
       }
     }
   };
