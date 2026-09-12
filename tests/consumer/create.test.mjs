@@ -92,6 +92,19 @@ test(
       built.includes("/introduction/index.html"),
       "no compatibility redirect for the sample page",
     );
+    const agents = readFileSync(join(project, "AGENTS.md"), "utf8");
+    assert.match(agents, /jaad\.lancher\.dev/, "no link to the documentation");
+    assert.match(agents, /astro dev --background/);
+    assert.match(
+      readFileSync(join(project, "CLAUDE.md"), "utf8"),
+      /AGENTS\.md/,
+      "CLAUDE.md does not defer to AGENTS.md",
+    );
+    assert.ok(
+      !built.some((file) => /agents|claude/i.test(file)),
+      "an agent guide was published as a page",
+    );
+
     const home = readFileSync(join(project, "dist", "index.html"), "utf8");
     assert.match(home, /<title>Scaffolded<\/title>/, "title missing");
     assert.doesNotMatch(home, /rel="canonical"/);
@@ -362,6 +375,10 @@ test("the published scaffolder carries its templates", () => {
     "templates/docs/docs/01-introduction.md",
     "templates/docs/public/favicon.svg",
     "templates/docs/tsconfig.json",
+    "templates/docs/AGENTS.md",
+    "templates/docs/CLAUDE.md",
+    "templates/site/AGENTS.md",
+    "templates/site/CLAUDE.md",
     "templates/site/jaad.config.ts",
     "templates/site/public/favicon.svg",
     "templates/site/tsconfig.json",
