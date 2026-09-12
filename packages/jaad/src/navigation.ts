@@ -1,6 +1,7 @@
 import type { DocsNavItem } from "./@types/docs.ts";
 import {
-  docTitle,
+  docLabel,
+  docOrder,
   getCanonicalDocSlug,
   parseDocCollectionId,
   type DocsPageLike,
@@ -53,9 +54,9 @@ export function buildDocsNavigation<T extends DocsPageLike>(
   const items = sortedPages.map((page, index): DocsNavItem => {
     const parsed = parseDocCollectionId(page.id);
     return {
-      title: docTitle(page),
+      title: docLabel(page),
       chapter: parsed.chapter,
-      primaryOrder: parsed.orderChapter ?? parsed.order,
+      primaryOrder: docOrder(page).primary,
       href: docsPageHref(getCanonicalDocSlug(page, index), urls),
       isActive: page.id === currentId,
     };

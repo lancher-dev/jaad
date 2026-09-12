@@ -1,6 +1,10 @@
 import GithubSlugger, { slug as githubSlug } from "github-slugger";
 import { ucfirst } from "./helpers.ts";
-import type { DocsHeadings, ParsedDocsCollectionId } from "../@types/docs.ts";
+import type {
+  DocsHeadings,
+  DocsPageData,
+  ParsedDocsCollectionId,
+} from "../@types/docs.ts";
 
 /** Matches a numeric order prefix, e.g. "01-" or "123-" */
 const NUMBERED_PREFIX_RE = /^(\d+)-(.+)$/;
@@ -47,18 +51,22 @@ export function parseDocCollectionId(
 
 /** Chapter first, then file order within it. Root pages sort by their own
  *  number, so they interleave with chapters. Returns a new array. */
-export function sortDocPages<T extends { id: string }>(pages: T[]): T[] {
+export function sortDocPages<T extends DocsPageLike>(pages: T[]): T[] {
   return pages
-    .map((page) => {
-      const parsed = parseDocCollectionId(page.id);
-      return {
-        page,
-        primary: parsed.orderChapter ?? parsed.order,
-        secondary: parsed.order,
-      };
-    })
+    .map((page) => ({ page, ...docOrder(page) }))
     .sort((a, b) => a.primary - b.primary || a.secondary - b.secondary)
     .map((entry) => entry.page);
+}
+
+/** Frontmatter `order` replaces the filename prefix number. A chapter keeps
+ *  its own. */
+export function docOrder(page: DocsPageLike): {
+  primary: number;
+  secondary: number;
+} {
+  const parsed = parseDocCollectionId(page.id);
+  const order = page.data?.order ?? parsed.order;
+  return { primary: parsed.orderChapter ?? order, secondary: order };
 }
 
 /** "01-chapter/02-section" → "chapter/section" */
@@ -190,7 +198,7 @@ export function extractHeadingsFromMarkdown(markdown: string): DocsHeadings[] {
 export interface DocsPageLike {
   id: string;
   body?: string;
-  data?: { title?: string };
+  data?: Partial<DocsPageData>;
 }
 
 /** Frontmatter title, then the first H1, then the slug. */
@@ -202,12 +210,18 @@ export function docTitle(page: DocsPageLike): string {
   );
 }
 
+/** The name navigation uses. */
+export function docLabel(page: DocsPageLike): string {
+  return page.data?.label ?? docTitle(page);
+}
+
 // ── Search index ────────────────────────────────────────────────────────────
 
 export interface DocsSearchEntry {
   title: string;
   slug: string;
   chapter: string | null;
+  keywords: string[];
   body: string;
 }
 
@@ -260,6 +274,7 @@ export function buildSearchIndex<T extends DocsPageLike>(
     title: docTitle(page),
     slug: getCanonicalDocSlug(page, index),
     chapter: formatChapterTitle(parseDocCollectionId(page.id).chapter),
+    keywords: page.data?.keywords ?? [],
     body: stripMarkdown(page.body || ""),
   }));
 }

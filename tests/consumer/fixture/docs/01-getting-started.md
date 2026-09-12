@@ -1,6 +1,7 @@
 ---
 slug: this-frontmatter-field-must-not-own-the-url
 title: Frontmatter Wins
+keywords: [alpha, beta]
 ---
 
 # Getting Started

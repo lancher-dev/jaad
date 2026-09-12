@@ -1,4 +1,4 @@
-import type { DocsHeadings } from "./@types/docs.ts";
+import type { DocsHeadings, DocsPageData } from "./@types/docs.ts";
 import type { DocsNavigation } from "./navigation.ts";
 
 /** Data available to an advanced documentation frame. */
@@ -10,10 +10,17 @@ export interface DocsFrameProps {
     slug: string;
     title: string;
     chapter?: string;
+    /** Raw frontmatter. */
+    data: DocsPageData;
   };
   headings: DocsHeadings[];
   navigation: DocsNavigation;
 }
 
-export type { DocsHeadings, DocsNavItem, DocsEntry } from "./@types/docs.ts";
+export type {
+  DocsHeadings,
+  DocsNavItem,
+  DocsEntry,
+  DocsPageData,
+} from "./@types/docs.ts";
 export type { DocsNavigation, NavSection } from "./navigation.ts";

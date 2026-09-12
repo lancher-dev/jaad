@@ -20,10 +20,23 @@ export interface DocsHeadings {
   text: string;
 }
 
+/** Resolved frontmatter. Mirrors the schema in content.ts. */
+export interface DocsPageData {
+  title?: string;
+  description?: string;
+  label?: string;
+  order?: number;
+  draft: boolean;
+  keywords: string[];
+  author?: string;
+  ogImage?: string | false;
+  lastUpdated?: Date;
+}
+
 /** The shape jaad requires of the docs collection. Astro generates collection
  *  types in the consumer project, so the package states its own contract. */
 export interface DocsEntry {
   id: string;
   body?: string;
-  data: { title?: string; description?: string };
+  data: DocsPageData;
 }
