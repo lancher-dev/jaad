@@ -1,4 +1,4 @@
-import { test } from "node:test";
+import { test, type TestContext } from "node:test";
 import assert from "node:assert/strict";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -227,4 +227,64 @@ test("an explicit social image has to be a public url", () => {
     "https://cdn.example.dev/social.png",
   );
   assert.throws(() => bare({ ogImage: "./src/social.png" }), /public url/);
+});
+
+// ── Locales ──────────────────────────────────────────────────────────────────
+
+const docsTree = (t: TestContext, entries: string[]) => {
+  const cwd = mkdtempSync(join(tmpdir(), "jaad-config-locales-"));
+  t.after(() => rmSync(cwd, { recursive: true }));
+  for (const entry of entries) {
+    mkdirSync(join(cwd, "docs", entry, ".."), { recursive: true });
+    writeFileSync(join(cwd, "docs", entry), "# Page");
+  }
+  return cwd;
+};
+
+test("locale directories reach the resolved config", (t) => {
+  const cwd = docsTree(t, ["en/01-a.md", "it/01-a.md"]);
+  const config = resolveConfig({ title: "T" }, cwd);
+
+  assert.deepEqual(
+    config.docsLocales.map((locale) => locale.code),
+    ["en", "it"],
+  );
+  assert.equal(config.defaultLocale, "en");
+});
+
+test("locales: false leaves the directories as chapters", (t) => {
+  const cwd = docsTree(t, ["en/01-a.md", "it/01-a.md"]);
+  const config = resolveConfig({ title: "T", locales: false }, cwd);
+
+  assert.deepEqual(config.docsLocales, []);
+  assert.equal(config.defaultLocale, "en");
+});
+
+test("an explicit list is taken over what detection would find", (t) => {
+  const cwd = docsTree(t, ["en/01-a.md", "it/01-a.md", "fr/01-a.md"]);
+  const config = resolveConfig({ title: "T", locales: ["en", "it"] }, cwd);
+
+  assert.deepEqual(
+    config.docsLocales.map((locale) => locale.code),
+    ["en", "it"],
+  );
+});
+
+test("two empty locale directories leave the docs unlocalised", (t) => {
+  const cwd = mkdtempSync(join(tmpdir(), "jaad-config-locales-"));
+  t.after(() => rmSync(cwd, { recursive: true }));
+  mkdirSync(join(cwd, "docs", "en"), { recursive: true });
+  mkdirSync(join(cwd, "docs", "it"), { recursive: true });
+
+  assert.deepEqual(resolveConfig({ title: "T" }, cwd).docsLocales, []);
+});
+
+// A pinned list skips detection, which is what guards against a missing docsDir.
+test("a pinned list does not crash when there is no docs directory", () => {
+  assert.doesNotThrow(() => bare({ locales: ["en"] }));
+  assert.deepEqual(bare({ locales: ["en"] }).docsLocales, []);
+});
+
+test("a locale code the config pins has to be a real one", () => {
+  assert.throws(() => bare({ locales: ["nope"] }), /not a locale code/);
 });

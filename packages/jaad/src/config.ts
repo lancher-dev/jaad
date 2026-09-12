@@ -232,7 +232,9 @@ function resolveLocales(config: JaadConfig, cwd: string): string[] {
 
   const docsDir = join(cwd, config.docsDir);
   const locales = config.locales ?? detectLocales(docsDir, config.lang);
-  if (locales.length === 0) return [];
+  // A pinned list skips detection, and with it the missing-directory guard;
+  // the integration warns about that case with better words than readdir does.
+  if (locales.length === 0 || !existsSync(docsDir)) return [];
 
   validateLocaleTree(docsDir, locales, config.lang);
   return locales.map((locale) => locale.toLowerCase()).sort();
