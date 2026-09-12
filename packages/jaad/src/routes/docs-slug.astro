@@ -1,36 +1,64 @@
 ---
 import { render } from "astro:content";
 import { getSortedDocsPages } from "../collection.ts";
-import { getCanonicalDocSlug, getCleanSlug, docTitle } from "../utils/docs.ts";
+import {
+  getCanonicalDocSlug,
+  getCleanSlug,
+  docTitle,
+  routedId,
+} from "../utils/docs.ts";
 import DocsPage from "../components/docs/DocsPage.astro";
 import config from "virtual:jaad/config";
-import { docsPageHref, withDeploymentBase } from "../urls.ts";
+import { docsPageHref, routedLocales, withDeploymentBase } from "../urls.ts";
 
-export async function getStaticPaths() {
-  const sortedPages = await getSortedDocsPages();
-
-  return sortedPages.map((page, index) => {
-    const canonicalSlug = getCanonicalDocSlug(page, index);
-    return {
-      params: { slug: getCleanSlug(page.id) },
-      props: { id: page.id, isOpening: canonicalSlug === "" },
-    };
-  });
+interface DocsPath {
+  params: { slug: string };
+  props: { id: string; locale?: string; isOpening: boolean };
 }
 
-const { id, isOpening } = Astro.props;
+export async function getStaticPaths() {
+  const paths: DocsPath[] = [];
+
+  for (const locale of routedLocales(config)) {
+    const sortedPages = await getSortedDocsPages(locale);
+    const prefix =
+      locale && locale !== config.defaultLocale ? `${locale}/` : "";
+
+    sortedPages.forEach((page, index) => {
+      const isOpening = getCanonicalDocSlug(page, index) === "";
+      paths.push({
+        params: { slug: `${prefix}${getCleanSlug(routedId(page))}` },
+        props: { id: page.id, locale, isOpening },
+      });
+
+      // A prefixed locale has no index route of its own: /it is this page.
+      if (isOpening && prefix) {
+        paths.push({
+          params: { slug: locale! },
+          props: { id: page.id, locale, isOpening: false },
+        });
+      }
+    });
+  }
+
+  return paths;
+}
+
+const { id, locale, isOpening } = Astro.props;
 
 if (isOpening) {
   return Astro.redirect(
     docsPageHref("", {
       docsBase: config.docsBase,
       deploymentBase: import.meta.env.BASE_URL,
+      locale,
+      defaultLocale: config.defaultLocale,
     }),
     301,
   );
 }
 
-const sortedPages = await getSortedDocsPages();
+const sortedPages = await getSortedDocsPages(locale);
 const docPage = sortedPages.find((page) => page.id === id);
 if (!docPage) {
   return Astro.redirect(withDeploymentBase("/404", import.meta.env.BASE_URL));

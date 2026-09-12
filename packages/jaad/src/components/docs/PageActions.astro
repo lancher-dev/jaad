@@ -8,13 +8,16 @@ interface Props {
   id: string;
   /** URL-safe slug, e.g. "markdown/inner-html". */
   cleanSlug: string;
+  locale?: string;
 }
 
-const { id, cleanSlug } = Astro.props;
+const { id, cleanSlug, locale } = Astro.props;
 
 const mdHref = docsMarkdownHref(cleanSlug, {
   docsBase: config.docsBase,
   deploymentBase: import.meta.env.BASE_URL,
+  locale,
+  defaultLocale: config.defaultLocale,
 });
 const editHref = config.editBase ? editUrl(config.editBase, `${id}.md`) : null;
 ---

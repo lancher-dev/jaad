@@ -5,6 +5,7 @@ import {
   parseDocCollectionId,
   docTitle,
   extractHeadingsFromMarkdown,
+  routedId,
 } from "../../utils/docs.ts";
 import { buildDocsNavigation } from "../../navigation.ts";
 import type { DocsEntry } from "../../@types/docs.ts";
@@ -24,14 +25,17 @@ interface Props {
 
 const { entry, sortedPages, headTitle } = Astro.props;
 
-const cleanSlug = getCleanSlug(entry.id);
-const { chapter } = parseDocCollectionId(entry.id);
+const cleanSlug = getCleanSlug(routedId(entry));
+const { chapter } = parseDocCollectionId(routedId(entry));
 const title = docTitle(entry);
 const headings = extractHeadingsFromMarkdown(entry.body || "");
-const navigation = buildDocsNavigation(sortedPages, entry.id, {
+const urls = {
   docsBase: config.docsBase,
   deploymentBase: import.meta.env.BASE_URL,
-});
+  locale: entry.locale,
+  defaultLocale: config.defaultLocale,
+};
+const navigation = buildDocsNavigation(sortedPages, entry.id, urls);
 ---
 
 <DocsLayout
@@ -47,8 +51,18 @@ const navigation = buildDocsNavigation(sortedPages, entry.id, {
     headings={headings}
   />
 
-  <Breadcrumbs slot="breadcrumbs" chapter={chapter} title={title} />
-  <PageActions slot="page-actions" id={entry.id} cleanSlug={cleanSlug} />
+  <Breadcrumbs
+    slot="breadcrumbs"
+    chapter={chapter}
+    title={title}
+    locale={entry.locale}
+  />
+  <PageActions
+    slot="page-actions"
+    id={entry.id}
+    cleanSlug={cleanSlug}
+    locale={entry.locale}
+  />
 
   <Fragment slot="content">
     <MarkdownContent

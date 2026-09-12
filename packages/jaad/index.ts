@@ -27,7 +27,11 @@ export default function jaad(options: JaadUserConfig): AstroIntegration[] {
     ...(options.site
       ? [
           sitemap({
-            filter: createSitemapFilter(config.docsBase, state),
+            filter: createSitemapFilter(
+              config.docsBase,
+              state,
+              config.defaultLocale,
+            ),
           }),
         ]
       : []),

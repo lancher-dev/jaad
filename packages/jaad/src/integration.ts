@@ -11,10 +11,12 @@ import {
   getCleanSlug,
   getDocCollectionId,
   sortDocPages,
+  splitDocLocale,
 } from "./utils/docs.ts";
 import {
   docsPageHref,
   normaliseBasePath,
+  prefixedLocales,
   type DocsUrlOptions,
 } from "./urls.ts";
 
@@ -24,9 +26,15 @@ interface Stylesheets {
   bridge: string;
 }
 
+/** One per locale: each has its own first page, and its own redirect. */
+export interface OpeningPage {
+  locale?: string;
+  slug: string;
+}
+
 export interface IntegrationState {
   deploymentBase: string;
-  openingSlug: string | null;
+  openingPages: OpeningPage[];
   docsFrame: string;
 }
 
@@ -60,10 +68,13 @@ export function shouldInjectNotFound(docsBase: string, srcDir: URL): boolean {
   );
 }
 
-export function findOpeningDocSlug(dir: string): string | null {
-  if (!existsSync(dir)) return null;
+export function findOpeningPages(
+  dir: string,
+  locales: string[] = [],
+): OpeningPage[] {
+  if (!existsSync(dir)) return [];
 
-  const pages: { id: string }[] = [];
+  const pages: { id: string; localeId: string; locale: string | null }[] = [];
   const visit = (current: string) => {
     for (const entry of readdirSync(current, { withFileTypes: true }).sort(
       (a, b) => a.name.localeCompare(b.name),
@@ -71,21 +82,49 @@ export function findOpeningDocSlug(dir: string): string | null {
       const file = join(current, entry.name);
       if (entry.isDirectory()) visit(file);
       else if (entry.isFile() && entry.name.endsWith(".md")) {
-        pages.push({ id: getDocCollectionId(relative(dir, file)) });
+        const id = getDocCollectionId(relative(dir, file));
+        const split = splitDocLocale(id, locales);
+        pages.push({ id, localeId: split.id, locale: split.locale });
       }
     }
   };
 
   visit(dir);
-  const first = sortDocPages(pages)[0];
-  return first ? getCleanSlug(first.id) : null;
+
+  const groups = locales.length > 0 ? locales : [null];
+  return groups.flatMap((locale) => {
+    const first = sortDocPages(
+      pages.filter((page) => page.locale === locale),
+    )[0];
+    if (!first) return [];
+    return [
+      { locale: locale ?? undefined, slug: getCleanSlug(first.localeId) },
+    ];
+  });
 }
 
-export function getInjectedRoutes(docsBase: string): [string, string][] {
+export function getInjectedRoutes(
+  docsBase: string,
+  locales: string[] = [],
+): [string, string][] {
+  // `[...slug]` already absorbs "it/guide" and "it". Only the two fixed
+  // endpoints need a route of their own, and `[locale]` hands them the code.
+  const perLocale: [string, string][] =
+    locales.length > 0
+      ? [
+          [
+            `${docsBase}/[locale]/search-index.json`,
+            "search-index-locale.json.ts",
+          ],
+          [`${docsBase}/[locale]/llms.txt`, "llms-locale.txt.ts"],
+        ]
+      : [];
+
   return [
     [docsBase, "docs-index.astro"],
     [`${docsBase}/search-index.json`, "search-index.json.ts"],
     [`${docsBase}/llms.txt`, "llms.txt.ts"],
+    ...perLocale,
     [`${docsBase}/[...slug]`, "docs-slug.astro"],
     [`${docsBase}/[...slug].md`, "docs-slug.md.ts"],
   ];
@@ -94,7 +133,7 @@ export function getInjectedRoutes(docsBase: string): [string, string][] {
 export function createIntegrationState(base = ""): IntegrationState {
   return {
     deploymentBase: normaliseBasePath(base),
-    openingSlug: null,
+    openingPages: [],
     docsFrame: fileURLToPath(
       new URL("./layouts/DefaultDocsFrame.astro", import.meta.url),
     ),
@@ -137,6 +176,7 @@ export function createCoreIntegration(
 
         for (const [pattern, entrypoint] of getInjectedRoutes(
           config.docsBase,
+          prefixedLocales(config),
         )) {
           injectRoute({
             pattern,
@@ -173,7 +213,10 @@ export function createCoreIntegration(
               "Create it, or point docsDir at your markdown.",
           );
         } else if (discoverOpeningPage) {
-          state.openingSlug = findOpeningDocSlug(docsDirPath);
+          state.openingPages = findOpeningPages(
+            docsDirPath,
+            config.docsLocales.map((locale) => locale.code),
+          );
         }
         addWatchFile(docsDir);
 
@@ -209,18 +252,23 @@ const withoutTrailingSlash = (value: string) =>
 
 export function createSitemapFilter(
   docsBase: string,
-  state: Pick<IntegrationState, "deploymentBase" | "openingSlug">,
+  state: Pick<IntegrationState, "deploymentBase" | "openingPages">,
+  defaultLocale?: string,
 ): (page: string) => boolean {
   return (page) => {
-    if (!state.openingSlug) return true;
-    const urls: DocsUrlOptions = {
-      docsBase,
-      deploymentBase: state.deploymentBase,
-    };
-    const redirectPath = docsPageHref(state.openingSlug, urls);
-    return (
-      withoutTrailingSlash(new URL(page).pathname) !==
-      withoutTrailingSlash(redirectPath)
-    );
+    if (state.openingPages.length === 0) return true;
+
+    const pathname = withoutTrailingSlash(new URL(page).pathname);
+    return !state.openingPages.some((opening) => {
+      const urls: DocsUrlOptions = {
+        docsBase,
+        deploymentBase: state.deploymentBase,
+        locale: opening.locale,
+        defaultLocale,
+      };
+      return (
+        pathname === withoutTrailingSlash(docsPageHref(opening.slug, urls))
+      );
+    });
   };
 }

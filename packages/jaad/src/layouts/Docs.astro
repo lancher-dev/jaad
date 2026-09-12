@@ -6,7 +6,13 @@ import DocsSidebarLeft from "../components/docs/DocsSidebarLeft.astro";
 import TableOfContents from "../components/docs/TableOfContents.astro";
 import StructuredData from "../components/docs/StructuredData.astro";
 import DocsFrame from "virtual:jaad/docs-frame";
-import { docTitle, extractDescription, getCleanSlug } from "../utils/docs.ts";
+import {
+  docTitle,
+  extractDescription,
+  getCleanSlug,
+  routedId,
+} from "../utils/docs.ts";
+import { getLocaleAlternates } from "../collection.ts";
 import type { DocsEntry, DocsHeadings } from "../@types/docs.ts";
 import type { DocsNavigation } from "../navigation.ts";
 import type { DocsFrameProps } from "../advanced.ts";
@@ -42,10 +48,27 @@ const pageDescription =
   config.description ??
   config.title;
 
+const locale = entry?.locale ?? config.defaultLocale;
+const language =
+  config.docsLocales.find((known) => known.code === locale)?.tag ?? config.lang;
+
+const switcherAlternates = await getLocaleAlternates(
+  entry ? getCleanSlug(routedId(entry)) : "",
+);
+
+// hreflang describes translations of this page, not the switcher's fallbacks.
+const alternates = switcherAlternates
+  .filter((alternate) => alternate.translated)
+  .map((alternate) => ({
+    code: alternate.locale.code,
+    tag: alternate.locale.tag,
+    href: alternate.href,
+  }));
+
 const frameProps: DocsFrameProps = {
   page: {
     id: entry?.id ?? "",
-    slug: entry ? getCleanSlug(entry.id) : "",
+    slug: entry ? getCleanSlug(routedId(entry)) : "",
     title: entryTitle,
     chapter,
     data: entry?.data ?? { draft: false, keywords: [] },
@@ -56,10 +79,7 @@ const frameProps: DocsFrameProps = {
 ---
 
 <!doctype html>
-<html
-  lang={config.lang}
-  class={config.appearance === "dark" ? "dark" : undefined}
->
+<html lang={language} class={config.appearance === "dark" ? "dark" : undefined}>
   <head>
     <Head
       title={pageTitle}
@@ -68,6 +88,8 @@ const frameProps: DocsFrameProps = {
       author={entry?.data.author}
       image={entry?.data.ogImage}
       modified={entry?.data.lastUpdated}
+      language={language}
+      {alternates}
     />
     <StructuredData
       title={entryTitle || config.title}
@@ -76,6 +98,7 @@ const frameProps: DocsFrameProps = {
       keywords={entry?.data.keywords}
       author={entry?.data.author}
       modified={entry?.data.lastUpdated}
+      {language}
     />
     <ClientRouter />
   </head>
@@ -84,7 +107,7 @@ const frameProps: DocsFrameProps = {
     class="bg-background text-foreground flex min-h-screen flex-col text-[14px] leading-[1.6]"
   >
     <DocsFrame {...frameProps}>
-      <Header slot="header" inDocs />
+      <Header slot="header" inDocs {locale} alternates={switcherAlternates} />
       <DocsSidebarLeft slot="sidebar" sections={navigation.sections} />
       <slot name="mobile-navigation" slot="mobile-navigation" />
       <slot name="breadcrumbs" slot="breadcrumbs" />

@@ -37,6 +37,10 @@ export interface DocsPageData {
  *  types in the consumer project, so the package states its own contract. */
 export interface DocsEntry {
   id: string;
+  /** Set when the docs are localised; the id without its locale directory. */
+  localeId?: string;
+  /** Set when the docs are localised. */
+  locale?: string;
   body?: string;
   data: DocsPageData;
 }
