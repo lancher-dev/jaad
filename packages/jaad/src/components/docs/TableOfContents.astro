@@ -40,7 +40,9 @@ const { headings } = Astro.props;
 <script>
   function initToc(): void {
     const sidebar = document.getElementById("toc-sidebar");
-    if (!sidebar) return;
+    // astro:page-load also fires on the first load, which would observe twice.
+    if (!sidebar || sidebar.dataset.tocInit) return;
+    sidebar.dataset.tocInit = "1";
 
     const allLinks = Array.from(
       sidebar.querySelectorAll<HTMLAnchorElement>("[data-toc-link]"),
@@ -55,7 +57,9 @@ const { headings } = Astro.props;
     });
 
     if (visibleLinks.length === 0) {
+      // Not `hidden`: .docs-sidebar-right sets display:block, which outranks it.
       sidebar.style.display = "none";
+      sidebar.removeAttribute("data-toc-pending");
       return;
     }
 
@@ -96,7 +100,7 @@ const { headings } = Astro.props;
 
     document.addEventListener(
       "astro:before-preparation",
-      () => headingEls.forEach((el) => observer.unobserve(el)),
+      () => observer.disconnect(),
       { once: true },
     );
   }
