@@ -1,7 +1,9 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { resolve } from "node:path";
 import {
   missingAnswers,
+  normaliseDir,
   packageManager,
   parseArgs,
   quoteArg,
@@ -41,6 +43,29 @@ test("an unknown template names the ones that exist", () => {
 test("--here and a directory are mutually exclusive", () => {
   assert.throws(() => parseArgs(["--here", "x"]), /cannot be used together/);
   assert.throws(() => parseArgs(["a", "b"]), /only one directory/);
+});
+
+// ── The current directory, however it is spelled ─────────────────────────────
+
+// The prompt used to compare against "." alone, so answering "./" aborted with
+// advice to use --here, which is what the answer meant.
+test("every spelling of the current directory becomes --here", () => {
+  for (const dir of [".", "./", ".//", resolve(".")]) {
+    const args = normaliseDir({ dir, here: false });
+    assert.equal(args.here, true, dir);
+    assert.equal(args.dir, null, dir);
+  }
+});
+
+test("a real directory is left alone", () => {
+  const args = normaliseDir({ dir: "my-docs", here: false });
+  assert.equal(args.here, false);
+  assert.equal(args.dir, "my-docs");
+});
+
+test("the flag path normalises the same way", () => {
+  assert.equal(parseArgs(["./"]).here, true);
+  assert.equal(parseArgs(["./"]).dir, null);
 });
 
 // ── Presentation ─────────────────────────────────────────────────────────────

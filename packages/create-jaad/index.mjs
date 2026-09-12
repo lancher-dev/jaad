@@ -10,6 +10,7 @@ import {
   HELP,
   fail,
   missingAnswers,
+  normaliseDir,
   packageManager,
   parseArgs,
   quoteArg,
@@ -281,7 +282,7 @@ async function collectAnswers(args) {
     );
     if (dir === null) return null;
     args.dir = dir;
-    if (args.dir === ".") args.here = true;
+    normaliseDir(args);
   }
 
   const target = resolve(args.here ? "." : args.dir);
