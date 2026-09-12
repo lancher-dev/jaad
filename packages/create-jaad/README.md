@@ -11,6 +11,9 @@ This is the `docs` template: the minimal documentation setup, and the default.
 `--template site` adds a local Astro layout and landing page instead; those
 files belong to the application and do not inherit JAAD's documentation layout.
 
+Either template also writes `AGENTS.md`, a short guide to the project for
+coding agents, with `CLAUDE.md` deferring to it.
+
 ## A repository you already have
 
 ```bash
