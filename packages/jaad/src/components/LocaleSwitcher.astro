@@ -82,17 +82,23 @@ const active = alternates.find((entry) => entry.locale.code === current);
       if (next) this.innerHTML = next.innerHTML;
     };
 
-    connectedCallback() {
-      this.querySelector("[data-trigger]")?.addEventListener("click", () => {
-        this.#menu()?.hidden ? this.#open() : this.#close();
-      });
+    /** Delegated: #onBeforeSwap replaces the button, and the element it is
+     *  bound to has to outlive that. connectedCallback runs once. */
+    #onClick = (event: MouseEvent) => {
+      const target = event.target as Element | null;
+      if (!target?.closest("[data-trigger]")) return;
+      this.#menu()?.hidden ? this.#open() : this.#close();
+    };
 
+    connectedCallback() {
+      this.addEventListener("click", this.#onClick);
       document.addEventListener("pointerdown", this.#onDocumentPointerDown);
       document.addEventListener("keydown", this.#onKeyDown);
       document.addEventListener("astro:before-swap", this.#onBeforeSwap);
     }
 
     disconnectedCallback() {
+      this.removeEventListener("click", this.#onClick);
       document.removeEventListener("pointerdown", this.#onDocumentPointerDown);
       document.removeEventListener("keydown", this.#onKeyDown);
       document.removeEventListener("astro:before-swap", this.#onBeforeSwap);
