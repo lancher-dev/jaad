@@ -1,5 +1,4 @@
 import { getCollection } from "astro:content";
-import config from "virtual:jaad/config";
 import type { DocsEntry } from "./@types/docs.ts";
 import {
   getCleanSlug,
@@ -9,26 +8,32 @@ import {
   validateDocsStructure,
 } from "./utils/docs.ts";
 import { docsPageHref } from "./urls.ts";
+import {
+  DEFAULT_LOCALE,
+  LOCALES,
+  docsUrls,
+  prefixedCodes,
+} from "./docs-config.ts";
 import type { Locale } from "./locales.ts";
 
 const cached = new Map<string, DocsEntry[]>();
 
-const LOCALES = config.docsLocales.map((locale) => locale.code);
+const CODES = LOCALES.map((locale) => locale.code);
 
 /** Attaches the locale and the id routing reads, leaving `id` the real
  *  collection id: the edit link points at the file on disk. */
 function localise(page: DocsEntry): DocsEntry {
-  if (LOCALES.length === 0) return page;
-  const split = splitDocLocale(page.id, LOCALES);
+  if (CODES.length === 0) return page;
+  const split = splitDocLocale(page.id, CODES);
   return { ...page, locale: split.locale ?? undefined, localeId: split.id };
 }
 
 /** The pages of one locale, or every page when the docs are not localised.
  *  Cached in production only: in dev the module would go stale on edit. */
 export async function getSortedDocsPages(
-  locale: string = config.defaultLocale,
+  locale: string = DEFAULT_LOCALE,
 ): Promise<DocsEntry[]> {
-  const key = LOCALES.length > 0 ? locale : "";
+  const key = CODES.length > 0 ? locale : "";
   if (import.meta.env.PROD && cached.has(key)) return cached.get(key)!;
 
   const pages = ((await getCollection("docsPages")) as unknown as DocsEntry[])
@@ -58,8 +63,11 @@ export async function getLocaleAlternates(
 ): Promise<LocaleAlternate[]> {
   const alternates: LocaleAlternate[] = [];
 
-  for (const locale of config.docsLocales) {
+  for (const locale of LOCALES) {
     const pages = await getSortedDocsPages(locale.code);
+    // Every page drafted leaves a locale with nothing to link to.
+    if (pages.length === 0) continue;
+
     const index = slug
       ? pages.findIndex((page) => getCleanSlug(routedId(page)) === slug)
       : 0;
@@ -70,15 +78,22 @@ export async function getLocaleAlternates(
       translated: Boolean(match),
       href: docsPageHref(
         match && index > 0 ? getCleanSlug(routedId(match)) : "",
-        {
-          docsBase: config.docsBase,
-          deploymentBase: import.meta.env.BASE_URL,
-          locale: locale.code,
-          defaultLocale: config.defaultLocale,
-        },
+        docsUrls(locale.code),
       ),
     });
   }
 
   return alternates;
+}
+
+/** The prefixed locales that have something to serve. */
+export async function getServedLocales(): Promise<string[]> {
+  const served: string[] = [];
+
+  for (const code of prefixedCodes()) {
+    const pages = await getSortedDocsPages(code);
+    if (pages.length > 0) served.push(code);
+  }
+
+  return served;
 }

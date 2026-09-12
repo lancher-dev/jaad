@@ -1,10 +1,9 @@
 import type { APIRoute, GetStaticPaths } from "astro";
-import config from "virtual:jaad/config";
+import { getServedLocales } from "../collection.ts";
 import { llmsResponse } from "../utils/endpoints.ts";
-import { prefixedLocales } from "../urls.ts";
 
-export const getStaticPaths: GetStaticPaths = () =>
-  prefixedLocales(config).map((locale) => ({ params: { locale } }));
+export const getStaticPaths: GetStaticPaths = async () =>
+  (await getServedLocales()).map((locale) => ({ params: { locale } }));
 
 export const GET: APIRoute = ({ site, params }) =>
   llmsResponse(site, params.locale);

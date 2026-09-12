@@ -231,7 +231,7 @@ function resolveLocales(config: JaadConfig, cwd: string): string[] {
   if (config.locales === false) return [];
 
   const docsDir = join(cwd, config.docsDir);
-  const locales = config.locales ?? detectLocales(docsDir);
+  const locales = config.locales ?? detectLocales(docsDir, config.lang);
   if (locales.length === 0) return [];
 
   validateLocaleTree(docsDir, locales, config.lang);

@@ -1,4 +1,5 @@
 import { existsSync, readdirSync } from "node:fs";
+import { join } from "node:path";
 import { ucfirst } from "./utils/helpers.ts";
 
 /** ISO 639-1. A three-letter directory such as `api` is never a locale. */
@@ -161,17 +162,32 @@ export function describeLocale(code: string): Locale {
   return { code, tag, name: localeName(tag), flag: localeFlag(code) };
 }
 
-/** Locale directories under docs/, or none. Two is the threshold: a lone
- *  `docs/it/` is a chapter, which is what an "IT" section relies on. */
-export function detectLocales(docsDir: string): string[] {
+function hasMarkdown(dir: string): boolean {
+  return readdirSync(dir, { withFileTypes: true }).some((entry) =>
+    entry.isDirectory()
+      ? hasMarkdown(join(dir, entry.name))
+      : entry.name.endsWith(".md"),
+  );
+}
+
+/** Locale directories under docs/, or none. Two of them mean the tree is
+ *  organised by language; one counts only when `lang` names it, so a lone
+ *  `docs/it/` stays the chapter an "IT" section needs. */
+export function detectLocales(docsDir: string, lang: string): string[] {
   if (!existsSync(docsDir)) return [];
 
-  const locales = readdirSync(docsDir, { withFileTypes: true })
+  const candidates = readdirSync(docsDir, { withFileTypes: true })
     .filter((entry) => entry.isDirectory() && isLocale(entry.name))
     .map((entry) => entry.name.toLowerCase())
     .sort();
 
-  return locales.length >= 2 ? locales : [];
+  const localised =
+    candidates.length >= 2 ||
+    (candidates.length === 1 && candidates[0] === lang.toLowerCase());
+  if (!localised) return [];
+
+  // An empty directory would be advertised in the switcher and then 404.
+  return candidates.filter((code) => hasMarkdown(join(docsDir, code)));
 }
 
 /** Once localised, every top-level entry is a locale and `lang` names one. */
