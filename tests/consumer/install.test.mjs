@@ -105,6 +105,8 @@ export default defineJaadConfig({
     rmSync(docs, { recursive: true });
     mkdirSync(join(docs, "en", "02-guides"), { recursive: true });
     mkdirSync(join(docs, "it"), { recursive: true });
+    // Created but never written: it must not reach the switcher or the routes.
+    mkdirSync(join(docs, "fr"), { recursive: true });
     writeFileSync(
       join(docs, "en", "01-getting-started.md"),
       "---\ntitle: Getting Started\n---\n\n# Getting Started\n\nEnglish.\n",
@@ -212,6 +214,11 @@ export default defineJaadConfig({
       "an untranslated page was built anyway",
     );
 
+    assert.ok(
+      !localised.files.some((file) => file.startsWith("/fr")),
+      "an empty locale directory was built anyway",
+    );
+
     const italian = JSON.parse(localised.read("it/search-index.json"));
     assert.deepEqual(
       italian.map((entry) => entry.slug),
@@ -247,6 +254,11 @@ export default defineJaadConfig({
     const deepDive = localised.read("guides/deep-dive/index.html");
     assert.match(deepDive, /<jaad-locale-switcher/);
     assert.match(deepDive, /Italiano/);
+    assert.doesNotMatch(
+      deepDive,
+      /hreflang="fr"/,
+      "an empty locale was offered",
+    );
     // No Italian deep dive, so Italian lands on the Italian opening page.
     assert.match(deepDive, /<a href="\/it" hreflang="it"/);
   });
