@@ -385,8 +385,14 @@ function scaffold(request) {
     existsSync(join(target, "public", name)),
   );
 
-  const root = templateRoot(template);
-  for (const relative of templateFiles(root)) {
+  // The shared layer first; a template that repeats a file wins over it.
+  const roots = [templateRoot("_shared"), templateRoot(template)];
+  const sources = new Map();
+  for (const root of roots) {
+    for (const relative of templateFiles(root)) sources.set(relative, root);
+  }
+
+  for (const [relative, root] of sources) {
     if (relative === "jaad.config.ts" && existing.jaadConfig) {
       skipped.push(existing.jaadConfig);
       continue;
