@@ -16,13 +16,8 @@ import {
   type RepoInfo,
 } from "./infer.ts";
 import { PRESETS, PRESET_NAMES, isPreset } from "./themes/index.ts";
-import {
-  describeLocale,
-  detectLocales,
-  isLocale,
-  validateLocaleTree,
-  type Locale,
-} from "./locales.ts";
+import { describeLocale, isLocale, type Locale } from "./locales.ts";
+import { detectLocales, validateLocaleTree } from "./locale-tree.ts";
 import { normaliseBasePath } from "./urls.ts";
 
 export const jaadConfigSchema = z.object({

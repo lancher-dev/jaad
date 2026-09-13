@@ -5,11 +5,16 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
   describeLocale,
-  detectLocales,
   isLocale,
   localeTag,
-  validateLocaleTree,
+  localePrefix,
+  prefixedLocales,
+  routedLocales,
 } from "../../packages/jaad/src/locales.ts";
+import {
+  detectLocales,
+  validateLocaleTree,
+} from "../../packages/jaad/src/locale-tree.ts";
 
 function docsTree(entries: string[]): string {
   const dir = mkdtempSync(join(tmpdir(), "jaad-locales-"));
@@ -211,4 +216,25 @@ test("a localised tree with a matching lang passes", () => {
   } finally {
     rmSync(dir, { recursive: true });
   }
+});
+
+// ── The one place the default locale's missing prefix is decided ─────────────
+
+const locale = (code: string) => ({ code, tag: code, name: code, flag: null });
+
+test("the default locale carries no prefix and the others do", () => {
+  assert.equal(localePrefix("en", "en"), "");
+  assert.equal(localePrefix("it", "en"), "it/");
+  assert.equal(localePrefix(undefined, "en"), "");
+});
+
+test("only the prefixed locales get a route of their own", () => {
+  assert.deepEqual(prefixedLocales([locale("en"), locale("it")], "en"), ["it"]);
+  assert.deepEqual(prefixedLocales([], "en"), []);
+});
+
+// An unlocalised site still has to be built once.
+test("a site with no locales is built in a single unlocalised pass", () => {
+  assert.deepEqual(routedLocales([]), [undefined]);
+  assert.deepEqual(routedLocales([locale("en"), locale("it")]), ["en", "it"]);
 });

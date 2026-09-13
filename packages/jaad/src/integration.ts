@@ -16,9 +16,9 @@ import {
 import {
   docsPageHref,
   normaliseBasePath,
-  prefixedLocales,
   type DocsUrlOptions,
 } from "./urls.ts";
+import { prefixedLocales } from "./locales.ts";
 
 interface Stylesheets {
   user: string | null;
@@ -204,7 +204,7 @@ export function createCoreIntegration(
 
         for (const [pattern, entrypoint] of getInjectedRoutes(
           config.docsBase,
-          prefixedLocales(config),
+          prefixedLocales(config.docsLocales, config.defaultLocale),
         )) {
           injectRoute({
             pattern,
