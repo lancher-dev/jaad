@@ -3,10 +3,9 @@ import type { Locale } from "./locales.ts";
 import type { DocsUrlOptions } from "./urls.ts";
 import * as locales from "./locales.ts";
 
-/** The virtual config arrives serialised, so it is read once and typed here
- *  rather than dotted into from every component. */
-export const LOCALES: Locale[] = config.docsLocales ?? [];
-export const DEFAULT_LOCALE: string = config.defaultLocale ?? config.lang;
+/** The virtual config, read once and typed here. */
+export const LOCALES: Locale[] = config.docsLocales;
+export const DEFAULT_LOCALE: string = config.defaultLocale;
 
 /** The four fields every href builder takes, in one place. */
 export function docsUrls(locale?: string): DocsUrlOptions {

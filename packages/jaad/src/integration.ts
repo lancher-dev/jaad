@@ -158,9 +158,9 @@ export function getInjectedRoutes(
   ];
 }
 
-export function createIntegrationState(base = ""): IntegrationState {
+export function createIntegrationState(): IntegrationState {
   return {
-    deploymentBase: normaliseBasePath(base),
+    deploymentBase: "",
     openingPages: [],
     docsFrame: fileURLToPath(
       new URL("./layouts/DefaultDocsFrame.astro", import.meta.url),

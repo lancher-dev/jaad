@@ -18,7 +18,7 @@ import {
 export default function jaad(options: JaadUserConfig): AstroIntegration[] {
   const config = resolveConfig(options);
   const css = resolveStylesheets(config);
-  const state = createIntegrationState(options.base);
+  const state = createIntegrationState();
   const core = createCoreIntegration(config, css, state, Boolean(options.site));
 
   // Without `site` the sitemap integration can only warn and skip.
