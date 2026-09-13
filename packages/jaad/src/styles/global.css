@@ -165,6 +165,19 @@
   .jaad-sidebar {
     width: var(--jaad-sidebar-width);
   }
+
+  /* The header controls sit in one row and have to stay identical. */
+  .jaad-icon-button {
+    @apply text-foreground-secondary hover:text-foreground-bright flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg transition-colors;
+  }
+
+  .jaad-menu {
+    @apply bg-surface border-border absolute top-full right-0 z-40 mt-2 w-44 overflow-hidden rounded-xl border shadow-lg;
+  }
+
+  .jaad-menu-item {
+    @apply text-foreground-secondary hover:text-foreground-bright hover:bg-primary/5 block rounded-lg px-3 py-2 text-sm no-underline transition-colors;
+  }
 }
 
 /* Dark mode */

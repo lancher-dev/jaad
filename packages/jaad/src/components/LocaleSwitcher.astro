@@ -17,7 +17,7 @@ const active = alternates.find((entry) => entry.locale.code === current);
     aria-expanded="false"
     aria-label="Change language"
     title="Change language"
-    class="text-foreground-secondary hover:text-foreground-bright flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-lg px-2 transition-colors"
+    class="jaad-icon-button w-auto gap-1.5 px-2"
   >
     {
       active?.locale.flag && (
@@ -40,11 +40,7 @@ const active = alternates.find((entry) => entry.locale.code === current);
     </svg>
   </button>
 
-  <div
-    data-menu
-    hidden
-    class="bg-surface border-border absolute top-full right-0 z-40 mt-2 w-44 overflow-hidden rounded-xl border p-1 shadow-lg"
-  >
+  <div data-menu hidden class="jaad-menu p-1">
     {
       alternates.map((entry) => (
         <a
@@ -52,7 +48,7 @@ const active = alternates.find((entry) => entry.locale.code === current);
           hreflang={entry.locale.tag}
           lang={entry.locale.tag}
           aria-current={entry.locale.code === current ? "true" : undefined}
-          class="text-foreground-secondary hover:text-foreground-bright hover:bg-primary/5 flex items-center gap-2 rounded-lg px-3 py-2 text-sm no-underline transition-colors aria-[current]:font-semibold"
+          class="jaad-menu-item flex items-center gap-2 aria-[current]:font-semibold"
         >
           {entry.locale.flag && (
             <span aria-hidden="true">{entry.locale.flag}</span>
