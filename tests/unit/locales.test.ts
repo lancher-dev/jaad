@@ -5,11 +5,17 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
   describeLocale,
-  detectLocales,
   isLocale,
   localeTag,
-  validateLocaleTree,
+  openGraphLocale,
+  localePrefix,
+  prefixedLocales,
+  routedLocales,
 } from "../../packages/jaad/src/locales.ts";
+import {
+  detectLocales,
+  validateLocaleTree,
+} from "../../packages/jaad/src/locale-tree.ts";
 
 function docsTree(entries: string[]): string {
   const dir = mkdtempSync(join(tmpdir(), "jaad-locales-"));
@@ -88,23 +94,15 @@ test("markdown anywhere inside the directory counts", () => {
   }
 });
 
-// An advertised locale with nothing in it is a link to a 404.
-test("an empty locale directory is not a locale", () => {
-  const dir = docsTree(["en/01-intro.md", "it"]);
-  try {
-    assert.deepEqual(detectLocales(dir, "en"), ["en"]);
-  } finally {
-    rmSync(dir, { recursive: true });
-  }
-});
-
 // The tree stays localised, so en/ keeps being stripped and no url moves.
 test("one locale left with content still owns the unprefixed urls", () => {
   const dir = docsTree(["en/01-intro.md", "it"]);
   try {
     const locales = detectLocales(dir, "en");
     assert.deepEqual(locales, ["en"]);
-    assert.doesNotThrow(() => validateLocaleTree(dir, locales, "en"));
+    assert.doesNotThrow(() => {
+      validateLocaleTree(dir, locales, "en");
+    });
   } finally {
     rmSync(dir, { recursive: true });
   }
@@ -113,10 +111,9 @@ test("one locale left with content still owns the unprefixed urls", () => {
 test("lang naming a locale that has no pages is reported", () => {
   const dir = docsTree(["en/01-intro.md", "it"]);
   try {
-    assert.throws(
-      () => validateLocaleTree(dir, detectLocales(dir, "en"), "it"),
-      /lang is "it", which has no directory; found en/,
-    );
+    assert.throws(() => {
+      validateLocaleTree(dir, detectLocales(dir, "en"), "it");
+    }, /lang is "it", which has no directory; found en/);
   } finally {
     rmSync(dir, { recursive: true });
   }
@@ -168,7 +165,9 @@ test("a stray directory beside locales stops the build and is named", () => {
   const dir = docsTree(["en/01-a.md", "it/01-a.md", "guides"]);
   try {
     assert.throws(
-      () => validateLocaleTree(dir, ["en", "it"], "en"),
+      () => {
+        validateLocaleTree(dir, ["en", "it"], "en");
+      },
       (error: Error) => {
         assert.match(error.message, /docs\/guides is not a locale/);
         assert.match(error.message, /en, it/);
@@ -183,10 +182,9 @@ test("a stray directory beside locales stops the build and is named", () => {
 test("a page left outside the locale directories is reported too", () => {
   const dir = docsTree(["en/01-a.md", "it/01-a.md", "01-orphan.md"]);
   try {
-    assert.throws(
-      () => validateLocaleTree(dir, ["en", "it"], "en"),
-      /01-orphan\.md is not a locale/,
-    );
+    assert.throws(() => {
+      validateLocaleTree(dir, ["en", "it"], "en");
+    }, /01-orphan\.md is not a locale/);
   } finally {
     rmSync(dir, { recursive: true });
   }
@@ -195,10 +193,9 @@ test("a page left outside the locale directories is reported too", () => {
 test("lang has to name one of the directories", () => {
   const dir = docsTree(["it/01-a.md", "fr/01-a.md"]);
   try {
-    assert.throws(
-      () => validateLocaleTree(dir, ["fr", "it"], "en"),
-      /lang is "en", which has no directory; found fr, it/,
-    );
+    assert.throws(() => {
+      validateLocaleTree(dir, ["fr", "it"], "en");
+    }, /lang is "en", which has no directory; found fr, it/);
   } finally {
     rmSync(dir, { recursive: true });
   }
@@ -207,8 +204,48 @@ test("lang has to name one of the directories", () => {
 test("a localised tree with a matching lang passes", () => {
   const dir = docsTree(["en/01-a.md", "it/01-a.md"]);
   try {
-    assert.doesNotThrow(() => validateLocaleTree(dir, ["en", "it"], "en"));
+    assert.doesNotThrow(() => {
+      validateLocaleTree(dir, ["en", "it"], "en");
+    });
   } finally {
     rmSync(dir, { recursive: true });
   }
+});
+
+// ── The one place the default locale's missing prefix is decided ─────────────
+
+const locale = (code: string) => ({ code, tag: code, name: code, flag: null });
+
+test("the default locale carries no prefix and the others do", () => {
+  assert.equal(localePrefix("en", "en"), "");
+  assert.equal(localePrefix("it", "en"), "it/");
+  assert.equal(localePrefix(undefined, "en"), "");
+});
+
+test("only the prefixed locales get a route of their own", () => {
+  assert.deepEqual(prefixedLocales([locale("en"), locale("it")], "en"), ["it"]);
+  assert.deepEqual(prefixedLocales([], "en"), []);
+});
+
+// An unlocalised site still has to be built once.
+test("a site with no locales is built in a single unlocalised pass", () => {
+  assert.deepEqual(routedLocales([]), [undefined]);
+  assert.deepEqual(routedLocales([locale("en"), locale("it")]), ["en", "it"]);
+});
+
+// ── Open Graph ───────────────────────────────────────────────────────────────
+
+// og:locale is language_TERRITORY, not a BCP-47 tag: "it" alone is invalid.
+test("an open graph locale carries a territory", () => {
+  assert.equal(openGraphLocale("it"), "it_IT");
+  assert.equal(openGraphLocale("en"), "en_GB");
+});
+
+test("a code that names its own region keeps it", () => {
+  assert.equal(openGraphLocale("pt-br"), "pt_BR");
+  assert.equal(openGraphLocale("en-us"), "en_US");
+});
+
+test("a language with no listed region stays bare rather than invented", () => {
+  assert.equal(openGraphLocale("aa"), "aa");
 });

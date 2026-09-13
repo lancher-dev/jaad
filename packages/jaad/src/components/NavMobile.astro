@@ -9,9 +9,11 @@ const links = config.nav;
   links.length > 0 && (
     <jaad-nav-mobile class="relative md:hidden">
       <button
-        class="text-foreground-secondary hover:text-foreground-bright flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg transition-colors"
+        class="jaad-icon-button"
         aria-label="Toggle mobile menu"
         aria-expanded="false"
+        aria-haspopup="true"
+        aria-controls="jaad-nav-menu"
       >
         <svg
           class="h-5 w-5"
@@ -37,18 +39,14 @@ const links = config.nav;
         </svg>
       </button>
 
-      <div
-        data-menu
-        hidden
-        class="bg-surface border-border absolute top-full right-0 z-40 mt-2 w-44 overflow-hidden rounded-xl border shadow-lg"
-      >
+      <div id="jaad-nav-menu" data-menu hidden class="jaad-menu">
         <nav class="p-2">
           <ul class="flex flex-col gap-1">
             {links.map((link) => (
               <li>
                 <a
                   href={withDeploymentBase(link.href, import.meta.env.BASE_URL)}
-                  class="text-foreground-secondary hover:text-foreground-bright hover:bg-primary/5 block rounded-lg px-3 py-2 text-sm no-underline transition-colors"
+                  class="jaad-menu-item"
                   {...(link.href.startsWith("http")
                     ? { target: "_blank", rel: "noopener noreferrer" }
                     : {})}

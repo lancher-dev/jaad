@@ -29,7 +29,7 @@ export default defineConfig([
   // information. astro check already covers what tsc alone can see.
   {
     files: ["**/*.ts"],
-    extends: [tseslint.configs.recommendedTypeChecked],
+    extends: [tseslint.configs.strictTypeChecked],
     languageOptions: {
       parserOptions: {
         projectService: true,

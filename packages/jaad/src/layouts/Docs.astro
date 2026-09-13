@@ -57,6 +57,12 @@ const switcherAlternates = await getLocaleAlternates(
   entry ? getCleanSlug(routedId(entry)) : "",
 );
 
+// x-default is a landing place, so it takes the fallback when this page has no
+// translation into the default locale.
+const xDefault = switcherAlternates.find(
+  (alternate) => alternate.locale.code === DEFAULT_LOCALE,
+)?.href;
+
 // hreflang describes translations of this page, not the switcher's fallbacks.
 const alternates = switcherAlternates
   .filter((alternate) => alternate.translated)
@@ -91,6 +97,7 @@ const frameProps: DocsFrameProps = {
       modified={entry?.data.lastUpdated}
       language={language}
       {alternates}
+      {xDefault}
     />
     <StructuredData
       title={entryTitle || config.title}
@@ -100,6 +107,7 @@ const frameProps: DocsFrameProps = {
       author={entry?.data.author}
       modified={entry?.data.lastUpdated}
       {language}
+      {locale}
     />
     <ClientRouter />
   </head>
@@ -122,7 +130,7 @@ const frameProps: DocsFrameProps = {
     <script>
       import { navigate } from "astro:transitions/client";
 
-      /** Prev/next are identified by their `rel`, not by their icon markup. */
+      /** Identified by `rel`. */
       function getPageLinks(): {
         prev: HTMLAnchorElement | null;
         next: HTMLAnchorElement | null;
@@ -169,7 +177,7 @@ const frameProps: DocsFrameProps = {
         navigate(target.href);
       }
 
-      // This module runs once and `document` survives View Transitions.
+      // `document` survives View Transitions, and this module runs once.
       document.addEventListener("keydown", onKey);
     </script>
   </body>

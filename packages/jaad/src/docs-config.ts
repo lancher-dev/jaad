@@ -1,11 +1,11 @@
 import config from "virtual:jaad/config";
 import type { Locale } from "./locales.ts";
-import { prefixedLocales, routedLocales, type DocsUrlOptions } from "./urls.ts";
+import type { DocsUrlOptions } from "./urls.ts";
+import * as locales from "./locales.ts";
 
-/** The virtual config arrives serialised, so it is read once and typed here
- *  rather than dotted into from every component. */
-export const LOCALES: Locale[] = config.docsLocales ?? [];
-export const DEFAULT_LOCALE: string = config.defaultLocale ?? config.lang;
+/** The virtual config, read once. */
+export const LOCALES: Locale[] = config.docsLocales;
+export const DEFAULT_LOCALE: string = config.defaultLocale;
 
 /** The four fields every href builder takes, in one place. */
 export function docsUrls(locale?: string): DocsUrlOptions {
@@ -17,20 +17,10 @@ export function docsUrls(locale?: string): DocsUrlOptions {
   };
 }
 
-/** What a generated slug carries, empty for the locale that owns the root. */
-export function localePrefix(locale?: string): string {
-  return locale && locale !== DEFAULT_LOCALE ? `${locale}/` : "";
-}
+export const localePrefix = (locale?: string) =>
+  locales.localePrefix(locale, DEFAULT_LOCALE);
 
-/** What to iterate when building: every locale, or one unlocalised pass. */
-export function buildLocales(): (string | undefined)[] {
-  return routedLocales({ docsLocales: LOCALES });
-}
+export const buildLocales = () => locales.routedLocales(LOCALES);
 
-/** The locale codes whose urls carry a prefix. */
-export function prefixedCodes(): string[] {
-  return prefixedLocales({
-    docsLocales: LOCALES,
-    defaultLocale: DEFAULT_LOCALE,
-  });
-}
+export const prefixedCodes = () =>
+  locales.prefixedLocales(LOCALES, DEFAULT_LOCALE);

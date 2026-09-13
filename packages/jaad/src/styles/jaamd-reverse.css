@@ -1,10 +1,7 @@
-/* JAAMD's palette drives JAAD's. Used when a JAAMD preset supplies the colours —
-   the opposite direction to jaamd-forward.css, and never both at once: together
-   they would be a cycle, and CSS drops both sides of one.
+/* JAAMD's palette drives JAAD's, the opposite direction to jaamd-forward.css.
+   Never both at once: together they are a cycle, and CSS drops both sides.
 
-   Only the seeds: global.css derives borders, surfaces and muted text from them
-   with color-mix(). `:root, html.dark` matches the specificity global.css uses,
-   and this sheet is loaded after it. */
+   Only the seeds; global.css derives the rest with color-mix(). */
 
 :root,
 html.dark {

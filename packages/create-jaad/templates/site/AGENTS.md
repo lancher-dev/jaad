@@ -37,7 +37,8 @@ options apply to documentation pages only. `routeBase: "/docs"` in
 
 - A numeric prefix sets the order and is stripped from the URL:
   `02-guide.md` becomes `/docs/guide`.
-- A folder becomes a chapter. Only one level of nesting is supported.
+- A folder becomes a chapter. Only one level of nesting is supported,
+  per language.
 - The first `# Heading` is the page title; `##` and `###` build the table of
   contents.
 - The first page in sort order opens at `/docs`, and its named URL redirects
@@ -54,10 +55,21 @@ title: Images & Videos # page title; the filename still sets the URL
 label: Media # shorter name, in navigation only
 description: Add accessible images. # description metadata
 keywords: [markdown, media] # keyword metadata and search weight
+author: Ada Lovelace # author metadata
+ogImage: /og/media.png # social image for this page
+lastUpdated: 2026-09-12 # modification date in metadata
 order: 5 # replaces the number in the filename
 draft: false # true keeps it out of the build
 ---
 ```
+
+## More than one language
+
+Name the directories directly under `docs/` after language codes — `docs/en/`,
+`docs/it/` — and JAAD builds one site per language with a switcher in the
+header. `lang` in `jaad.config.ts` names the one that keeps the unprefixed
+urls. Two directories are the threshold; a single one counts only when `lang`
+names it.
 
 ## Changing the site
 
@@ -76,6 +88,9 @@ Consult these guides before working on related tasks:
 - [Structure and navigation](https://jaad.lancher.dev/docs/configurations/structure)
 - [Frontmatter](https://jaad.lancher.dev/docs/configurations/frontmatter)
 - [Markdown features](https://jaad.lancher.dev/docs/markdown)
+- [Languages](https://jaad.lancher.dev/docs/configurations/i18n)
+- [Search](https://jaad.lancher.dev/docs/configurations/search)
+- [Fonts](https://jaad.lancher.dev/docs/configurations/fonts)
 - [Configuration reference](https://jaad.lancher.dev/docs/configurations/reference)
 - [Styles](https://jaad.lancher.dev/docs/configurations/styles) and [themes](https://jaad.lancher.dev/docs/configurations/themes)
 - [Pages of your own](https://jaad.lancher.dev/docs/configurations/custom-pages)

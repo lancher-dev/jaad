@@ -1,5 +1,3 @@
-import { existsSync, readdirSync } from "node:fs";
-import { join } from "node:path";
 import { ucfirst } from "./utils/helpers.ts";
 
 /** ISO 639-1. A three-letter directory such as `api` is never a locale. */
@@ -16,8 +14,7 @@ const LANGUAGES = new Set(
   ).split(" "),
 );
 
-/** Region for a language that does not name one. Listed, never guessed: `aa`
- *  uppercased is not a country and would render an empty box. */
+/** Region for a language that does not name one. Listed, never derived. */
 const LANGUAGE_REGION: Record<string, string> = {
   af: "ZA",
   am: "ET",
@@ -150,11 +147,25 @@ function localeName(tag: string): string {
 function localeFlag(code: string): string | null {
   const match = LOCALE_RE.exec(code.toLowerCase());
   if (!match) return null;
+  // A group that did not participate is undefined, whatever the type says.
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   const region = match[3]?.toUpperCase() ?? LANGUAGE_REGION[match[1]];
   if (!region) return null;
   return String.fromCodePoint(
-    ...[...region].map((letter) => 0x1f1e6 + letter.charCodeAt(0) - 65),
+    ...Array.from(region, (letter) => 0x1f1e6 + letter.charCodeAt(0) - 65),
   );
+}
+
+/** Open Graph wants language_TERRITORY, not a BCP-47 tag. The territory comes
+ *  from the code when it names one, and from LANGUAGE_REGION otherwise. */
+export function openGraphLocale(code: string): string {
+  const match = LOCALE_RE.exec(code.toLowerCase());
+  if (!match) return code;
+
+  const language = match[1];
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  const region = match[3]?.toUpperCase() ?? LANGUAGE_REGION[language];
+  return region ? `${language}_${region}` : language;
 }
 
 export function describeLocale(code: string): Locale {
@@ -162,61 +173,28 @@ export function describeLocale(code: string): Locale {
   return { code, tag, name: localeName(tag), flag: localeFlag(code) };
 }
 
-function hasMarkdown(dir: string): boolean {
-  return readdirSync(dir, { withFileTypes: true }).some((entry) =>
-    entry.isDirectory()
-      ? hasMarkdown(join(dir, entry.name))
-      : entry.name.endsWith(".md"),
-  );
+/** Empty for the locale that owns the unprefixed urls. */
+export function localeSegment(locale?: string, defaultLocale?: string): string {
+  return !locale || locale === defaultLocale ? "" : locale;
 }
 
-/** Locale directories under docs/, or none. Two of them mean the tree is
- *  organised by language; one counts only when `lang` names it, so a lone
- *  `docs/it/` stays the chapter an "IT" section needs. */
-export function detectLocales(docsDir: string, lang: string): string[] {
-  if (!existsSync(docsDir)) return [];
-
-  const candidates = readdirSync(docsDir, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory() && isLocale(entry.name))
-    .map((entry) => entry.name.toLowerCase())
-    .sort();
-
-  const localised =
-    candidates.length >= 2 ||
-    (candidates.length === 1 && candidates[0] === lang.toLowerCase());
-  if (!localised) return [];
-
-  // An empty directory would be advertised in the switcher and then 404.
-  return candidates.filter((code) => hasMarkdown(join(docsDir, code)));
+/** The segment a generated slug carries, with its separator. */
+export function localePrefix(locale?: string, defaultLocale?: string): string {
+  const segment = localeSegment(locale, defaultLocale);
+  return segment ? `${segment}/` : "";
 }
 
-/** Once localised, every top-level entry is a locale and `lang` names one. */
-export function validateLocaleTree(
-  docsDir: string,
-  locales: string[],
-  lang: string,
-): void {
-  const issues: string[] = [];
+/** What to iterate when building: every locale, or one unlocalised pass. */
+export function routedLocales(locales: Locale[]): (string | undefined)[] {
+  return locales.length > 0 ? locales.map((l) => l.code) : [undefined];
+}
 
-  const strays = readdirSync(docsDir, { withFileTypes: true })
-    .filter((entry) => !(entry.isDirectory() && isLocale(entry.name)))
-    .map((entry) => entry.name)
-    .sort();
-
-  for (const stray of strays) {
-    issues.push(`docs/${stray} is not a locale, but ${locales.join(", ")} are`);
-  }
-
-  if (!locales.includes(lang.toLowerCase())) {
-    issues.push(
-      `lang is "${lang}", which has no directory; found ${locales.join(", ")}`,
-    );
-  }
-
-  if (issues.length > 0) {
-    throw new Error(
-      `jaad: mixed documentation tree\n${issues.map((issue) => `  ${issue}`).join("\n")}\n` +
-        "Move every page under a locale directory, or set locales: false.",
-    );
-  }
+/** The locale codes whose urls carry a prefix. */
+export function prefixedLocales(
+  locales: Locale[],
+  defaultLocale: string,
+): string[] {
+  return locales
+    .map((locale) => locale.code)
+    .filter((code) => localeSegment(code, defaultLocale) !== "");
 }

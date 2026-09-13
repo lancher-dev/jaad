@@ -21,9 +21,7 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "..", "..");
 const PKG = join(ROOT, "packages", "jaad");
 
-/**
- * Captures the contents of a directory for later assertion.
- */
+/** A built directory, frozen so the later rebuilds can be compared to it. */
 function snapshot(dist) {
   const files = walk(dist);
   const contents = new Map(
@@ -42,6 +40,19 @@ function snapshot(dist) {
       .filter(([f]) => f.endsWith(".css") || f.endsWith(".html"))
       .map(([, body]) => body)
       .join("\n"),
+    /** Only the stylesheets one page links, so a layout's set is testable. */
+    cssOf: (relative) => {
+      const html = contents.get("/" + relative);
+      assert.ok(html !== undefined, `${relative} was not built`);
+      const linked = [
+        ...html.matchAll(/<link rel="stylesheet" href="([^"]+)"/g),
+        // The href carries Astro's base; dist keys do not.
+      ].map((m) => contents.get(m[1].slice(m[1].indexOf("/_astro/"))) ?? "");
+      const inline = [...html.matchAll(/<style>([\s\S]*?)<\/style>/g)].map(
+        (m) => m[1],
+      );
+      return [...linked, ...inline].join("\n");
+    },
   };
 }
 
@@ -94,6 +105,7 @@ export default defineJaadConfig({
   routeBase: "/docs",
   logo: "/logo.svg",
   appearance: "dark",
+  theme: "dracula",
 });
 `,
     );
@@ -113,11 +125,25 @@ export default defineJaadConfig({
     );
     writeFileSync(
       join(docs, "en", "02-guides", "01-deep-dive.md"),
-      "# Deep Dive\n\nOnly in English.\n",
+      "# Deep Dive\n\nTranslated.\n",
+    );
+    writeFileSync(
+      join(docs, "en", "02-guides", "02-only-in-english.md"),
+      "# Only In English\n\nNo Italian counterpart.\n",
     );
     writeFileSync(
       join(docs, "it", "01-per-iniziare.md"),
       "---\ntitle: Per iniziare\n---\n\n# Per iniziare\n\nItaliano.\n",
+    );
+    // A matching slug is what makes two files translations of each other.
+    mkdirSync(join(docs, "it", "02-guides"), { recursive: true });
+    writeFileSync(
+      join(docs, "it", "02-guides", "01-deep-dive.md"),
+      "# Analisi\n\nItalian twin of the English page.\n",
+    );
+    writeFileSync(
+      join(docs, "it", "02-guides", "02-solo-italiano.md"),
+      "# Solo italiano\n\nNo English counterpart.\n",
     );
     writeFileSync(
       join(project, "jaad.config.ts"),
@@ -182,6 +208,10 @@ export default defineJaadConfig({
     const home = built.read("index.html");
     assert.match(home, /<meta name="keywords" content="alpha, beta"/);
     assert.match(home, /"keywords":\["alpha","beta"\]/);
+    assert.deepEqual(JSON.parse(built.read("search-index.json"))[0].keywords, [
+      "alpha",
+      "beta",
+    ]);
   });
 
   test("a draft is left out of the production build entirely", () => {
@@ -196,7 +226,6 @@ export default defineJaadConfig({
       "a draft page reached the search index",
     );
     assert.doesNotMatch(built.read("llms.txt"), /\/draft/);
-    assert.deepEqual(index[0].keywords, ["alpha", "beta"]);
   });
 
   test("locale directories build one documentation site per language", () => {
@@ -210,7 +239,7 @@ export default defineJaadConfig({
     assert.ok(localised.pages.includes("/it/index.html"), "no /it index");
 
     assert.ok(
-      !localised.pages.includes("/it/guides/deep-dive/index.html"),
+      !localised.pages.includes("/it/guides/only-in-english/index.html"),
       "an untranslated page was built anyway",
     );
 
@@ -222,7 +251,7 @@ export default defineJaadConfig({
     const italian = JSON.parse(localised.read("it/search-index.json"));
     assert.deepEqual(
       italian.map((entry) => entry.slug),
-      [""],
+      ["", "guides/deep-dive", "guides/solo-italiano"],
       "the italian index is not scoped to italian",
     );
     assert.match(localised.read("it/llms.txt"), /\/it\//);
@@ -231,7 +260,6 @@ export default defineJaadConfig({
   test("a localised page declares its own language and its alternates", () => {
     const italian = localised.read("it/index.html");
     assert.match(italian, /<html lang="it"/);
-    assert.match(italian, /<meta property="og:locale" content="it"/);
     assert.match(
       italian,
       /<link rel="alternate" hreflang="it" href="https:\/\/example\.dev\/it"/,
@@ -244,23 +272,68 @@ export default defineJaadConfig({
       /<link rel="alternate" hreflang="x-default" href="https:\/\/example\.dev\/"/,
     );
 
+    // Open Graph wants language_TERRITORY; a bare tag is invalid.
+    assert.match(english, /<meta property="og:locale" content="en_GB"/);
+    assert.match(italian, /<meta property="og:locale" content="it_IT"/);
+
+    // Two files at the same slug are translations, and say so both ways.
+    const pair = localised.read("it/guides/deep-dive/index.html");
+    assert.match(pair, /<meta property="og:locale:alternate" content="en_GB"/);
+    assert.match(
+      pair,
+      /<link rel="alternate" hreflang="en" href="https:\/\/example\.dev\/guides\/deep-dive"/,
+    );
+
+    // Untranslated, so x-default still has to name somewhere to land.
+    const onlyItalian = localised.read("it/guides/solo-italiano/index.html");
+    assert.doesNotMatch(onlyItalian, /<link rel="alternate" hreflang="en"/);
+    assert.match(
+      onlyItalian,
+      /<link rel="alternate" hreflang="x-default" href="https:\/\/example\.dev\/"/,
+    );
+
     // An untranslated page advertises no alternate it does not have. The
     // switcher still links to Italian, so this looks only at <head>.
-    const deepDive = localised.read("guides/deep-dive/index.html");
-    assert.doesNotMatch(deepDive, /<link rel="alternate" hreflang="it"/);
+    const onlyEnglish = localised.read("guides/only-in-english/index.html");
+    assert.doesNotMatch(onlyEnglish, /<link rel="alternate" hreflang="it"/);
+  });
+
+  test("structured data roots the breadcrumb in the page's own locale", () => {
+    const ld = (html) =>
+      JSON.parse(
+        html.match(
+          /<script type="application\/ld\+json">([\s\S]*?)<\/script>/,
+        )[1],
+      );
+
+    const italian = ld(localised.read("it/index.html"));
+    assert.equal(
+      italian.breadcrumb.itemListElement[0].item,
+      "https://example.dev/it",
+    );
+
+    const english = ld(localised.read("index.html"));
+    assert.equal(
+      english.breadcrumb.itemListElement[0].item,
+      "https://example.dev/",
+    );
   });
 
   test("the switcher ships with two locales and falls back per page", () => {
-    const deepDive = localised.read("guides/deep-dive/index.html");
-    assert.match(deepDive, /<jaad-locale-switcher/);
-    assert.match(deepDive, /Italiano/);
+    const onlyEnglish = localised.read("guides/only-in-english/index.html");
+    assert.match(onlyEnglish, /<jaad-locale-switcher/);
+    assert.match(onlyEnglish, /Italiano/);
     assert.doesNotMatch(
-      deepDive,
+      onlyEnglish,
       /hreflang="fr"/,
       "an empty locale was offered",
     );
-    // No Italian deep dive, so Italian lands on the Italian opening page.
-    assert.match(deepDive, /<a href="\/it" hreflang="it"/);
+    // No Italian twin, so Italian lands on the Italian opening page.
+    assert.match(onlyEnglish, /<a href="\/it" hreflang="it"/);
+
+    // With a twin it links to the twin instead.
+    const pair = localised.read("guides/deep-dive/index.html");
+    assert.match(pair, /<a href="\/it\/guides\/deep-dive" hreflang="it"/);
   });
 
   test("a single-locale site renders no switcher at all", () => {
@@ -268,6 +341,22 @@ export default defineJaadConfig({
     assert.doesNotMatch(
       remounted.read("docs/index.html"),
       /jaad-locale-switcher/,
+    );
+  });
+
+  // A preset's palette reaches JAAD's tokens only through the reverse bridge.
+  // Without it a page renders the default palette while the docs render dracula.
+  test("a preset palette reaches pages of your own, not just the docs", () => {
+    const bridge = /--color-background:\s*var\(--jaamd-bg\)/;
+    assert.match(
+      remounted.cssOf("docs/index.html"),
+      bridge,
+      "the docs lost the preset bridge",
+    );
+    assert.match(
+      remounted.cssOf("page/index.html"),
+      bridge,
+      "a page built on the exported Page.astro has no preset palette",
     );
   });
 

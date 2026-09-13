@@ -17,6 +17,19 @@ import {
 import type { Locale } from "./locales.ts";
 
 const cached = new Map<string, DocsEntry[]>();
+// Keyed on the array: the same object in production, a fresh one in dev.
+const slugIndex = new WeakMap<DocsEntry[], Map<string, number>>();
+
+function indexOfSlug(pages: DocsEntry[], slug: string): number {
+  let index = slugIndex.get(pages);
+  if (!index) {
+    index = new Map(
+      pages.map((page, at) => [getCleanSlug(routedId(page)), at]),
+    );
+    slugIndex.set(pages, index);
+  }
+  return index.get(slug) ?? -1;
+}
 
 const CODES = LOCALES.map((locale) => locale.code);
 
@@ -34,13 +47,14 @@ export async function getSortedDocsPages(
   locale: string = DEFAULT_LOCALE,
 ): Promise<DocsEntry[]> {
   const key = CODES.length > 0 ? locale : "";
-  if (import.meta.env.PROD && cached.has(key)) return cached.get(key)!;
+  const hit = cached.get(key);
+  if (import.meta.env.PROD && hit) return hit;
 
   const pages = ((await getCollection("docsPages")) as unknown as DocsEntry[])
     .map(localise)
     .filter((page) => key === "" || page.locale === key);
 
-  // Validated before filtering: a draft's slug conflict still surfaces in dev.
+  // Validated before drafts are dropped, so a draft's slug conflict is an error.
   validateDocsStructure(pages, key || undefined);
   const sorted = sortDocPages(
     import.meta.env.PROD ? pages.filter((page) => !page.data.draft) : pages,
@@ -68,9 +82,7 @@ export async function getLocaleAlternates(
     // Every page drafted leaves a locale with nothing to link to.
     if (pages.length === 0) continue;
 
-    const index = slug
-      ? pages.findIndex((page) => getCleanSlug(routedId(page)) === slug)
-      : 0;
+    const index = slug ? indexOfSlug(pages, slug) : 0;
     const match = index >= 0 ? pages[index] : undefined;
 
     alternates.push({

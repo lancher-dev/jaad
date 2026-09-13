@@ -21,7 +21,7 @@ test("every preset resolves to a stylesheet JAAMD actually ships", () => {
       resolveConfig({ title: "T", theme: name }, "/"),
       "/",
     );
-    assert.ok(theme && existsSync(theme), `${name} points at ${theme}`);
+    assert.ok(theme && existsSync(theme), `${name} points at ${String(theme)}`);
   }
 });
 

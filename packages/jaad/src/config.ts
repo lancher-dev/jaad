@@ -16,13 +16,8 @@ import {
   type RepoInfo,
 } from "./infer.ts";
 import { PRESETS, PRESET_NAMES, isPreset } from "./themes/index.ts";
-import {
-  describeLocale,
-  detectLocales,
-  isLocale,
-  validateLocaleTree,
-  type Locale,
-} from "./locales.ts";
+import { describeLocale, isLocale, type Locale } from "./locales.ts";
+import { detectLocales, validateLocaleTree } from "./locale-tree.ts";
 import { normaliseBasePath } from "./urls.ts";
 
 export const jaadConfigSchema = z.object({
@@ -110,8 +105,8 @@ export const jaadConfigSchema = z.object({
 
 export type JaadConfig = z.output<typeof jaadConfigSchema>;
 
-/** Out of the schema on purpose, so `parse` strips them: the resolved config
- *  is serialised, and an Astro integration is not serialisable. */
+/** Out of the schema, so `parse` strips them: the resolved config is
+ *  serialised and an integration is not. */
 type AstroPassthroughConfig = AstroUserConfig<
   Locales,
   string | SessionDriverConfig | undefined,
@@ -164,15 +159,15 @@ function resolveEditBase(
   docsDir: string,
 ): string | null {
   if (typeof editLink === "string") return editLink;
-  if (editLink === false || !repo) return null;
+  if (!editLink || !repo) return null;
   return editBaseFrom(repo, docsDir);
 }
 
 const OPTIONS = Object.keys(jaadConfigSchema.shape);
 const FORWARDED = ["site", "base", "astro"];
 
-/** Zod strips what it does not know, so a misspelt option would do nothing at
- *  all. Both messages are read in a terminal, not parsed. */
+/** Unknown keys are rejected here: zod would strip a misspelt option in
+ *  silence. Both messages are read in a terminal, not parsed. */
 function parseConfig(options: JaadUserConfig): JaadConfig {
   const known = new Set([...OPTIONS, ...FORWARDED]);
   const unknown = Object.keys(options).filter((key) => !known.has(key));
@@ -232,7 +227,9 @@ function resolveLocales(config: JaadConfig, cwd: string): string[] {
 
   const docsDir = join(cwd, config.docsDir);
   const locales = config.locales ?? detectLocales(docsDir, config.lang);
-  if (locales.length === 0) return [];
+  // A pinned list skips detection, and with it the missing-directory guard;
+  // the integration warns about that case with better words than readdir does.
+  if (locales.length === 0 || !existsSync(docsDir)) return [];
 
   validateLocaleTree(docsDir, locales, config.lang);
   return locales.map((locale) => locale.toLowerCase()).sort();
@@ -263,7 +260,7 @@ export function resolveStylesheets(
   };
 }
 
-/** Identity helper, so a project can keep its options in its own typed file. */
+/** Identity helper, for a typed `jaad.config.ts`. */
 export function defineJaadConfig(config: JaadUserConfig): JaadUserConfig {
   return config;
 }

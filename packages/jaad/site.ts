@@ -14,8 +14,7 @@ if (!file) {
   );
 }
 
-// The path is only known at runtime, which is the point: Vite cannot analyse it
-// and would warn on every dev server and every build.
+// Unanalysable on purpose: a static path would make Vite warn on every build.
 const loaded = (await import(/* @vite-ignore */ pathToFileURL(file).href)) as {
   default: JaadUserConfig;
 };

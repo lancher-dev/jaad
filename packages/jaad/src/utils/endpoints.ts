@@ -4,8 +4,8 @@ import { docsMarkdownHref } from "../urls.ts";
 import { docsUrls } from "../docs-config.ts";
 import {
   buildSearchIndex,
+  docTitle,
   extractDescription,
-  extractTitleFromMarkdown,
   formatChapterTitle,
   getCleanSlug,
   parseDocCollectionId,
@@ -39,29 +39,27 @@ export async function llmsResponse(
   };
 
   const standalone: Row[] = [];
-  const chapterOrder: string[] = [];
   const chapters = new Map<string, Row[]>();
 
   for (const page of sortedPages) {
     const id = routedId(page);
-    const parsed = parseDocCollectionId(id);
-    const title =
-      page.data.title ??
-      extractTitleFromMarkdown(page.body || "") ??
-      parsed.title;
-    const description =
-      page.data.description ?? extractDescription(page.body || "", title);
-    const row: Row = { title, slug: getCleanSlug(id), description };
+    const { chapter } = parseDocCollectionId(id);
+    const title = docTitle(page);
+    const row: Row = {
+      title,
+      slug: getCleanSlug(id),
+      description:
+        page.data.description ?? extractDescription(page.body || "", title),
+    };
 
-    if (!parsed.chapter) {
+    if (!chapter) {
       standalone.push(row);
       continue;
     }
-    if (!chapters.has(parsed.chapter)) {
-      chapters.set(parsed.chapter, []);
-      chapterOrder.push(parsed.chapter);
-    }
-    chapters.get(parsed.chapter)!.push(row);
+
+    const rows = chapters.get(chapter) ?? [];
+    if (rows.length === 0) chapters.set(chapter, rows);
+    rows.push(row);
   }
 
   const toLine = (row: Row): string =>
@@ -71,11 +69,9 @@ export async function llmsResponse(
   if (standalone.length > 0) {
     sections.push(standalone.map(toLine).join("\n"));
   }
-  for (const chapter of chapterOrder) {
+  for (const [chapter, rows] of chapters) {
     const heading = formatChapterTitle(chapter) ?? chapter;
-    sections.push(
-      `## ${heading}\n\n${chapters.get(chapter)!.map(toLine).join("\n")}`,
-    );
+    sections.push(`## ${heading}\n\n${rows.map(toLine).join("\n")}`);
   }
 
   const content = [

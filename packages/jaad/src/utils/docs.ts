@@ -27,10 +27,7 @@ export function splitDocLocale(
 /** Matches a numeric order prefix, e.g. "01-" or "123-" */
 const NUMBERED_PREFIX_RE = /^(\d+)-(.+)$/;
 
-export function parseDocCollectionId(
-  id: string,
-  isNumbered: boolean = true,
-): ParsedDocsCollectionId {
+export function parseDocCollectionId(id: string): ParsedDocsCollectionId {
   let order = 999;
   let orderChapter: number | undefined;
   let chapter: string | undefined;
@@ -40,35 +37,26 @@ export function parseDocCollectionId(
 
   if (parts.length >= 2) {
     const chapterPart = parts[parts.length - 2];
-
-    if (isNumbered) {
-      const chapterMatch = chapterPart.match(NUMBERED_PREFIX_RE);
-      if (chapterMatch) {
-        orderChapter = parseInt(chapterMatch[1], 10);
-        chapter = chapterMatch[2];
-      } else {
-        chapter = chapterPart;
-      }
+    const chapterMatch = NUMBERED_PREFIX_RE.exec(chapterPart);
+    if (chapterMatch) {
+      orderChapter = parseInt(chapterMatch[1], 10);
+      chapter = chapterMatch[2];
     } else {
       chapter = chapterPart;
     }
   }
 
-  if (isNumbered) {
-    const match = slug.match(NUMBERED_PREFIX_RE);
-    if (match) {
-      order = parseInt(match[1], 10);
-      slug = match[2];
-    }
+  const match = NUMBERED_PREFIX_RE.exec(slug);
+  if (match) {
+    order = parseInt(match[1], 10);
+    slug = match[2];
   }
 
-  const title = slugToTitle(slug);
-
-  return { order, orderChapter, chapter, slug, title };
+  return { order, orderChapter, chapter, slug, title: slugToTitle(slug) };
 }
 
-/** Chapter first, then file order within it. Root pages sort by their own
- *  number, so they interleave with chapters. Returns a new array. */
+/** Chapter order first, then file order within it. Root pages interleave with
+ *  chapters by their own number. */
 export function sortDocPages<T extends DocsPageLike>(pages: T[]): T[] {
   return pages
     .map((page) => ({ page, ...docOrder(page) }))
@@ -175,10 +163,6 @@ export function slugToTitle(slug: string): string {
 export function formatChapterTitle(chapter: string | undefined): string | null {
   if (!chapter) return null;
   return slugToTitle(chapter);
-}
-
-export function generateHeadingSlug(text: string): string {
-  return githubSlug(text);
 }
 
 /** The authoritative title: Astro's glob loader strips special characters from
@@ -289,8 +273,8 @@ export function extractDescription(
   return `${truncated.slice(0, lastSpace > 0 ? lastSpace : maxLength)}…`;
 }
 
-export function buildSearchIndex<T extends DocsPageLike>(
-  sortedPages: T[],
+export function buildSearchIndex(
+  sortedPages: DocsPageLike[],
 ): DocsSearchEntry[] {
   return sortedPages.map((page, index) => ({
     title: docTitle(page),

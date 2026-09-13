@@ -1,7 +1,6 @@
 import type { DocsNavItem } from "./@types/docs.ts";
 import {
   docLabel,
-  docOrder,
   getCanonicalDocSlug,
   parseDocCollectionId,
   routedId,
@@ -47,30 +46,61 @@ function groupByChapter(items: DocsNavItem[]): NavSection[] {
 }
 
 /** Build every navigation view from one ordered collection traversal. */
-export function buildDocsNavigation<T extends DocsPageLike>(
-  sortedPages: T[],
+interface Model {
+  items: DocsNavItem[];
+  positions: Map<string, number>;
+}
+
+// Only isActive and the neighbours vary between the pages of one locale. The
+// hrefs do not, as long as the url options are the same ones.
+const models = new WeakMap<object, Map<string, Model>>();
+
+function modelFor(sortedPages: DocsPageLike[], urls: DocsUrlOptions): Model {
+  const key = `${urls.docsBase}\u0000${urls.deploymentBase ?? ""}\u0000${urls.locale ?? ""}\u0000${urls.defaultLocale ?? ""}`;
+  let byUrls = models.get(sortedPages);
+  if (!byUrls) {
+    byUrls = new Map();
+    models.set(sortedPages, byUrls);
+  }
+  const cached = byUrls.get(key);
+  if (cached) return cached;
+
+  const model: Model = {
+    items: sortedPages.map((page, index): DocsNavItem => {
+      const parsed = parseDocCollectionId(routedId(page));
+      return {
+        title: docLabel(page),
+        chapter: parsed.chapter,
+        primaryOrder: parsed.orderChapter ?? page.data?.order ?? parsed.order,
+        href: docsPageHref(getCanonicalDocSlug(page, index), urls),
+        isActive: false,
+      };
+    }),
+    positions: new Map(sortedPages.map((page, index) => [page.id, index])),
+  };
+
+  byUrls.set(key, model);
+  return model;
+}
+
+export function buildDocsNavigation(
+  sortedPages: DocsPageLike[],
   currentId: string,
   urls: DocsUrlOptions,
 ): DocsNavigation {
-  const items = sortedPages.map((page, index): DocsNavItem => {
-    const parsed = parseDocCollectionId(routedId(page));
-    return {
-      title: docLabel(page),
-      chapter: parsed.chapter,
-      primaryOrder: docOrder(page).primary,
-      href: docsPageHref(getCanonicalDocSlug(page, index), urls),
-      isActive: page.id === currentId,
-    };
-  });
-
-  const currentIndex = sortedPages.findIndex((page) => page.id === currentId);
+  const { items, positions } = modelFor(sortedPages, urls);
+  const currentIndex = positions.get(currentId) ?? -1;
+  const marked = items.map((item, index) => ({
+    ...item,
+    isActive: index === currentIndex,
+  }));
 
   return {
-    sections: groupByChapter(items),
-    previousPage: currentIndex > 0 ? items[currentIndex - 1] : null,
+    sections: groupByChapter(marked),
+    previousPage: currentIndex > 0 ? marked[currentIndex - 1] : null,
     nextPage:
-      currentIndex >= 0 && currentIndex < items.length - 1
-        ? items[currentIndex + 1]
+      currentIndex >= 0 && currentIndex < marked.length - 1
+        ? marked[currentIndex + 1]
         : null,
   };
 }

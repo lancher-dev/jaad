@@ -15,9 +15,11 @@ const active = alternates.find((entry) => entry.locale.code === current);
     type="button"
     data-trigger
     aria-expanded="false"
+    aria-haspopup="true"
+    aria-controls="jaad-locale-menu"
     aria-label="Change language"
     title="Change language"
-    class="text-foreground-secondary hover:text-foreground-bright flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-lg px-2 transition-colors"
+    class="jaad-icon-button w-auto gap-1.5 px-2"
   >
     {
       active?.locale.flag && (
@@ -40,11 +42,7 @@ const active = alternates.find((entry) => entry.locale.code === current);
     </svg>
   </button>
 
-  <div
-    data-menu
-    hidden
-    class="bg-surface border-border absolute top-full right-0 z-40 mt-2 w-44 overflow-hidden rounded-xl border p-1 shadow-lg"
-  >
+  <div id="jaad-locale-menu" data-menu hidden class="jaad-menu p-1">
     {
       alternates.map((entry) => (
         <a
@@ -52,7 +50,7 @@ const active = alternates.find((entry) => entry.locale.code === current);
           hreflang={entry.locale.tag}
           lang={entry.locale.tag}
           aria-current={entry.locale.code === current ? "true" : undefined}
-          class="text-foreground-secondary hover:text-foreground-bright hover:bg-primary/5 flex items-center gap-2 rounded-lg px-3 py-2 text-sm no-underline transition-colors aria-[current]:font-semibold"
+          class="jaad-menu-item flex items-center gap-2 aria-[current]:font-semibold"
         >
           {entry.locale.flag && (
             <span aria-hidden="true">{entry.locale.flag}</span>
@@ -65,6 +63,8 @@ const active = alternates.find((entry) => entry.locale.code === current);
 </jaad-locale-switcher>
 
 <script>
+  import { nextSwitcherMarkup } from "./locale-switcher.ts";
+
   class JaadLocaleSwitcher extends HTMLElement {
     #onDocumentPointerDown = (event: PointerEvent) => {
       if (!this.contains(event.target as Node)) this.#close();
@@ -74,16 +74,15 @@ const active = alternates.find((entry) => entry.locale.code === current);
       if (event.key === "Escape") this.#close();
     };
 
-    /** The header persists across navigations; the links in it must not. */
+    /** The header persists across navigations; its links must not. */
     #onBeforeSwap = (event: Event) => {
-      const next = (
-        event as Event & { newDocument: Document }
-      ).newDocument.querySelector("jaad-locale-switcher");
-      if (next) this.innerHTML = next.innerHTML;
+      const markup = nextSwitcherMarkup(
+        (event as Event & { newDocument: Document }).newDocument,
+      );
+      if (markup !== null) this.innerHTML = markup;
     };
 
-    /** Delegated: #onBeforeSwap replaces the button, and the element it is
-     *  bound to has to outlive that. connectedCallback runs once. */
+    /** Delegated: #onBeforeSwap replaces the button this would bind to. */
     #onClick = (event: MouseEvent) => {
       const target = event.target as Element | null;
       if (!target?.closest("[data-trigger]")) return;
@@ -120,10 +119,9 @@ const active = alternates.find((entry) => entry.locale.code === current);
     #close() {
       const menu = this.#menu();
       if (menu) menu.hidden = true;
-      this.querySelector("[data-trigger]")?.setAttribute(
-        "aria-expanded",
-        "false",
-      );
+      const trigger = this.querySelector<HTMLElement>("[data-trigger]");
+      trigger?.setAttribute("aria-expanded", "false");
+      if (this.contains(document.activeElement)) trigger?.focus();
     }
   }
 

@@ -371,17 +371,14 @@ test("the published scaffolder carries its templates", () => {
   const packed = JSON.parse(output)[0].files.map((entry) => entry.path);
 
   for (const file of [
+    "templates/_shared/CLAUDE.md",
+    "templates/_shared/tsconfig.json",
+    "templates/_shared/public/favicon.svg",
     "templates/docs/jaad.config.ts",
     "templates/docs/docs/01-introduction.md",
-    "templates/docs/public/favicon.svg",
-    "templates/docs/tsconfig.json",
     "templates/docs/AGENTS.md",
-    "templates/docs/CLAUDE.md",
     "templates/site/AGENTS.md",
-    "templates/site/CLAUDE.md",
     "templates/site/jaad.config.ts",
-    "templates/site/public/favicon.svg",
-    "templates/site/tsconfig.json",
     "templates/site/src/layouts/SiteLayout.astro",
     "templates/site/src/pages/index.astro",
     "templates/site/src/styles/site.css",
@@ -390,18 +387,15 @@ test("the published scaffolder carries its templates", () => {
     assert.ok(packed.includes(file), `${file} is missing from the tarball`);
   }
 
-  // npm drops every `.gitignore` from a tarball, so the templates carry the
-  // file under a name it cannot recognise.
-  for (const template of ["docs", "site"]) {
-    assert.ok(
-      packed.includes(`templates/${template}/_gitignore`),
-      `the ${template} template ships no gitignore`,
-    );
-    assert.ok(
-      !packed.includes(`templates/${template}/.gitignore`),
-      `the ${template} template ships a .gitignore npm would strip`,
-    );
-  }
+  // npm drops every `.gitignore` from a tarball, so it ships renamed.
+  assert.ok(
+    packed.includes("templates/_shared/_gitignore"),
+    "the templates ship no gitignore",
+  );
+  assert.ok(
+    !packed.some((file) => file.endsWith("/.gitignore")),
+    "a template ships a .gitignore npm would strip",
+  );
 });
 
 test("a scaffolded project ignores what it should not commit", () => {

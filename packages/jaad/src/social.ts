@@ -20,13 +20,15 @@ export function buildSocialLinks(config: JaadResolvedConfig): SocialLink[] {
     links.push({
       href: entry.href,
       label:
+        // FORGES has no index signature guarantee: a missing key is undefined.
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         ("label" in entry ? entry.label : undefined) ?? forge?.label ?? key,
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       path: forge?.path,
       svg: "svg" in entry ? entry.svg : undefined,
     });
   }
 
-  // If the user didn't name a forge, and the repository is known, add it to the list
   const namedAForge = Object.keys(config.social).some((key) => key in FORGES);
 
   if (

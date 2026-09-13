@@ -6,6 +6,9 @@ export const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 export const DIST = join(ROOT, "www", "dist");
 
 export function walk(dir) {
+  if (!existsSync(dir)) {
+    throw new Error(`no build at ${dir} — run the build first`);
+  }
   return readdirSync(dir).flatMap((e) => {
     const p = join(dir, e);
     return statSync(p).isDirectory() ? walk(p) : [p];
