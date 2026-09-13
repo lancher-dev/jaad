@@ -17,13 +17,16 @@ Build the site with `astro build`.
 
 ## Layout
 
-| Path                    | What it is                                      |
-| ----------------------- | ----------------------------------------------- |
-| `docs/`                 | The markdown that becomes the site              |
-| `jaad.config.ts`        | Every JAAD option                               |
-| `src/jaad.css`          | Colours, fonts and widths (create it if absent) |
-| `astro.config.mjs`      | Re-exports JAAD's Astro config; leave it alone  |
-| `src/content.config.ts` | Re-exports JAAD's collection; leave it alone    |
+| Path             | What it is                                      |
+| ---------------- | ----------------------------------------------- |
+| `docs/`          | The markdown that becomes the site              |
+| `jaad.config.ts` | Every JAAD option                               |
+| `src/jaad.css`   | Colours, fonts and widths (create it if absent) |
+
+JAAD's own stylesheet is precompiled: installing it does not bring Tailwind
+into this project.
+| `astro.config.mjs` | Re-exports JAAD's Astro config; leave it alone |
+| `src/content.config.ts` | Re-exports JAAD's collection; leave it alone |
 
 `src/pages/` is for pages of your own, which keep their own layout.
 

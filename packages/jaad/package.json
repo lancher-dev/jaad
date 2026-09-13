@@ -31,6 +31,7 @@
     "index.ts",
     "site.ts",
     "src",
+    "dist",
     "README.md",
     "LICENSE"
   ],
@@ -42,15 +43,20 @@
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
-    "@tailwindcss/vite": "^4.3.3",
-    "github-slugger": "^2.0.0",
     "@lancher-dev/jaamd": "^0.9.2",
-    "tailwindcss": "^4.3.3"
+    "github-slugger": "^2.0.0"
   },
   "scripts": {
+    "build": "tailwindcss -i ./src/styles/global.css -o ./dist/jaad.css",
+    "prepare": "pnpm build",
+    "prepack": "pnpm build",
     "check": "astro check"
   },
   "publishConfig": {
     "access": "public"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "tailwindcss": "^4.3.3"
   }
 }

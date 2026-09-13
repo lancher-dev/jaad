@@ -1,5 +1,4 @@
 import type { AstroIntegration } from "astro";
-import tailwindcss from "@tailwindcss/vite";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -189,7 +188,6 @@ export function createCoreIntegration(
         updateConfig({
           vite: {
             plugins: [
-              tailwindcss(),
               jaadVirtualPlugin(
                 config,
                 stylesheets.user,

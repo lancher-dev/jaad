@@ -20,6 +20,10 @@ import {
 // Bumped together with the package they install.
 const JAAD = "^0.8.3";
 const ASTRO = "^7.3.1";
+// Only the site template styles its own pages, so only it needs Tailwind.
+const TEMPLATE_DEPENDENCIES = {
+  site: { "@tailwindcss/vite": "^4.3.3", tailwindcss: "^4.3.3" },
+};
 const ASTRO_CONFIG_NAMES = [
   "astro.config.ts",
   "astro.config.mjs",
@@ -207,7 +211,7 @@ function inspectExistingProject(target) {
  * we create: adding it to someone's library would change how Node reads every
  * file in it, and `astro.config.mjs` is ESM either way.
  */
-function writeManifest(target, existing, name) {
+function writeManifest(target, existing, name, template) {
   const manifest = existing ?? { name, private: true, type: "module" };
 
   manifest.scripts = {
@@ -229,6 +233,14 @@ function writeManifest(target, existing, name) {
   ) {
     dependencies["@lancher-dev/jaad"] = JAAD;
   }
+  for (const [pkg, range] of Object.entries(
+    TEMPLATE_DEPENDENCIES[template] ?? {},
+  )) {
+    if (!(pkg in dependencies) && !(pkg in (manifest.devDependencies ?? {}))) {
+      dependencies[pkg] = range;
+    }
+  }
+
   if (Object.keys(dependencies).length > 0)
     manifest.dependencies = dependencies;
 
@@ -406,7 +418,7 @@ function scaffold(request) {
     write(target, destination, withTitle(source, title), written, skipped);
   }
 
-  writeManifest(target, manifest, basename(target));
+  writeManifest(target, manifest, basename(target), template);
   return { written, skipped, found };
 }
 

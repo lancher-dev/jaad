@@ -15,6 +15,24 @@ html.dark {
 }
 ```
 
+JAAD ships its stylesheet already compiled, so installing it does not add
+Tailwind to your project and does not touch your Vite configuration. Use
+whatever CSS you like for pages of your own; if that is Tailwind, add it
+yourself:
+
+```ts
+// jaad.config.ts
+import tailwindcss from "@tailwindcss/vite";
+
+defineJaadConfig({
+  title: "My Project",
+  astro: { vite: { plugins: [tailwindcss()] } },
+});
+```
+
+The tokens below stay overridable either way: they are plain custom properties
+in the compiled sheet, and `src/jaad.css` loads after it.
+
 ## Core tokens
 
 | Token                | Purpose                          |

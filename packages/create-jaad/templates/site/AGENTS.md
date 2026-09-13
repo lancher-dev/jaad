@@ -19,15 +19,18 @@ Build the site with `astro build`.
 
 ## Layout
 
-| Path                    | What it is                                        |
-| ----------------------- | ------------------------------------------------- |
-| `docs/`                 | The markdown that becomes the site                |
-| `jaad.config.ts`        | Every JAAD option                                 |
-| `src/jaad.css`          | Colours, fonts and widths (create it if absent)   |
-| `astro.config.mjs`      | Re-exports JAAD's Astro config; leave it alone    |
-| `src/content.config.ts` | Re-exports JAAD's collection; leave it alone      |
-| `src/pages/`            | Pages of your own, starting with the landing page |
-| `src/layouts/`          | The layout those pages use                        |
+| Path             | What it is                                      |
+| ---------------- | ----------------------------------------------- |
+| `docs/`          | The markdown that becomes the site              |
+| `jaad.config.ts` | Every JAAD option                               |
+| `src/jaad.css`   | Colours, fonts and widths (create it if absent) |
+
+JAAD's own stylesheet is precompiled, so it brings no Tailwind with it. The
+landing page's Tailwind is this project's own, wired up in `jaad.config.ts`.
+| `astro.config.mjs` | Re-exports JAAD's Astro config; leave it alone |
+| `src/content.config.ts` | Re-exports JAAD's collection; leave it alone |
+| `src/pages/` | Pages of your own, starting with the landing page |
+| `src/layouts/` | The layout those pages use |
 
 Pages in `src/pages/` keep their own layout, styles and metadata: JAAD's
 options apply to documentation pages only. `routeBase: "/docs"` in
