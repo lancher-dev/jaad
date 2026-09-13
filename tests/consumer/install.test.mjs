@@ -131,19 +131,30 @@ export default defineJaadConfig({
       join(docs, "en", "02-guides", "02-only-in-english.md"),
       "# Only In English\n\nNo Italian counterpart.\n",
     );
+    mkdirSync(join(docs, "en", "03-handbook"), { recursive: true });
+    writeFileSync(
+      join(docs, "en", "03-handbook", "01-setup.md"),
+      "---\ntranslationKey: setup\n---\n\n# Setup\n\nPaired by key.\n",
+    );
     writeFileSync(
       join(docs, "it", "01-per-iniziare.md"),
       "---\ntitle: Per iniziare\n---\n\n# Per iniziare\n\nItaliano.\n",
     );
-    // A matching slug is what makes two files translations of each other.
+    // A matching slug pairs two files; so does a shared translationKey, which
+    // is what lets a language translate its own file and directory names.
     mkdirSync(join(docs, "it", "02-guides"), { recursive: true });
     writeFileSync(
       join(docs, "it", "02-guides", "01-deep-dive.md"),
-      "# Analisi\n\nItalian twin of the English page.\n",
+      "# Analisi\n\nPaired by slug.\n",
     );
     writeFileSync(
       join(docs, "it", "02-guides", "02-solo-italiano.md"),
       "# Solo italiano\n\nNo English counterpart.\n",
+    );
+    mkdirSync(join(docs, "it", "03-guida"), { recursive: true });
+    writeFileSync(
+      join(docs, "it", "03-guida", "01-installazione.md"),
+      "---\ntranslationKey: setup\n---\n\n# Installazione\n\nPaired by key.\n",
     );
     writeFileSync(
       join(project, "jaad.config.ts"),
@@ -251,7 +262,7 @@ export default defineJaadConfig({
     const italian = JSON.parse(localised.read("it/search-index.json"));
     assert.deepEqual(
       italian.map((entry) => entry.slug),
-      ["", "guides/deep-dive", "guides/solo-italiano"],
+      ["", "guides/deep-dive", "guides/solo-italiano", "guida/installazione"],
       "the italian index is not scoped to italian",
     );
     assert.match(localised.read("it/llms.txt"), /\/it\//);
@@ -296,6 +307,31 @@ export default defineJaadConfig({
     // switcher still links to Italian, so this looks only at <head>.
     const onlyEnglish = localised.read("guides/only-in-english/index.html");
     assert.doesNotMatch(onlyEnglish, /<link rel="alternate" hreflang="it"/);
+  });
+
+  // Without this, a language that translates its own file names silently loses
+  // every hreflang and every switcher link but the fallback.
+  test("a shared translationKey pairs pages whose slugs differ", () => {
+    const english = localised.read("handbook/setup/index.html");
+    assert.match(
+      english,
+      /<link rel="alternate" hreflang="it" href="https:\/\/example\.dev\/it\/guida\/installazione"/,
+    );
+    assert.match(
+      english,
+      /<a href="\/it\/guida\/installazione" hreflang="it"/,
+      "the switcher does not follow the key",
+    );
+
+    const italian = localised.read("it/guida/installazione/index.html");
+    assert.match(
+      italian,
+      /<link rel="alternate" hreflang="en" href="https:\/\/example\.dev\/handbook\/setup"/,
+    );
+    assert.match(
+      italian,
+      /<meta property="og:locale:alternate" content="en_GB"/,
+    );
   });
 
   test("structured data roots the breadcrumb in the page's own locale", () => {

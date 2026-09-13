@@ -17,6 +17,7 @@ import {
   docOrder,
   splitDocLocale,
   routedId,
+  docTranslationKey,
   buildSearchIndex,
   validateDocsStructure,
 } from "../../packages/jaad/src/utils/docs.ts";
@@ -457,4 +458,40 @@ test("a structure error names the file on disk, locale included", () => {
   assert.throws(() => {
     validateDocsStructure([{ id: "it/a/b/c", localeId: "a/b/c" }], "it");
   }, /it\/a\/b\/c: only one chapter directory/);
+});
+
+// ── Pairing translations ─────────────────────────────────────────────────────
+
+// Without a key the slug decides, which is why two languages that translate
+// their file names stop being linked.
+test("the clean slug pairs translations until a key says otherwise", () => {
+  assert.equal(docTranslationKey({ id: "02-guides/01-setup" }), "guides/setup");
+  assert.equal(
+    docTranslationKey({
+      id: "02-guida/01-installazione",
+      data: { translationKey: "setup" },
+    }),
+    "setup",
+  );
+});
+
+test("two pages of one locale cannot claim the same translation", () => {
+  assert.throws(() => {
+    validateDocsStructure(
+      [
+        { id: "01-a", data: { translationKey: "setup" } },
+        { id: "02-b", data: { translationKey: "setup" } },
+      ],
+      "it",
+    );
+  }, /it\/01-a, it\/02-b all claim translationKey setup/);
+});
+
+test("the same key in different locales is the point, not a clash", () => {
+  assert.doesNotThrow(() => {
+    validateDocsStructure(
+      [{ id: "01-a", data: { translationKey: "setup" } }],
+      "it",
+    );
+  });
 });

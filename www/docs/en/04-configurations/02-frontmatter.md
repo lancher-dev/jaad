@@ -13,6 +13,7 @@ overrides something the file tree or the body already supplies.
 ---
 title: Images & Videos
 label: Media
+translationKey: media
 description: Add accessible images and embedded videos.
 keywords: [markdown, media]
 order: 5
@@ -25,17 +26,18 @@ lastUpdated: 2026-09-12
 # Images and videos
 ```
 
-| Field         | Type              | Effect                                       |
-| ------------- | ----------------- | -------------------------------------------- |
-| `title`       | `string`          | Page title, everywhere the page is named     |
-| `label`       | `string`          | Shorter name, in navigation only             |
-| `description` | `string`          | Description metadata and `llms.txt`          |
-| `order`       | `number`          | Replaces the number from the filename prefix |
-| `draft`       | `boolean`         | Kept in development, left out of the build   |
-| `keywords`    | `string[]`        | Keyword metadata, and weight in search       |
-| `author`      | `string`          | Author metadata                              |
-| `ogImage`     | `string \| false` | Social image for this page                   |
-| `lastUpdated` | `date`            | Modification date in metadata                |
+| Field            | Type              | Effect                                       |
+| ---------------- | ----------------- | -------------------------------------------- |
+| `title`          | `string`          | Page title, everywhere the page is named     |
+| `label`          | `string`          | Shorter name, in navigation only             |
+| `translationKey` | `string`          | Pairs this page with its translations        |
+| `description`    | `string`          | Description metadata and `llms.txt`          |
+| `order`          | `number`          | Replaces the number from the filename prefix |
+| `draft`          | `boolean`         | Kept in development, left out of the build   |
+| `keywords`       | `string[]`        | Keyword metadata, and weight in search       |
+| `author`         | `string`          | Author metadata                              |
+| `ogImage`        | `string \| false` | Social image for this page                   |
+| `lastUpdated`    | `date`            | Modification date in metadata                |
 
 Fields JAAD does not know are ignored, so frontmatter your own tooling
 reads can sit alongside these. A wrong type is a build error.
@@ -57,6 +59,9 @@ label: FAQ
 ```
 
 Without `title`, JAAD uses the first `# Heading`, then the filename.
+
+`translationKey` pairs a page with its translations when their slugs differ.
+See [Languages](/docs/configurations/i18n).
 
 ## Ordering and drafts
 
