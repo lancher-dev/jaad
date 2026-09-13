@@ -159,7 +159,7 @@ function resolveEditBase(
   docsDir: string,
 ): string | null {
   if (typeof editLink === "string") return editLink;
-  if (editLink === false || !repo) return null;
+  if (!editLink || !repo) return null;
   return editBaseFrom(repo, docsDir);
 }
 

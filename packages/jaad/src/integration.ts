@@ -124,6 +124,8 @@ export function findOpeningPages(
     const first = sortDocPages(
       pages.filter((page) => page.locale === locale),
     )[0];
+    // Indexed access is typed as always present; a locale can have no pages.
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!first) return [];
     return [
       { locale: locale ?? undefined, slug: getCleanSlug(first.localeId) },

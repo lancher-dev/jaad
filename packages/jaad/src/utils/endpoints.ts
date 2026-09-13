@@ -39,7 +39,6 @@ export async function llmsResponse(
   };
 
   const standalone: Row[] = [];
-  const chapterOrder: string[] = [];
   const chapters = new Map<string, Row[]>();
 
   for (const page of sortedPages) {
@@ -58,12 +57,8 @@ export async function llmsResponse(
       continue;
     }
 
-    let rows = chapters.get(chapter);
-    if (!rows) {
-      rows = [];
-      chapters.set(chapter, rows);
-      chapterOrder.push(chapter);
-    }
+    const rows = chapters.get(chapter) ?? [];
+    if (rows.length === 0) chapters.set(chapter, rows);
     rows.push(row);
   }
 
@@ -74,11 +69,9 @@ export async function llmsResponse(
   if (standalone.length > 0) {
     sections.push(standalone.map(toLine).join("\n"));
   }
-  for (const chapter of chapterOrder) {
+  for (const [chapter, rows] of chapters) {
     const heading = formatChapterTitle(chapter) ?? chapter;
-    sections.push(
-      `## ${heading}\n\n${chapters.get(chapter)!.map(toLine).join("\n")}`,
-    );
+    sections.push(`## ${heading}\n\n${rows.map(toLine).join("\n")}`);
   }
 
   const content = [

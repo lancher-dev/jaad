@@ -148,10 +148,12 @@ function localeName(tag: string): string {
 function localeFlag(code: string): string | null {
   const match = LOCALE_RE.exec(code.toLowerCase());
   if (!match) return null;
+  // A group that did not participate is undefined, whatever the type says.
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   const region = match[3]?.toUpperCase() ?? LANGUAGE_REGION[match[1]];
   if (!region) return null;
   return String.fromCodePoint(
-    ...[...region].map((letter) => 0x1f1e6 + letter.charCodeAt(0) - 65),
+    ...Array.from(region, (letter) => 0x1f1e6 + letter.charCodeAt(0) - 65),
   );
 }
 

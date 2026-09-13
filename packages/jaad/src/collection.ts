@@ -47,7 +47,8 @@ export async function getSortedDocsPages(
   locale: string = DEFAULT_LOCALE,
 ): Promise<DocsEntry[]> {
   const key = CODES.length > 0 ? locale : "";
-  if (import.meta.env.PROD && cached.has(key)) return cached.get(key)!;
+  const hit = cached.get(key);
+  if (import.meta.env.PROD && hit) return hit;
 
   const pages = ((await getCollection("docsPages")) as unknown as DocsEntry[])
     .map(localise)

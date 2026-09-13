@@ -109,7 +109,9 @@ test("one locale left with content still owns the unprefixed urls", () => {
   try {
     const locales = detectLocales(dir, "en");
     assert.deepEqual(locales, ["en"]);
-    assert.doesNotThrow(() => validateLocaleTree(dir, locales, "en"));
+    assert.doesNotThrow(() => {
+      validateLocaleTree(dir, locales, "en");
+    });
   } finally {
     rmSync(dir, { recursive: true });
   }
@@ -118,10 +120,9 @@ test("one locale left with content still owns the unprefixed urls", () => {
 test("lang naming a locale that has no pages is reported", () => {
   const dir = docsTree(["en/01-intro.md", "it"]);
   try {
-    assert.throws(
-      () => validateLocaleTree(dir, detectLocales(dir, "en"), "it"),
-      /lang is "it", which has no directory; found en/,
-    );
+    assert.throws(() => {
+      validateLocaleTree(dir, detectLocales(dir, "en"), "it");
+    }, /lang is "it", which has no directory; found en/);
   } finally {
     rmSync(dir, { recursive: true });
   }
@@ -173,7 +174,9 @@ test("a stray directory beside locales stops the build and is named", () => {
   const dir = docsTree(["en/01-a.md", "it/01-a.md", "guides"]);
   try {
     assert.throws(
-      () => validateLocaleTree(dir, ["en", "it"], "en"),
+      () => {
+        validateLocaleTree(dir, ["en", "it"], "en");
+      },
       (error: Error) => {
         assert.match(error.message, /docs\/guides is not a locale/);
         assert.match(error.message, /en, it/);
@@ -188,10 +191,9 @@ test("a stray directory beside locales stops the build and is named", () => {
 test("a page left outside the locale directories is reported too", () => {
   const dir = docsTree(["en/01-a.md", "it/01-a.md", "01-orphan.md"]);
   try {
-    assert.throws(
-      () => validateLocaleTree(dir, ["en", "it"], "en"),
-      /01-orphan\.md is not a locale/,
-    );
+    assert.throws(() => {
+      validateLocaleTree(dir, ["en", "it"], "en");
+    }, /01-orphan\.md is not a locale/);
   } finally {
     rmSync(dir, { recursive: true });
   }
@@ -200,10 +202,9 @@ test("a page left outside the locale directories is reported too", () => {
 test("lang has to name one of the directories", () => {
   const dir = docsTree(["it/01-a.md", "fr/01-a.md"]);
   try {
-    assert.throws(
-      () => validateLocaleTree(dir, ["fr", "it"], "en"),
-      /lang is "en", which has no directory; found fr, it/,
-    );
+    assert.throws(() => {
+      validateLocaleTree(dir, ["fr", "it"], "en");
+    }, /lang is "en", which has no directory; found fr, it/);
   } finally {
     rmSync(dir, { recursive: true });
   }
@@ -212,7 +213,9 @@ test("lang has to name one of the directories", () => {
 test("a localised tree with a matching lang passes", () => {
   const dir = docsTree(["en/01-a.md", "it/01-a.md"]);
   try {
-    assert.doesNotThrow(() => validateLocaleTree(dir, ["en", "it"], "en"));
+    assert.doesNotThrow(() => {
+      validateLocaleTree(dir, ["en", "it"], "en");
+    });
   } finally {
     rmSync(dir, { recursive: true });
   }

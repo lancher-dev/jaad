@@ -78,18 +78,20 @@ test("only the first sorted page has an empty canonical slug", () => {
 });
 
 test("a flat tree or one chapter level has an unambiguous structure", () => {
-  assert.doesNotThrow(() =>
+  assert.doesNotThrow(() => {
     validateDocsStructure([
       { id: "01-intro" },
       { id: "02-guides/01-setup" },
       { id: "02-guides/02-deploy" },
-    ]),
-  );
+    ]);
+  });
 });
 
 test("duplicate clean slugs stop the build with both source ids", () => {
   assert.throws(
-    () => validateDocsStructure([{ id: "01-guide" }, { id: "02-guide" }]),
+    () => {
+      validateDocsStructure([{ id: "01-guide" }, { id: "02-guide" }]);
+    },
     (error: Error) => {
       assert.match(error.message, /^jaad: invalid documentation structure\n/);
       assert.match(error.message, /01-guide, 02-guide all resolve to \/guide/);
@@ -100,12 +102,13 @@ test("duplicate clean slugs stop the build with both source ids", () => {
 
 test("ambiguous chapters and unsupported depth are reported together", () => {
   assert.throws(
-    () =>
+    () => {
       validateDocsStructure([
         { id: "01-guides/01-start" },
         { id: "guides/02-next" },
         { id: "03-api/01-client/01-create" },
-      ]),
+      ]);
+    },
     (error: Error) => {
       assert.match(
         error.message,
@@ -244,7 +247,7 @@ test("the description skips a first paragraph that only repeats the title", () =
 
 test("a long description is cut at a word boundary", () => {
   const body = "# T\n\n" + "word ".repeat(60);
-  const description = extractDescription(body, "T", 40)!;
+  const description = extractDescription(body, "T", 40) ?? "";
   assert.ok(description.length <= 41, description);
   assert.ok(description.endsWith("…"));
   assert.ok(!description.includes("wor…"));
@@ -307,7 +310,9 @@ test("root pages and chapters interleave by number", () => {
 
   assert.deepEqual(
     navigation.sections.map((s) =>
-      s.type === "page" ? s.item.title : `${s.chapter}(${s.items.length})`,
+      s.type === "page"
+        ? s.item.title
+        : `${s.chapter}(${String(s.items.length)})`,
     ),
     ["Intro", "guides(2)", "Changelog"],
   );
@@ -440,17 +445,16 @@ test("ordering and chapters read the id without its locale", () => {
 // Three segments are only legal because the locale is gone by the time the
 // structure is checked.
 test("a chaptered page inside a locale is a valid structure", () => {
-  assert.doesNotThrow(() =>
+  assert.doesNotThrow(() => {
     validateDocsStructure(
       [{ id: "it/02-guides/01-setup", localeId: "02-guides/01-setup" }],
       "it",
-    ),
-  );
+    );
+  });
 });
 
 test("a structure error names the file on disk, locale included", () => {
-  assert.throws(
-    () => validateDocsStructure([{ id: "it/a/b/c", localeId: "a/b/c" }], "it"),
-    /it\/a\/b\/c: only one chapter directory/,
-  );
+  assert.throws(() => {
+    validateDocsStructure([{ id: "it/a/b/c", localeId: "a/b/c" }], "it");
+  }, /it\/a\/b\/c: only one chapter directory/);
 });

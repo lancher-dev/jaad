@@ -273,8 +273,8 @@ export function extractDescription(
   return `${truncated.slice(0, lastSpace > 0 ? lastSpace : maxLength)}…`;
 }
 
-export function buildSearchIndex<T extends DocsPageLike>(
-  sortedPages: T[],
+export function buildSearchIndex(
+  sortedPages: DocsPageLike[],
 ): DocsSearchEntry[] {
   return sortedPages.map((page, index) => ({
     title: docTitle(page),

@@ -207,7 +207,9 @@ test("a logo has to be a public url, not a source path", () => {
 
 test("a social image is inferred only when the public asset exists", (t) => {
   const cwd = mkdtempSync(join(tmpdir(), "jaad-config-"));
-  t.after(() => rmSync(cwd, { recursive: true }));
+  t.after(() => {
+    rmSync(cwd, { recursive: true });
+  });
 
   assert.equal(resolveConfig({ title: "T" }, cwd).ogImage, false);
 
@@ -233,7 +235,9 @@ test("an explicit social image has to be a public url", () => {
 
 const docsTree = (t: TestContext, entries: string[]) => {
   const cwd = mkdtempSync(join(tmpdir(), "jaad-config-locales-"));
-  t.after(() => rmSync(cwd, { recursive: true }));
+  t.after(() => {
+    rmSync(cwd, { recursive: true });
+  });
   for (const entry of entries) {
     mkdirSync(join(cwd, "docs", entry, ".."), { recursive: true });
     writeFileSync(join(cwd, "docs", entry), "# Page");
@@ -272,7 +276,9 @@ test("an explicit list is taken over what detection would find", (t) => {
 
 test("two empty locale directories leave the docs unlocalised", (t) => {
   const cwd = mkdtempSync(join(tmpdir(), "jaad-config-locales-"));
-  t.after(() => rmSync(cwd, { recursive: true }));
+  t.after(() => {
+    rmSync(cwd, { recursive: true });
+  });
   mkdirSync(join(cwd, "docs", "en"), { recursive: true });
   mkdirSync(join(cwd, "docs", "it"), { recursive: true });
 

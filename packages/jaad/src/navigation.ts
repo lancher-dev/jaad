@@ -55,10 +55,7 @@ interface Model {
 // hrefs do not, as long as the url options are the same ones.
 const models = new WeakMap<object, Map<string, Model>>();
 
-function modelFor<T extends DocsPageLike>(
-  sortedPages: T[],
-  urls: DocsUrlOptions,
-): Model {
+function modelFor(sortedPages: DocsPageLike[], urls: DocsUrlOptions): Model {
   const key = `${urls.docsBase}\u0000${urls.deploymentBase ?? ""}\u0000${urls.locale ?? ""}\u0000${urls.defaultLocale ?? ""}`;
   let byUrls = models.get(sortedPages);
   if (!byUrls) {
@@ -86,8 +83,8 @@ function modelFor<T extends DocsPageLike>(
   return model;
 }
 
-export function buildDocsNavigation<T extends DocsPageLike>(
-  sortedPages: T[],
+export function buildDocsNavigation(
+  sortedPages: DocsPageLike[],
   currentId: string,
   urls: DocsUrlOptions,
 ): DocsNavigation {
