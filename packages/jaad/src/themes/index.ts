@@ -9,10 +9,7 @@ export interface Preset {
   mode: "light" | "dark" | "dual";
 }
 
-/**
- * The palettes come from JAAMD, which ships them with a manifest; JAAD adds only
- * `default`, its own identity, which needs no stylesheet.
- */
+/** JAAMD's palettes, plus `default`: JAAD's own, which needs no stylesheet. */
 export const PRESETS: Record<string, Preset> = {
   default: {
     shiki: { light: "github-light", dark: "github-dark" },

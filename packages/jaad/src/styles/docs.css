@@ -43,7 +43,6 @@
     }
   }
 
-  /* Derived from the content, so one token moves the whole layout. */
   @media (min-width: 1024px) {
     [data-jaad-default-frame] .docs-sidebar-left,
     [data-jaad-default-frame] .docs-sidebar-right {

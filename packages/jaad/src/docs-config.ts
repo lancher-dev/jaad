@@ -3,7 +3,7 @@ import type { Locale } from "./locales.ts";
 import type { DocsUrlOptions } from "./urls.ts";
 import * as locales from "./locales.ts";
 
-/** The virtual config, read once and typed here. */
+/** The virtual config, read once. */
 export const LOCALES: Locale[] = config.docsLocales;
 export const DEFAULT_LOCALE: string = config.defaultLocale;
 

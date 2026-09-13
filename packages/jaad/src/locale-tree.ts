@@ -10,9 +10,8 @@ function hasMarkdown(dir: string): boolean {
   );
 }
 
-/** Locale directories under docs/, or none. Two of them mean the tree is
- *  organised by language; one counts only when `lang` names it, so a lone
- *  `docs/it/` stays the chapter an "IT" section needs. */
+/** Locale directories under docs/, or none. Two mean the tree is organised by
+ *  language; one counts only when `lang` names it. */
 export function detectLocales(docsDir: string, lang: string): string[] {
   if (!existsSync(docsDir)) return [];
 
@@ -26,7 +25,7 @@ export function detectLocales(docsDir: string, lang: string): string[] {
     (candidates.length === 1 && candidates[0] === lang.toLowerCase());
   if (!localised) return [];
 
-  // An empty directory would be advertised in the switcher and then 404.
+  // An empty directory would reach the switcher and answer 404.
   return candidates.filter((code) => hasMarkdown(join(docsDir, code)));
 }
 

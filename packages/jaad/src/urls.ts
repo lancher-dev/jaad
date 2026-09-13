@@ -19,7 +19,7 @@ export function withDeploymentBase(
 }
 
 export interface DocsUrlOptions {
-  /** Normalised routeBase: empty at the application root. */
+  /** routeBase, normalised here: empty at the application root. */
   docsBase: string;
   /** Astro's deployment base. */
   deploymentBase?: string;

@@ -14,8 +14,7 @@ const LANGUAGES = new Set(
   ).split(" "),
 );
 
-/** Region for a language that does not name one. Listed, never guessed: `aa`
- *  uppercased is not a country and would render an empty box. */
+/** Region for a language that does not name one. Listed, never derived. */
 const LANGUAGE_REGION: Record<string, string> = {
   af: "ZA",
   am: "ET",

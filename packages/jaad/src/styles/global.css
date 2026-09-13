@@ -157,7 +157,7 @@
     }
   }
 
-  /* `bare`: the landmark stays, the spacing goes. */
+  /* `bare` keeps the landmark without the spacing. */
   .jaad-main-bare {
     flex: 1;
   }

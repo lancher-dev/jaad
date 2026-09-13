@@ -72,7 +72,7 @@ const active = alternates.find((entry) => entry.locale.code === current);
       if (event.key === "Escape") this.#close();
     };
 
-    /** The header persists across navigations; the links in it must not. */
+    /** The header persists across navigations; its links must not. */
     #onBeforeSwap = (event: Event) => {
       const next = (
         event as Event & { newDocument: Document }
@@ -80,8 +80,7 @@ const active = alternates.find((entry) => entry.locale.code === current);
       if (next) this.innerHTML = next.innerHTML;
     };
 
-    /** Delegated: #onBeforeSwap replaces the button, and the element it is
-     *  bound to has to outlive that. connectedCallback runs once. */
+    /** Delegated: #onBeforeSwap replaces the button this would bind to. */
     #onClick = (event: MouseEvent) => {
       const target = event.target as Element | null;
       if (!target?.closest("[data-trigger]")) return;

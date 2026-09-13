@@ -105,8 +105,8 @@ export const jaadConfigSchema = z.object({
 
 export type JaadConfig = z.output<typeof jaadConfigSchema>;
 
-/** Out of the schema on purpose, so `parse` strips them: the resolved config
- *  is serialised, and an Astro integration is not serialisable. */
+/** Out of the schema, so `parse` strips them: the resolved config is
+ *  serialised and an integration is not. */
 type AstroPassthroughConfig = AstroUserConfig<
   Locales,
   string | SessionDriverConfig | undefined,
@@ -166,8 +166,8 @@ function resolveEditBase(
 const OPTIONS = Object.keys(jaadConfigSchema.shape);
 const FORWARDED = ["site", "base", "astro"];
 
-/** Zod strips what it does not know, so a misspelt option would do nothing at
- *  all. Both messages are read in a terminal, not parsed. */
+/** Unknown keys are rejected here: zod would strip a misspelt option in
+ *  silence. Both messages are read in a terminal, not parsed. */
 function parseConfig(options: JaadUserConfig): JaadConfig {
   const known = new Set([...OPTIONS, ...FORWARDED]);
   const unknown = Object.keys(options).filter((key) => !known.has(key));
@@ -260,7 +260,7 @@ export function resolveStylesheets(
   };
 }
 
-/** Identity helper, so a project can keep its options in its own typed file. */
+/** Identity helper, for a typed `jaad.config.ts`. */
 export function defineJaadConfig(config: JaadUserConfig): JaadUserConfig {
   return config;
 }

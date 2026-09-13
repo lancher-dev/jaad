@@ -21,9 +21,7 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "..", "..");
 const PKG = join(ROOT, "packages", "jaad");
 
-/**
- * Captures the contents of a directory for later assertion.
- */
+/** A built directory, frozen so the later rebuilds can be compared to it. */
 function snapshot(dist) {
   const files = walk(dist);
   const contents = new Map(

@@ -54,7 +54,7 @@ export async function getSortedDocsPages(
     .map(localise)
     .filter((page) => key === "" || page.locale === key);
 
-  // Validated before filtering: a draft's slug conflict still surfaces in dev.
+  // Validated before drafts are dropped, so a draft's slug conflict is an error.
   validateDocsStructure(pages, key || undefined);
   const sorted = sortDocPages(
     import.meta.env.PROD ? pages.filter((page) => !page.data.draft) : pages,

@@ -55,8 +55,8 @@ export function parseDocCollectionId(id: string): ParsedDocsCollectionId {
   return { order, orderChapter, chapter, slug, title: slugToTitle(slug) };
 }
 
-/** Chapter first, then file order within it. Root pages sort by their own
- *  number, so they interleave with chapters. Returns a new array. */
+/** Chapter order first, then file order within it. Root pages interleave with
+ *  chapters by their own number. */
 export function sortDocPages<T extends DocsPageLike>(pages: T[]): T[] {
   return pages
     .map((page) => ({ page, ...docOrder(page) }))

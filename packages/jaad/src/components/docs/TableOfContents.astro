@@ -48,7 +48,7 @@ const { headings } = Astro.props;
       sidebar.querySelectorAll<HTMLAnchorElement>("[data-toc-link]"),
     );
 
-    // [data-toc-ignore] can be set at runtime, so this cannot be done at build.
+    // [data-toc-ignore] is a runtime attribute, so this filter is too.
     const visibleLinks = allLinks.filter((link) => {
       const id = link.getAttribute("href")?.slice(1);
       if (!id) return false;

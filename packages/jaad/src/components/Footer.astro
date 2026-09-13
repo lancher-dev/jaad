@@ -1,11 +1,10 @@
 ---
 import config from "virtual:jaad/config";
 
-// Default line of credit, which can be replaced by the user in the config. It is always present in the source code, but can be hidden by setting `footer: false` in the config.
 const CREDIT =
   'Built with <a href="https://jaad.lancher.dev" rel="noopener">JAAD</a>.';
 
-// Unset is the credit on its own. A line of your own replaces it.
+// Unset is the credit alone; `footer: false` removes it.
 const line = config.footer === undefined ? ":credit" : config.footer;
 const html = line === false ? null : line.replaceAll(":credit", CREDIT);
 ---

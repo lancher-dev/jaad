@@ -29,7 +29,6 @@ export function buildSocialLinks(config: JaadResolvedConfig): SocialLink[] {
     });
   }
 
-  // If the user didn't name a forge, and the repository is known, add it to the list
   const namedAForge = Object.keys(config.social).some((key) => key in FORGES);
 
   if (

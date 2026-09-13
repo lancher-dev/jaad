@@ -123,7 +123,7 @@ const frameProps: DocsFrameProps = {
     <script>
       import { navigate } from "astro:transitions/client";
 
-      /** Prev/next are identified by their `rel`, not by their icon markup. */
+      /** Identified by `rel`. */
       function getPageLinks(): {
         prev: HTMLAnchorElement | null;
         next: HTMLAnchorElement | null;
@@ -170,7 +170,7 @@ const frameProps: DocsFrameProps = {
         navigate(target.href);
       }
 
-      // This module runs once and `document` survives View Transitions.
+      // `document` survives View Transitions, and this module runs once.
       document.addEventListener("keydown", onKey);
     </script>
   </body>
