@@ -1,3 +1,4 @@
+import tailwindcss from "@tailwindcss/vite";
 import { defineJaadConfig } from "@lancher-dev/jaad";
 
 export default defineJaadConfig({
@@ -8,6 +9,7 @@ export default defineJaadConfig({
   description:
     "An Astro integration that turns a folder of Markdown into a documentation site.",
   astro: {
+    vite: { plugins: [tailwindcss()] },
     redirects: {
       "/docs/getting-started/development":
         "/docs/getting-started/installation#run-locally",

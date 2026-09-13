@@ -368,6 +368,31 @@ test("--here refuses the site template over a configuration it cannot read", () 
 // forgets them, and everything fails once published.
 // The scaffolder pins the version it installs by hand, and a release that
 // bumps the package without it ships a project on the previous version.
+// JAAD no longer puts Tailwind in anyone's Vite config, so only the template
+// that styles its own pages may depend on it.
+test("only the site template depends on tailwind", () => {
+  const parent = temporaryDirectory("jaad-template-deps-");
+  const deps = (template) => {
+    const dir = join(parent, template);
+    run(
+      "node",
+      [CLI, dir, "--template", template, "--title", "T", "--no-install"],
+      parent,
+    );
+    return JSON.parse(readFileSync(join(dir, "package.json"), "utf8"))
+      .dependencies;
+  };
+
+  assert.ok(
+    !("tailwindcss" in deps("docs")),
+    "the docs template pulls tailwind",
+  );
+  assert.ok(
+    "tailwindcss" in deps("site"),
+    "the site template cannot style itself",
+  );
+});
+
 test("the version the scaffolder installs is the one being published", () => {
   const pinned = /const JAAD = "\^([\d.]+)"/.exec(
     readFileSync(join(CREATE_PKG, "index.mjs"), "utf8"),
