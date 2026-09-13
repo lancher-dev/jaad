@@ -57,6 +57,12 @@ const switcherAlternates = await getLocaleAlternates(
   entry ? getCleanSlug(routedId(entry)) : "",
 );
 
+// x-default is a landing place, so it takes the fallback when this page has no
+// translation into the default locale.
+const xDefault = switcherAlternates.find(
+  (alternate) => alternate.locale.code === DEFAULT_LOCALE,
+)?.href;
+
 // hreflang describes translations of this page, not the switcher's fallbacks.
 const alternates = switcherAlternates
   .filter((alternate) => alternate.translated)
@@ -91,6 +97,7 @@ const frameProps: DocsFrameProps = {
       modified={entry?.data.lastUpdated}
       language={language}
       {alternates}
+      {xDefault}
     />
     <StructuredData
       title={entryTitle || config.title}

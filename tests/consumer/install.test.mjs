@@ -125,11 +125,25 @@ export default defineJaadConfig({
     );
     writeFileSync(
       join(docs, "en", "02-guides", "01-deep-dive.md"),
-      "# Deep Dive\n\nOnly in English.\n",
+      "# Deep Dive\n\nTranslated.\n",
+    );
+    writeFileSync(
+      join(docs, "en", "02-guides", "02-only-in-english.md"),
+      "# Only In English\n\nNo Italian counterpart.\n",
     );
     writeFileSync(
       join(docs, "it", "01-per-iniziare.md"),
       "---\ntitle: Per iniziare\n---\n\n# Per iniziare\n\nItaliano.\n",
+    );
+    // A matching slug is what makes two files translations of each other.
+    mkdirSync(join(docs, "it", "02-guides"), { recursive: true });
+    writeFileSync(
+      join(docs, "it", "02-guides", "01-deep-dive.md"),
+      "# Analisi\n\nItalian twin of the English page.\n",
+    );
+    writeFileSync(
+      join(docs, "it", "02-guides", "02-solo-italiano.md"),
+      "# Solo italiano\n\nNo English counterpart.\n",
     );
     writeFileSync(
       join(project, "jaad.config.ts"),
@@ -225,7 +239,7 @@ export default defineJaadConfig({
     assert.ok(localised.pages.includes("/it/index.html"), "no /it index");
 
     assert.ok(
-      !localised.pages.includes("/it/guides/deep-dive/index.html"),
+      !localised.pages.includes("/it/guides/only-in-english/index.html"),
       "an untranslated page was built anyway",
     );
 
@@ -237,7 +251,7 @@ export default defineJaadConfig({
     const italian = JSON.parse(localised.read("it/search-index.json"));
     assert.deepEqual(
       italian.map((entry) => entry.slug),
-      [""],
+      ["", "guides/deep-dive", "guides/solo-italiano"],
       "the italian index is not scoped to italian",
     );
     assert.match(localised.read("it/llms.txt"), /\/it\//);
@@ -246,7 +260,6 @@ export default defineJaadConfig({
   test("a localised page declares its own language and its alternates", () => {
     const italian = localised.read("it/index.html");
     assert.match(italian, /<html lang="it"/);
-    assert.match(italian, /<meta property="og:locale" content="it"/);
     assert.match(
       italian,
       /<link rel="alternate" hreflang="it" href="https:\/\/example\.dev\/it"/,
@@ -259,10 +272,30 @@ export default defineJaadConfig({
       /<link rel="alternate" hreflang="x-default" href="https:\/\/example\.dev\/"/,
     );
 
+    // Open Graph wants language_TERRITORY; a bare tag is invalid.
+    assert.match(english, /<meta property="og:locale" content="en_GB"/);
+    assert.match(italian, /<meta property="og:locale" content="it_IT"/);
+
+    // Two files at the same slug are translations, and say so both ways.
+    const pair = localised.read("it/guides/deep-dive/index.html");
+    assert.match(pair, /<meta property="og:locale:alternate" content="en_GB"/);
+    assert.match(
+      pair,
+      /<link rel="alternate" hreflang="en" href="https:\/\/example\.dev\/guides\/deep-dive"/,
+    );
+
+    // Untranslated, so x-default still has to name somewhere to land.
+    const onlyItalian = localised.read("it/guides/solo-italiano/index.html");
+    assert.doesNotMatch(onlyItalian, /<link rel="alternate" hreflang="en"/);
+    assert.match(
+      onlyItalian,
+      /<link rel="alternate" hreflang="x-default" href="https:\/\/example\.dev\/"/,
+    );
+
     // An untranslated page advertises no alternate it does not have. The
     // switcher still links to Italian, so this looks only at <head>.
-    const deepDive = localised.read("guides/deep-dive/index.html");
-    assert.doesNotMatch(deepDive, /<link rel="alternate" hreflang="it"/);
+    const onlyEnglish = localised.read("guides/only-in-english/index.html");
+    assert.doesNotMatch(onlyEnglish, /<link rel="alternate" hreflang="it"/);
   });
 
   test("structured data roots the breadcrumb in the page's own locale", () => {
@@ -287,16 +320,20 @@ export default defineJaadConfig({
   });
 
   test("the switcher ships with two locales and falls back per page", () => {
-    const deepDive = localised.read("guides/deep-dive/index.html");
-    assert.match(deepDive, /<jaad-locale-switcher/);
-    assert.match(deepDive, /Italiano/);
+    const onlyEnglish = localised.read("guides/only-in-english/index.html");
+    assert.match(onlyEnglish, /<jaad-locale-switcher/);
+    assert.match(onlyEnglish, /Italiano/);
     assert.doesNotMatch(
-      deepDive,
+      onlyEnglish,
       /hreflang="fr"/,
       "an empty locale was offered",
     );
-    // No Italian deep dive, so Italian lands on the Italian opening page.
-    assert.match(deepDive, /<a href="\/it" hreflang="it"/);
+    // No Italian twin, so Italian lands on the Italian opening page.
+    assert.match(onlyEnglish, /<a href="\/it" hreflang="it"/);
+
+    // With a twin it links to the twin instead.
+    const pair = localised.read("guides/deep-dive/index.html");
+    assert.match(pair, /<a href="\/it\/guides\/deep-dive" hreflang="it"/);
   });
 
   test("a single-locale site renders no switcher at all", () => {

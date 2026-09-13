@@ -7,6 +7,7 @@ import {
   describeLocale,
   isLocale,
   localeTag,
+  openGraphLocale,
   localePrefix,
   prefixedLocales,
   routedLocales,
@@ -230,4 +231,21 @@ test("only the prefixed locales get a route of their own", () => {
 test("a site with no locales is built in a single unlocalised pass", () => {
   assert.deepEqual(routedLocales([]), [undefined]);
   assert.deepEqual(routedLocales([locale("en"), locale("it")]), ["en", "it"]);
+});
+
+// ── Open Graph ───────────────────────────────────────────────────────────────
+
+// og:locale is language_TERRITORY, not a BCP-47 tag: "it" alone is invalid.
+test("an open graph locale carries a territory", () => {
+  assert.equal(openGraphLocale("it"), "it_IT");
+  assert.equal(openGraphLocale("en"), "en_GB");
+});
+
+test("a code that names its own region keeps it", () => {
+  assert.equal(openGraphLocale("pt-br"), "pt_BR");
+  assert.equal(openGraphLocale("en-us"), "en_US");
+});
+
+test("a language with no listed region stays bare rather than invented", () => {
+  assert.equal(openGraphLocale("aa"), "aa");
 });

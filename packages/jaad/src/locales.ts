@@ -156,6 +156,18 @@ function localeFlag(code: string): string | null {
   );
 }
 
+/** Open Graph wants language_TERRITORY, not a BCP-47 tag. The territory comes
+ *  from the code when it names one, and from LANGUAGE_REGION otherwise. */
+export function openGraphLocale(code: string): string {
+  const match = LOCALE_RE.exec(code.toLowerCase());
+  if (!match) return code;
+
+  const language = match[1];
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  const region = match[3]?.toUpperCase() ?? LANGUAGE_REGION[language];
+  return region ? `${language}_${region}` : language;
+}
+
 export function describeLocale(code: string): Locale {
   const tag = localeTag(code);
   return { code, tag, name: localeName(tag), flag: localeFlag(code) };
