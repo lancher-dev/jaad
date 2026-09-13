@@ -25,6 +25,7 @@ export interface DocsPageData {
   title?: string;
   description?: string;
   label?: string;
+  translationKey?: string;
   order?: number;
   draft: boolean;
   keywords: string[];

@@ -53,6 +53,7 @@ the body already supplies:
 ---
 title: Images & Videos # page title; the filename still sets the URL
 label: Media # shorter name, in navigation only
+translationKey: media # pairs this page with its translations
 description: Add accessible images. # description metadata
 keywords: [markdown, media] # keyword metadata and search weight
 author: Ada Lovelace # author metadata
