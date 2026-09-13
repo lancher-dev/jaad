@@ -44,6 +44,7 @@ const navigation = buildDocsNavigation(sortedPages, entry.id, urls);
     slot="mobile-navigation"
     sections={navigation.sections}
     headings={headings}
+    locale={entry.locale}
   />
 
   <Breadcrumbs
@@ -72,5 +73,6 @@ const navigation = buildDocsNavigation(sortedPages, entry.id, urls);
     slot="page-navigation"
     previousPage={navigation.previousPage}
     nextPage={navigation.nextPage}
+    locale={entry.locale}
   />
 </DocsLayout>

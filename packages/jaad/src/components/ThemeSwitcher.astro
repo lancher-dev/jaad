@@ -1,12 +1,15 @@
 ---
 // The theme class and the icon are already set in <head>; only the click is JS.
+import { ui } from "../docs-config.ts";
+
+const t = ui(Astro.props.locale);
 ---
 
 <jaad-theme-toggle>
   <button
     class="jaad-icon-button"
-    aria-label="Toggle color theme"
-    title="Toggle color theme"
+    aria-label={t("theme.toggle")}
+    title={t("theme.toggle")}
   >
     <svg
       class="theme-icon-to-dark h-5 w-5"

@@ -1,5 +1,6 @@
 ---
 import type { LocaleAlternate } from "../collection.ts";
+import { ui } from "../docs-config.ts";
 
 interface Props {
   alternates: LocaleAlternate[];
@@ -8,6 +9,7 @@ interface Props {
 
 const { alternates, current } = Astro.props;
 const active = alternates.find((entry) => entry.locale.code === current);
+const t = ui(current);
 ---
 
 <jaad-locale-switcher class="relative">
@@ -17,8 +19,8 @@ const active = alternates.find((entry) => entry.locale.code === current);
     aria-expanded="false"
     aria-haspopup="true"
     aria-controls="jaad-locale-menu"
-    aria-label="Change language"
-    title="Change language"
+    aria-label={t("locale.change")}
+    title={t("locale.change")}
     class="jaad-icon-button w-auto gap-1.5 px-2"
   >
     {

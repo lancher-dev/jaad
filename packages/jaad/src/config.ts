@@ -94,6 +94,9 @@ export const jaadConfigSchema = z.object({
     })
     .default("auto"),
 
+  /** Per locale, the interface strings to use instead of JAAD's English. */
+  ui: z.record(z.string(), z.record(z.string(), z.string())).default({}),
+
   /** Only when detection guesses wrong: pin the set, or false to switch it off. */
   locales: z
     .union([

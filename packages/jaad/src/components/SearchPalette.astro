@@ -1,6 +1,6 @@
 ---
 import { docsPageHref } from "../urls.ts";
-import { DEFAULT_LOCALE, docsUrls } from "../docs-config.ts";
+import { DEFAULT_LOCALE, docsUrls, ui } from "../docs-config.ts";
 
 interface Props {
   /** Whether this page is part of the docs. Off them the palette keeps its
@@ -12,6 +12,7 @@ interface Props {
 
 const { inDocs = false, locale = DEFAULT_LOCALE } = Astro.props;
 const urls = docsUrls(locale);
+const t = ui(locale);
 const base = docsPageHref("", urls);
 const indexUrl = docsPageHref("search-index.json", urls);
 
@@ -22,12 +23,14 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
   data-in-docs={inDocs ? "" : null}
   data-base={base}
   data-index-url={indexUrl}
+  data-loading={t("search.loading")}
+  data-empty={t("search.empty")}
 >
   <button
     data-trigger-desktop
     hidden={!inDocs}
     class="border-border bg-surface hover:bg-surface-hover text-foreground-muted hidden cursor-pointer items-center gap-2 rounded-lg border px-3 py-1.5 text-sm transition-colors md:flex"
-    aria-label="Search documentation"
+    aria-label={t("search.label")}
   >
     <svg
       class="h-4 w-4 shrink-0"
@@ -42,7 +45,7 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
         stroke-width="2"
         d={MAGNIFIER}></path>
     </svg>
-    <span class="hidden lg:inline">Search docs...</span>
+    <span class="hidden lg:inline">{t("search.trigger")}</span>
     <kbd
       data-shortcut
       class="bg-background-secondary text-foreground-muted rounded px-1.5 py-0.5 text-xs font-medium"
@@ -53,7 +56,7 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
   <button
     data-trigger-icon
     class:list={["jaad-icon-button", inDocs && "md:hidden"]}
-    aria-label="Search documentation"
+    aria-label={t("search.label")}
   >
     <svg
       class="h-5 w-5"
@@ -76,7 +79,7 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
     class="fixed inset-0 z-50 flex items-start justify-center px-4 pt-[15vh]"
     role="dialog"
     aria-modal="true"
-    aria-label="Search documentation"
+    aria-label={t("search.label")}
   >
     <div data-backdrop class="absolute inset-0 bg-black/60 backdrop-blur-sm">
     </div>
@@ -101,7 +104,7 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
         <input
           data-input
           type="text"
-          placeholder="Search documentation..."
+          placeholder={t("search.placeholder")}
           class="text-foreground placeholder-foreground-muted min-w-0 flex-1 bg-transparent text-sm outline-none"
           autocomplete="off"
           spellcheck="false"
@@ -109,7 +112,7 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
           aria-expanded="true"
           aria-controls="search-results"
           aria-autocomplete="list"
-          aria-label="Search documentation"
+          aria-label={t("search.label")}
         />
         <kbd
           data-close
@@ -123,7 +126,7 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
         id="search-results"
         class="max-h-80 overflow-y-auto p-2"
         role="listbox"
-        aria-label="Search results"
+        aria-label={t("search.results")}
       >
       </ul>
 
@@ -131,13 +134,16 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
         class="border-border text-foreground-muted flex items-center gap-4 border-t px-4 py-2 text-xs"
       >
         <span>
-          <kbd class="bg-background-secondary rounded px-1 py-0.5">↑↓</kbd> navigate
+          <kbd class="bg-background-secondary rounded px-1 py-0.5">↑↓</kbd>
+          {t("search.navigate")}
         </span>
         <span>
-          <kbd class="bg-background-secondary rounded px-1 py-0.5">↵</kbd> open
+          <kbd class="bg-background-secondary rounded px-1 py-0.5">↵</kbd>
+          {t("search.open")}
         </span>
         <span>
-          <kbd class="bg-background-secondary rounded px-1 py-0.5">esc</kbd> close
+          <kbd class="bg-background-secondary rounded px-1 py-0.5">esc</kbd>
+          {t("search.close")}
         </span>
       </div>
     </div>
@@ -320,14 +326,16 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
       this.#input.removeAttribute("aria-activedescendant");
 
       if (!this.#index) {
-        this.#list.append(this.#message("Loading..."));
+        this.#list.append(this.#message(this.dataset.loading ?? "Loading..."));
         return;
       }
 
       this.#results = scoreItems(this.#index, query);
 
       if (this.#results.length === 0) {
-        this.#list.append(this.#message(`No results for “${query}”`));
+        this.#list.append(
+          this.#message(`${this.dataset.empty ?? "No results for"} “${query}”`),
+        );
         return;
       }
 

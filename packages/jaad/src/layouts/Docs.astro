@@ -118,13 +118,13 @@ const frameProps: DocsFrameProps = {
   >
     <DocsFrame {...frameProps}>
       <Header slot="header" inDocs {locale} alternates={switcherAlternates} />
-      <DocsSidebarLeft slot="sidebar" sections={navigation.sections} />
+      <DocsSidebarLeft slot="sidebar" sections={navigation.sections} {locale} />
       <slot name="mobile-navigation" slot="mobile-navigation" />
       <slot name="breadcrumbs" slot="breadcrumbs" />
       <slot name="page-actions" slot="page-actions" />
       <slot name="content" slot="content" />
       <slot name="page-navigation" slot="page-navigation" />
-      <TableOfContents slot="table-of-contents" headings={headings} />
+      <TableOfContents slot="table-of-contents" headings={headings} {locale} />
       <Footer slot="footer" />
     </DocsFrame>
 

@@ -1,11 +1,15 @@
 ---
 import type { DocsHeadings } from "../../@types/docs.ts";
 
+import { ui } from "../../docs-config.ts";
+
 interface Props {
   headings: DocsHeadings[];
+  locale?: string;
 }
 
-const { headings } = Astro.props;
+const { headings, locale } = Astro.props;
+const t = ui(locale);
 ---
 
 {
@@ -15,7 +19,7 @@ const { headings } = Astro.props;
       data-toc-pending
       class="docs-sidebar-right jaad-sidebar overflow-y-auto"
     >
-      <nav aria-label="Table of contents">
+      <nav aria-label={t("toc.label")}>
         <h2 class="text-primary/60 mb-4 text-xs font-semibold tracking-wider uppercase">
           On This Page
         </h2>
