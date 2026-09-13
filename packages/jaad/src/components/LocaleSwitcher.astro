@@ -63,6 +63,8 @@ const active = alternates.find((entry) => entry.locale.code === current);
 </jaad-locale-switcher>
 
 <script>
+  import { nextSwitcherMarkup } from "./locale-switcher.ts";
+
   class JaadLocaleSwitcher extends HTMLElement {
     #onDocumentPointerDown = (event: PointerEvent) => {
       if (!this.contains(event.target as Node)) this.#close();
@@ -74,10 +76,10 @@ const active = alternates.find((entry) => entry.locale.code === current);
 
     /** The header persists across navigations; its links must not. */
     #onBeforeSwap = (event: Event) => {
-      const next = (
-        event as Event & { newDocument: Document }
-      ).newDocument.querySelector("jaad-locale-switcher");
-      if (next) this.innerHTML = next.innerHTML;
+      const markup = nextSwitcherMarkup(
+        (event as Event & { newDocument: Document }).newDocument,
+      );
+      if (markup !== null) this.innerHTML = markup;
     };
 
     /** Delegated: #onBeforeSwap replaces the button this would bind to. */

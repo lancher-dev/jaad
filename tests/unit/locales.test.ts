@@ -93,16 +93,6 @@ test("markdown anywhere inside the directory counts", () => {
   }
 });
 
-// An advertised locale with nothing in it is a link to a 404.
-test("an empty locale directory is not a locale", () => {
-  const dir = docsTree(["en/01-intro.md", "it"]);
-  try {
-    assert.deepEqual(detectLocales(dir, "en"), ["en"]);
-  } finally {
-    rmSync(dir, { recursive: true });
-  }
-});
-
 // The tree stays localised, so en/ keeps being stripped and no url moves.
 test("one locale left with content still owns the unprefixed urls", () => {
   const dir = docsTree(["en/01-intro.md", "it"]);

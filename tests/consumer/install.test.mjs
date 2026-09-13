@@ -194,6 +194,10 @@ export default defineJaadConfig({
     const home = built.read("index.html");
     assert.match(home, /<meta name="keywords" content="alpha, beta"/);
     assert.match(home, /"keywords":\["alpha","beta"\]/);
+    assert.deepEqual(JSON.parse(built.read("search-index.json"))[0].keywords, [
+      "alpha",
+      "beta",
+    ]);
   });
 
   test("a draft is left out of the production build entirely", () => {
@@ -208,7 +212,6 @@ export default defineJaadConfig({
       "a draft page reached the search index",
     );
     assert.doesNotMatch(built.read("llms.txt"), /\/draft/);
-    assert.deepEqual(index[0].keywords, ["alpha", "beta"]);
   });
 
   test("locale directories build one documentation site per language", () => {
