@@ -1,8 +1,10 @@
 ---
 import config from "virtual:jaad/config";
 import { withDeploymentBase } from "../urls.ts";
+import { ui } from "../docs-config.ts";
 
 const links = config.nav;
+const t = ui(Astro.props.locale);
 ---
 
 {
@@ -10,7 +12,7 @@ const links = config.nav;
     <jaad-nav-mobile class="relative md:hidden">
       <button
         class="jaad-icon-button"
-        aria-label="Toggle mobile menu"
+        aria-label={t("nav.mobile")}
         aria-expanded="false"
         aria-haspopup="true"
         aria-controls="jaad-nav-menu"

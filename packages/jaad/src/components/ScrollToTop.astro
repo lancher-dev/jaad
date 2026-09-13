@@ -1,7 +1,13 @@
+---
+import { ui } from "../docs-config.ts";
+
+const t = ui(Astro.props.locale);
+---
+
 <jaad-scroll-top>
   <button
     class="bg-background text-foreground hover:bg-background/80 border-foreground/20 pointer-events-none fixed right-6 bottom-6 z-50 flex h-12 w-12 items-center justify-center rounded-full border opacity-0 shadow-lg transition-opacity duration-300 lg:hidden"
-    aria-label="Scroll to top"
+    aria-label={t("scrollTop")}
   >
     <svg
       class="h-6 w-6"

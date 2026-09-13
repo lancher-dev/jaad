@@ -40,6 +40,7 @@ such as `/logo.svg`.
 | `docsDir`   | `string`            | `"./docs"` | Directory containing Markdown files      |
 | `routeBase` | `string`            | `"/"`      | Route where documentation is mounted     |
 | `locales`   | `string[] \| false` | detected   | Override the detected locale directories |
+| `ui`        | `object`            | `{}`       | Interface strings, per locale            |
 
 Locale directories under `docsDir` are detected on their own; `locales` only
 overrides that. See [Languages](/docs/configurations/i18n).

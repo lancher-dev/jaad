@@ -163,6 +163,7 @@ export default defineJaadConfig({
   site: "https://example.dev",
   title: "Consumer Test",
   lang: "en",
+  ui: { it: { "page.copy": "Copia la pagina", home: "Inizio" } },
 });
 `,
     );
@@ -332,6 +333,20 @@ export default defineJaadConfig({
       italian,
       /<meta property="og:locale:alternate" content="en_GB"/,
     );
+  });
+
+  test("interface strings follow the locale, key by key", () => {
+    const italian = localised.read("it/index.html");
+    assert.match(italian, />Copia la pagina</);
+    assert.match(italian, /title="Inizio"/);
+    // Not overridden, so it keeps the english default rather than going blank.
+    assert.match(italian, />Search docs\.\.\.</);
+    assert.match(italian, /aria-label="Search documentation"/);
+
+    // English is untouched by an italian override.
+    const english = localised.read("index.html");
+    assert.match(english, />Copy page</);
+    assert.match(english, /title="Home"/);
   });
 
   test("structured data roots the breadcrumb in the page's own locale", () => {
