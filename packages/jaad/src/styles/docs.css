@@ -1,140 +1,141 @@
-.docs-container {
-  position: relative;
-  width: 100%;
-  min-height: calc(100vh - 6.5rem);
-  display: flex;
-  justify-content: center;
-}
+/* Layered, so a page's own utilities still win. */
+@layer components {
+  .docs-container {
+    position: relative;
+    width: 100%;
+    min-height: calc(100vh - 6.5rem);
+    display: flex;
+    justify-content: center;
+  }
 
-.docs-page-main {
-  flex: 1;
-  margin: 2rem 1rem;
-}
-
-@media (min-width: 768px) {
+  /* The inline margin is deliberate and survives every breakpoint: it sits
+     outside the page padding, which only starts at 768px. */
   .docs-page-main {
-    margin-block: 4rem;
-    padding-inline: var(--jaad-page-padding);
-  }
-}
-
-@media (min-width: 1024px) {
-  .docs-page-main {
-    margin-bottom: 8rem;
-    padding-inline: calc(var(--jaad-page-padding) * 2);
-  }
-}
-
-.docs-main {
-  width: 100%;
-  max-width: var(--jaad-content-width);
-  position: relative;
-}
-
-/* The room the sidebars need, so widening them widens the gutters too. */
-@media (min-width: 1024px) {
-  .docs-main-gutters {
-    margin-inline: var(--jaad-sidebar-width);
-  }
-}
-
-/* Derived from the content, so one token moves the whole layout. */
-@media (min-width: 1024px) {
-  [data-jaad-default-frame] .docs-sidebar-left,
-  [data-jaad-default-frame] .docs-sidebar-right {
-    position: fixed;
-    top: 0;
-    display: block;
-    height: 100vh;
-    padding: 6rem 1.5rem 2rem;
+    flex: 1;
+    margin-block: 2rem;
+    margin-inline: 1rem;
   }
 
-  /* max() keeps the sidebar on screen when the centred offset would be
-     negative, whatever the content and sidebar tokens are set to. */
-  [data-jaad-default-frame] .docs-sidebar-left {
-    left: max(1rem, var(--jaad-sidebar-offset));
+  @media (min-width: 768px) {
+    .docs-page-main {
+      margin-block: 4rem;
+      padding-inline: var(--jaad-page-padding);
+    }
   }
 
-  [data-jaad-default-frame] .docs-sidebar-right {
-    right: max(1rem, var(--jaad-sidebar-offset));
+  @media (min-width: 1024px) {
+    .docs-page-main {
+      margin-bottom: 8rem;
+      padding-inline: calc(var(--jaad-page-padding) * 2);
+    }
   }
-}
 
-@media (max-width: 1023px) {
-  [data-jaad-default-frame] .docs-sidebar-left,
-  [data-jaad-default-frame] .docs-sidebar-right {
-    display: none;
+  .docs-main {
+    width: 100%;
+    max-width: var(--jaad-content-width);
+    position: relative;
   }
-}
 
-html {
-  scroll-padding-top: 8rem;
-}
+  /* The room the sidebars need, so widening them widens the gutters too. */
+  @media (min-width: 1024px) {
+    .docs-main-gutters {
+      margin-inline: var(--jaad-sidebar-width);
+    }
+  }
 
-.docs-sidebar-left::-webkit-scrollbar,
-.docs-sidebar-right::-webkit-scrollbar {
-  width: 6px;
-}
+  /* Derived from the content, so one token moves the whole layout. */
+  @media (min-width: 1024px) {
+    [data-jaad-default-frame] .docs-sidebar-left,
+    [data-jaad-default-frame] .docs-sidebar-right {
+      position: fixed;
+      top: 0;
+      height: 100vh;
+      padding: 6rem 1.5rem 2rem;
+    }
 
-.docs-sidebar-left::-webkit-scrollbar-track,
-.docs-sidebar-right::-webkit-scrollbar-track {
-  background: transparent;
-}
+    /* max() keeps the sidebar on screen when the centred offset would be
+       negative, whatever the content and sidebar tokens are set to. */
+    [data-jaad-default-frame] .docs-sidebar-left {
+      left: max(1rem, var(--jaad-sidebar-offset));
+    }
 
-.docs-sidebar-left::-webkit-scrollbar-thumb,
-.docs-sidebar-right::-webkit-scrollbar-thumb {
-  background: rgb(from var(--color-primary) r g b / 0.2);
-  border-radius: 3px;
-}
+    [data-jaad-default-frame] .docs-sidebar-right {
+      right: max(1rem, var(--jaad-sidebar-offset));
+    }
+  }
 
-.docs-sidebar-left::-webkit-scrollbar-thumb:hover,
-.docs-sidebar-right::-webkit-scrollbar-thumb:hover {
-  background: rgb(from var(--color-primary) r g b / 0.4);
-}
+  @media (max-width: 1023px) {
+    [data-jaad-default-frame] .docs-sidebar-left,
+    [data-jaad-default-frame] .docs-sidebar-right {
+      display: none;
+    }
+  }
 
-/* A mask, so the colour comes from the token and follows the theme.
-   Override --jaad-select-arrow for a different shape. */
-.docs-select {
-  position: relative;
-}
+  .docs-sidebar-left::-webkit-scrollbar,
+  .docs-sidebar-right::-webkit-scrollbar {
+    width: 6px;
+  }
 
-.docs-select::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  right: 0.75rem;
-  width: 1.25rem;
-  height: 1.25rem;
-  transform: translateY(-50%);
-  pointer-events: none;
-  background-color: var(--color-foreground);
-  mask: var(
-      --jaad-select-arrow,
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' viewBox='0 0 20 20'%3E%3Cpath d='M6 8l4 4 4-4'/%3E%3C/svg%3E")
-    )
-    center / contain no-repeat;
-}
+  .docs-sidebar-left::-webkit-scrollbar-track,
+  .docs-sidebar-right::-webkit-scrollbar-track {
+    background: transparent;
+  }
 
-.docs-mobile-nav select {
-  appearance: none;
-  padding-right: 2.5rem;
-}
+  .docs-sidebar-left::-webkit-scrollbar-thumb,
+  .docs-sidebar-right::-webkit-scrollbar-thumb {
+    background: rgb(from var(--color-primary) r g b / 0.2);
+    border-radius: 3px;
+  }
 
-.docs-mobile-nav optgroup {
-  font-weight: 600;
-  color: var(--color-primary);
-  background: var(--color-surface);
-}
+  .docs-sidebar-left::-webkit-scrollbar-thumb:hover,
+  .docs-sidebar-right::-webkit-scrollbar-thumb:hover {
+    background: rgb(from var(--color-primary) r g b / 0.4);
+  }
 
-.docs-mobile-nav option {
-  font-weight: 400;
-  color: var(--color-foreground);
-  background: var(--color-surface);
-  padding: 0.5rem;
-}
+  /* A mask, so the colour comes from the token and follows the theme.
+     Override --jaad-select-arrow for a different shape. */
+  .docs-select {
+    position: relative;
+  }
 
-/* Hidden until initToc() has pruned it, otherwise stale items flash. */
-#toc-sidebar[data-toc-pending] {
-  opacity: 0;
-  pointer-events: none;
+  .docs-select::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 0.75rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    transform: translateY(-50%);
+    pointer-events: none;
+    background-color: var(--color-foreground);
+    mask: var(
+        --jaad-select-arrow,
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' viewBox='0 0 20 20'%3E%3Cpath d='M6 8l4 4 4-4'/%3E%3C/svg%3E")
+      )
+      center / contain no-repeat;
+  }
+
+  .docs-mobile-nav select {
+    appearance: none;
+    padding-right: 2.5rem;
+  }
+
+  .docs-mobile-nav optgroup {
+    font-weight: 600;
+    color: var(--color-primary);
+    background: var(--color-surface);
+  }
+
+  .docs-mobile-nav option {
+    font-weight: 400;
+    color: var(--color-foreground);
+    background: var(--color-surface);
+    padding: 0.5rem;
+  }
+
+  /* Hidden until initToc() has pruned it, otherwise stale items flash. */
+  #toc-sidebar[data-toc-pending] {
+    opacity: 0;
+    pointer-events: none;
+  }
 }

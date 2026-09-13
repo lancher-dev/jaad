@@ -91,6 +91,7 @@
 
 @layer base {
   html {
+    scroll-padding-top: 8rem;
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
