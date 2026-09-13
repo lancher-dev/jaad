@@ -100,5 +100,6 @@ them, though a frame of your own can, through
 path or an absolute URL, and `false` removes the image from that page. Local
 paths need `site` to resolve, as elsewhere.
 
-`lastUpdated` takes a date, and becomes `article:modified_time` and
-`dateModified` in structured data. JAAD does not display it.
+`lastUpdated` takes a date. It becomes `article:modified_time` and
+`dateModified` in structured data, and is shown under the page, formatted for
+its language.

@@ -13,6 +13,7 @@ export const UI_DEFAULTS = {
   "page.copied": "Copied!",
   "page.copy": "Copy page",
   "page.edit": "Edit this page",
+  "page.lastUpdated": "Last updated on",
   scrollTop: "Scroll to top",
   "search.close": "close",
   "search.empty": "No results for",

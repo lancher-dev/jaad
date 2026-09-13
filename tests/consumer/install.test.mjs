@@ -335,6 +335,14 @@ export default defineJaadConfig({
     );
   });
 
+  // A date in frontmatter that nothing renders is a field nobody would set.
+  test("a lastUpdated date is shown, formatted for the page's language", () => {
+    const page = built.read("guides/deep-dive/index.html");
+    assert.match(page, /<time datetime="2026-09-12T00:00:00\.000Z">/);
+    assert.match(page, />Last updated on <time/);
+    assert.match(page, /September 12, 2026|12 September 2026/);
+  });
+
   test("interface strings follow the locale, key by key", () => {
     const italian = localised.read("it/index.html");
     assert.match(italian, />Copia la pagina</);

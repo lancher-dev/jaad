@@ -366,6 +366,19 @@ test("--here refuses the site template over a configuration it cannot read", () 
 
 // The templates are only files on disk: nothing fails locally when `files`
 // forgets them, and everything fails once published.
+// The scaffolder pins the version it installs by hand, and a release that
+// bumps the package without it ships a project on the previous version.
+test("the version the scaffolder installs is the one being published", () => {
+  const pinned = /const JAAD = "\^([\d.]+)"/.exec(
+    readFileSync(join(CREATE_PKG, "index.mjs"), "utf8"),
+  )?.[1];
+  const published = JSON.parse(
+    readFileSync(join(ROOT, "packages/jaad/package.json"), "utf8"),
+  ).version;
+
+  assert.equal(pinned, published, "create-jaad pins a stale @lancher-dev/jaad");
+});
+
 test("the published scaffolder carries its templates", () => {
   const output = run("npm", ["pack", "--dry-run", "--json"], CREATE_PKG);
   const packed = JSON.parse(output)[0].files.map((entry) => entry.path);
