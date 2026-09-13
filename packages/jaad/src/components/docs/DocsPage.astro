@@ -14,7 +14,8 @@ import DocsMobileNav from "./DocsMobileNav.astro";
 import DocsPageNav from "./DocsPageNav.astro";
 import Breadcrumbs from "./Breadcrumbs.astro";
 import PageActions from "./PageActions.astro";
-import { docsUrls } from "../../docs-config.ts";
+import config from "virtual:jaad/config";
+import { DEFAULT_LOCALE, LOCALES, docsUrls, ui } from "../../docs-config.ts";
 
 interface Props {
   entry: DocsEntry;
@@ -30,6 +31,11 @@ const { chapter } = parseDocCollectionId(routedId(entry));
 const title = docTitle(entry);
 const headings = extractHeadingsFromMarkdown(entry.body || "");
 const urls = docsUrls(entry.locale);
+const t = ui(entry.locale);
+const language =
+  LOCALES.find((known) => known.code === (entry.locale ?? DEFAULT_LOCALE))
+    ?.tag ?? config.lang;
+const updated = entry.data.lastUpdated;
 const navigation = buildDocsNavigation(sortedPages, entry.id, urls);
 ---
 
@@ -67,6 +73,19 @@ const navigation = buildDocsNavigation(sortedPages, entry.id, urls);
     >
       <slot />
     </MarkdownContent>
+
+    {
+      updated && (
+        <p class="text-foreground-muted mt-8 text-xs">
+          {t("page.lastUpdated")}{" "}
+          <time datetime={updated.toISOString()}>
+            {new Intl.DateTimeFormat(language, { dateStyle: "long" }).format(
+              updated,
+            )}
+          </time>
+        </p>
+      )
+    }
   </Fragment>
 
   <DocsPageNav
