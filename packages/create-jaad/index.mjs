@@ -18,7 +18,7 @@ import {
 } from "./lib.mjs";
 
 // Bumped together with the package they install.
-const JAAD = "^0.8.3";
+const JAAD = "^0.9.0";
 const ASTRO = "^7.3.1";
 const ASTRO_CONFIG_NAMES = [
   "astro.config.ts",

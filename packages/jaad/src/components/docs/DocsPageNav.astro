@@ -1,17 +1,21 @@
 ---
 import type { DocsNavItem } from "../../@types/docs.ts";
 
+import { ui } from "../../docs-config.ts";
+
 interface Props {
+  locale?: string;
   previousPage: DocsNavItem | null;
   nextPage: DocsNavItem | null;
 }
 
-const { previousPage, nextPage } = Astro.props;
+const { previousPage, nextPage, locale } = Astro.props;
+const t = ui(locale);
 ---
 
 {
   (previousPage || nextPage) && (
-    <nav class="py-8" aria-label="Page navigation">
+    <nav class="py-8" aria-label={t("nav.page")}>
       <div class="flex items-center justify-between gap-4">
         {previousPage && previousPage.title ? (
           <a

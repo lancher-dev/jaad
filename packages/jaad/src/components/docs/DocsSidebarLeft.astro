@@ -2,15 +2,19 @@
 import type { NavSection } from "../../navigation.ts";
 import { formatChapterTitle } from "../../utils/docs.ts";
 
+import { ui } from "../../docs-config.ts";
+
 interface Props {
   sections: NavSection[];
+  locale?: string;
 }
 
-const { sections } = Astro.props;
+const { sections, locale } = Astro.props;
+const t = ui(locale);
 ---
 
 <aside class="docs-sidebar-left jaad-sidebar overflow-y-auto">
-  <nav aria-label="Documentation navigation">
+  <nav aria-label={t("nav.documentation")}>
     {
       sections.map((section, i) =>
         section.type === "page" ? (

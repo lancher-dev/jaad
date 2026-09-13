@@ -1,6 +1,7 @@
 import { getCollection } from "astro:content";
 import type { DocsEntry } from "./@types/docs.ts";
 import {
+  docTranslationKey,
   getCleanSlug,
   routedId,
   sortDocPages,
@@ -18,17 +19,15 @@ import type { Locale } from "./locales.ts";
 
 const cached = new Map<string, DocsEntry[]>();
 // Keyed on the array: the same object in production, a fresh one in dev.
-const slugIndex = new WeakMap<DocsEntry[], Map<string, number>>();
+const keyIndex = new WeakMap<DocsEntry[], Map<string, number>>();
 
-function indexOfSlug(pages: DocsEntry[], slug: string): number {
-  let index = slugIndex.get(pages);
+function indexOfKey(pages: DocsEntry[], key: string): number {
+  let index = keyIndex.get(pages);
   if (!index) {
-    index = new Map(
-      pages.map((page, at) => [getCleanSlug(routedId(page)), at]),
-    );
-    slugIndex.set(pages, index);
+    index = new Map(pages.map((page, at) => [docTranslationKey(page), at]));
+    keyIndex.set(pages, index);
   }
-  return index.get(slug) ?? -1;
+  return index.get(key) ?? -1;
 }
 
 const CODES = LOCALES.map((locale) => locale.code);
@@ -70,10 +69,11 @@ export interface LocaleAlternate {
   translated: boolean;
 }
 
-/** Where a page lives in every locale. An untranslated page falls back to that
- *  locale's opening page, which is where the switcher should land. */
+/** Where a page lives in every locale, paired by `translationKey` or by slug.
+ *  An untranslated page falls back to that locale's opening page. Empty asks
+ *  for the opening pages themselves. */
 export async function getLocaleAlternates(
-  slug: string,
+  key: string,
 ): Promise<LocaleAlternate[]> {
   const alternates: LocaleAlternate[] = [];
 
@@ -82,7 +82,7 @@ export async function getLocaleAlternates(
     // Every page drafted leaves a locale with nothing to link to.
     if (pages.length === 0) continue;
 
-    const index = slug ? indexOfSlug(pages, slug) : 0;
+    const index = key ? indexOfKey(pages, key) : 0;
     const match = index >= 0 ? pages[index] : undefined;
 
     alternates.push({

@@ -4,17 +4,21 @@ import type { NavSection } from "../../navigation.ts";
 import { formatChapterTitle } from "../../utils/docs.ts";
 import ScrollToTop from "../ScrollToTop.astro";
 
+import { ui } from "../../docs-config.ts";
+
 interface Props {
+  locale?: string;
   sections: NavSection[];
   headings: DocsHeadings[];
 }
 
-const { sections, headings } = Astro.props;
+const { sections, headings, locale } = Astro.props;
+const t = ui(locale);
 ---
 
 <div class="docs-mobile-nav mb-8 space-y-4 lg:hidden">
   <div class="docs-select w-full">
-    <label for="page-select" class="sr-only">Select page</label>
+    <label for="page-select" class="sr-only">{t("nav.selectPage")}</label>
     <select
       id="page-select"
       class="border-primary/20 bg-surface text-foreground focus:border-primary w-full rounded-lg border px-4 py-3 transition-colors focus:outline-none"
@@ -51,7 +55,7 @@ const { sections, headings } = Astro.props;
           id="section-select"
           class="border-primary/20 bg-surface text-foreground focus:border-primary w-full rounded-lg border px-4 py-3 transition-colors focus:outline-none"
         >
-          <option value="">Jump to section...</option>
+          <option value="">{t("nav.jumpToSection")}</option>
           {headings.map((heading) => {
             const prefix =
               heading.depth === 3 ? "\u00A0\u00A0\u00A0\u00A0" : "";
@@ -68,7 +72,7 @@ const { sections, headings } = Astro.props;
   }
 </div>
 
-<ScrollToTop />
+<ScrollToTop {locale} />
 
 <script>
   import { navigate } from "astro:transitions/client";

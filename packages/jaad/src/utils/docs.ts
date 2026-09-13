@@ -132,6 +132,22 @@ export function validateDocsStructure(
     }
   }
 
+  const byKey = new Map<string, string[]>();
+  for (const page of pages) {
+    const key = page.data?.translationKey;
+    if (!key) continue;
+    const ids = byKey.get(key) ?? [];
+    ids.push(routedId(page));
+    byKey.set(key, ids);
+  }
+  for (const [key, ids] of byKey) {
+    if (ids.length > 1) {
+      issues.push(
+        `${ids.map(named).join(", ")} all claim translationKey ${key}`,
+      );
+    }
+  }
+
   for (const [chapter, directories] of directoriesByChapter) {
     if (directories.size > 1) {
       issues.push(
@@ -214,6 +230,11 @@ export function docTitle(page: DocsPageLike): string {
     (page.body ? extractTitleFromMarkdown(page.body) : null) ??
     parseDocCollectionId(routedId(page)).title
   );
+}
+
+/** What pairs a page with its translations: the declared key, or the slug. */
+export function docTranslationKey(page: DocsPageLike): string {
+  return page.data?.translationKey ?? getCleanSlug(routedId(page));
 }
 
 /** The name navigation uses. */

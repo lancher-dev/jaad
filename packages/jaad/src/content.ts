@@ -17,6 +17,8 @@ const docsPages = defineCollection({
     description: z.string().optional(),
     /** Shorter label, in navigation only. */
     label: z.string().optional(),
+    /** Pairs this page with its translations when the slugs differ. */
+    translationKey: z.string().optional(),
     /** Replaces the filename prefix number. */
     order: z.number().int().optional(),
     /** Left out of production builds. */
