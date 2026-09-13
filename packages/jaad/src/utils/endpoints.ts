@@ -4,8 +4,8 @@ import { docsMarkdownHref } from "../urls.ts";
 import { docsUrls } from "../docs-config.ts";
 import {
   buildSearchIndex,
+  docTitle,
   extractDescription,
-  extractTitleFromMarkdown,
   formatChapterTitle,
   getCleanSlug,
   parseDocCollectionId,
@@ -44,24 +44,27 @@ export async function llmsResponse(
 
   for (const page of sortedPages) {
     const id = routedId(page);
-    const parsed = parseDocCollectionId(id);
-    const title =
-      page.data.title ??
-      extractTitleFromMarkdown(page.body || "") ??
-      parsed.title;
-    const description =
-      page.data.description ?? extractDescription(page.body || "", title);
-    const row: Row = { title, slug: getCleanSlug(id), description };
+    const { chapter } = parseDocCollectionId(id);
+    const title = docTitle(page);
+    const row: Row = {
+      title,
+      slug: getCleanSlug(id),
+      description:
+        page.data.description ?? extractDescription(page.body || "", title),
+    };
 
-    if (!parsed.chapter) {
+    if (!chapter) {
       standalone.push(row);
       continue;
     }
-    if (!chapters.has(parsed.chapter)) {
-      chapters.set(parsed.chapter, []);
-      chapterOrder.push(parsed.chapter);
+
+    let rows = chapters.get(chapter);
+    if (!rows) {
+      rows = [];
+      chapters.set(chapter, rows);
+      chapterOrder.push(chapter);
     }
-    chapters.get(parsed.chapter)!.push(row);
+    rows.push(row);
   }
 
   const toLine = (row: Row): string =>

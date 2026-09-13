@@ -17,6 +17,19 @@ import {
 import type { Locale } from "./locales.ts";
 
 const cached = new Map<string, DocsEntry[]>();
+// Keyed on the array: the same object in production, a fresh one in dev.
+const slugIndex = new WeakMap<DocsEntry[], Map<string, number>>();
+
+function indexOfSlug(pages: DocsEntry[], slug: string): number {
+  let index = slugIndex.get(pages);
+  if (!index) {
+    index = new Map(
+      pages.map((page, at) => [getCleanSlug(routedId(page)), at]),
+    );
+    slugIndex.set(pages, index);
+  }
+  return index.get(slug) ?? -1;
+}
 
 const CODES = LOCALES.map((locale) => locale.code);
 
@@ -68,9 +81,7 @@ export async function getLocaleAlternates(
     // Every page drafted leaves a locale with nothing to link to.
     if (pages.length === 0) continue;
 
-    const index = slug
-      ? pages.findIndex((page) => getCleanSlug(routedId(page)) === slug)
-      : 0;
+    const index = slug ? indexOfSlug(pages, slug) : 0;
     const match = index >= 0 ? pages[index] : undefined;
 
     alternates.push({
