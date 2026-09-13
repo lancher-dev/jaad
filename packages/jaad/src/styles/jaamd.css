@@ -1,9 +1,9 @@
 /* Bridge to JAAMD. */
 
 :root {
-  --jaamd-font-sans: var(--font-sans), sans-serif;
-  --jaamd-font-serif: var(--font-serif), Georgia, serif;
-  --jaamd-font-mono: var(--font-mono), monospace;
+  --jaamd-font-sans: var(--font-sans);
+  --jaamd-font-serif: var(--font-serif);
+  --jaamd-font-mono: var(--font-mono);
   --jaamd-font-size: 1.125rem;
   --jaamd-line-height: 1.6;
 

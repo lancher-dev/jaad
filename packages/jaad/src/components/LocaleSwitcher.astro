@@ -15,6 +15,8 @@ const active = alternates.find((entry) => entry.locale.code === current);
     type="button"
     data-trigger
     aria-expanded="false"
+    aria-haspopup="true"
+    aria-controls="jaad-locale-menu"
     aria-label="Change language"
     title="Change language"
     class="jaad-icon-button w-auto gap-1.5 px-2"
@@ -40,7 +42,7 @@ const active = alternates.find((entry) => entry.locale.code === current);
     </svg>
   </button>
 
-  <div data-menu hidden class="jaad-menu p-1">
+  <div id="jaad-locale-menu" data-menu hidden class="jaad-menu p-1">
     {
       alternates.map((entry) => (
         <a
@@ -116,10 +118,9 @@ const active = alternates.find((entry) => entry.locale.code === current);
     #close() {
       const menu = this.#menu();
       if (menu) menu.hidden = true;
-      this.querySelector("[data-trigger]")?.setAttribute(
-        "aria-expanded",
-        "false",
-      );
+      const trigger = this.querySelector<HTMLElement>("[data-trigger]");
+      trigger?.setAttribute("aria-expanded", "false");
+      if (this.contains(document.activeElement)) trigger?.focus();
     }
   }
 

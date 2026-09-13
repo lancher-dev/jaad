@@ -3,7 +3,8 @@ import { docsPageHref } from "../urls.ts";
 import { DEFAULT_LOCALE, docsUrls } from "../docs-config.ts";
 
 interface Props {
-  /** Whether this page is part of the docs, where search is available. */
+  /** Whether this page is part of the docs. Off them the palette keeps its
+   *  icon trigger and its shortcut, and searches the default locale. */
   inDocs?: boolean;
   /** Search covers one locale: the one the reader is in. */
   locale?: string;
@@ -194,13 +195,11 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
       this.#input.addEventListener("keydown", (e) => this.#onInputKey(e));
 
       document.addEventListener("keydown", this.#onGlobalKey);
-      document.addEventListener("astro:after-swap", this.#syncInDocs);
       document.addEventListener("astro:before-swap", this.#syncLocale);
     }
 
     disconnectedCallback() {
       document.removeEventListener("keydown", this.#onGlobalKey);
-      document.removeEventListener("astro:after-swap", this.#syncInDocs);
       document.removeEventListener("astro:before-swap", this.#syncLocale);
     }
 
@@ -218,19 +217,6 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
         this.#request = null;
       }
       if (next.dataset.base) this.dataset.base = next.dataset.base;
-    };
-
-    /**
-     * The header persists across navigations; the triggers must not.
-     */
-    #syncInDocs = () => {
-      const inDocs = document.body.hasAttribute("data-docs");
-      this.querySelector<HTMLElement>("[data-trigger-desktop]")!.hidden =
-        !inDocs;
-      this.querySelector("[data-trigger-icon]")!.classList.toggle(
-        "md:hidden",
-        inDocs,
-      );
     };
 
     #onGlobalKey = (e: KeyboardEvent) => {

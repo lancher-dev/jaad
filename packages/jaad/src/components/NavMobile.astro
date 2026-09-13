@@ -12,6 +12,8 @@ const links = config.nav;
         class="jaad-icon-button"
         aria-label="Toggle mobile menu"
         aria-expanded="false"
+        aria-haspopup="true"
+        aria-controls="jaad-nav-menu"
       >
         <svg
           class="h-5 w-5"
@@ -37,7 +39,7 @@ const links = config.nav;
         </svg>
       </button>
 
-      <div data-menu hidden class="jaad-menu">
+      <div id="jaad-nav-menu" data-menu hidden class="jaad-menu">
         <nav class="p-2">
           <ul class="flex flex-col gap-1">
             {links.map((link) => (
