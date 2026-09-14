@@ -18,7 +18,7 @@ import {
 } from "./lib.mjs";
 
 // Bumped together with the package they install.
-const JAAD = "^0.9.0";
+const JAAD = "^0.9.1";
 const ASTRO = "^7.3.1";
 // Only the site template styles its own pages, so only it needs Tailwind.
 const TEMPLATE_DEPENDENCIES = {
