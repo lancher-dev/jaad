@@ -1,5 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { resolveConfig } from "../../packages/jaad/src/config.ts";
 import { UI_DEFAULTS, UI_KEYS, uiString } from "../../packages/jaad/src/ui.ts";
 
 test("a locale's override wins over the english default", () => {
@@ -24,6 +25,24 @@ test("a locale with no overrides at all is the english default", () => {
   assert.equal(
     uiString({ it: { home: "Inizio" } }, "en", "home"),
     UI_DEFAULTS.home,
+  );
+});
+
+test("unlocalised docs use the lang override as their default locale", () => {
+  const config = resolveConfig(
+    {
+      title: "T",
+      lang: "it",
+      ui: { it: { "page.copy": "Copia la pagina" } },
+    },
+    "/",
+  );
+
+  assert.deepEqual(config.docsLocales, []);
+  assert.equal(config.defaultLocale, "it");
+  assert.equal(
+    uiString(config.ui, config.defaultLocale, "page.copy"),
+    "Copia la pagina",
   );
 });
 
