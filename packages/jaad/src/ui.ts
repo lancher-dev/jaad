@@ -26,6 +26,7 @@ export const UI_DEFAULTS = {
   "search.trigger": "Search docs...",
   "theme.toggle": "Toggle color theme",
   "toc.label": "Table of contents",
+  "toc.title": "On This Page",
 } as const;
 
 export type UiKey = keyof typeof UI_DEFAULTS;
