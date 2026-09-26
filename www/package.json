@@ -12,8 +12,8 @@
   },
   "dependencies": {
     "@lancher-dev/jaad": "workspace:*",
-    "astro": "^7.3.1",
-    "sharp": "^0.35.3"
+    "astro": "^7.3.5",
+    "sharp": "^0.35.4"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",

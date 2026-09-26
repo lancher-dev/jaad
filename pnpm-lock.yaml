@@ -85,10 +85,10 @@ importers:
         specifier: workspace:*
         version: link:../packages/jaad
       astro:
-        specifier: ^7.3.1
+        specifier: ^7.3.5
         version: 7.3.5(@astrojs/markdown-remark@7.3.1)(@types/node@26.6.3)(jiti@2.7.0)(yaml@2.9.1)
       sharp:
-        specifier: ^0.35.3
+        specifier: ^0.35.4
         version: 0.35.4(@types/node@26.6.3)
     devDependencies:
       '@astrojs/check':
