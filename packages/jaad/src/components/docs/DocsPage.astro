@@ -37,6 +37,7 @@ const language =
     ?.tag ?? config.lang;
 const updated = entry.data.lastUpdated;
 const navigation = buildDocsNavigation(sortedPages, entry.id, urls);
+const contentAttrs = { id: "content" };
 ---
 
 <DocsLayout
@@ -68,7 +69,7 @@ const navigation = buildDocsNavigation(sortedPages, entry.id, urls);
 
   <Fragment slot="content">
     <MarkdownContent
-      id="content"
+      {...contentAttrs}
       class="w-full leading-relaxed wrap-break-word"
     >
       <slot />
