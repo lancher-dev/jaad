@@ -21,10 +21,15 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+          package-manager-cache: false
+
       - uses: pnpm/setup@v3
         with:
           version: 12
-          runtime: node@24 # OIDC needs npm >=11.5.1, bundled with Node 24
           cache: true
 
       # npm publishes what package.json says, not what the tag says.
