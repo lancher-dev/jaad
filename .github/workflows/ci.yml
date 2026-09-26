@@ -13,20 +13,13 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/setup@v3
         with:
-          version: 10.34.4
-
-      # The unit tests are TypeScript run by node --test, which needs the
-      # native type stripping available from Node 23.
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "24"
-          cache: pnpm
-
-      - run: pnpm install --frozen-lockfile
+          version: 12
+          runtime: node@24
+          cache: true
 
       - name: Format
         run: pnpm format
@@ -51,16 +44,12 @@ jobs:
   consumer:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/setup@v3
         with:
-          version: 10.34.4
+          version: 12
+          runtime: node@24
+          cache: true
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "24"
-          cache: pnpm
-
-      - run: pnpm install --frozen-lockfile
       - run: pnpm test:consumer
