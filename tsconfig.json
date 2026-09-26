@@ -10,6 +10,6 @@
     "skipLibCheck": true,
     "types": ["node"]
   },
-  "include": ["tests/**/*.ts"],
+  "include": ["tests/**/*.ts", "contributing/**/*.ts"],
   "exclude": ["tests/consumer/fixture"]
 }

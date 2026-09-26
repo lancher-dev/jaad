@@ -43,6 +43,11 @@ export default defineJaadConfig({
 
 Documentation: [jaad.lancher.dev](https://jaad.lancher.dev)
 
+## Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md), including the guide for contributing
+new interface translations.
+
 ## License
 
 jaad is released under the [MIT License](/LICENSE).
