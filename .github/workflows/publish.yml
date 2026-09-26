@@ -6,9 +6,18 @@ on:
     tags:
       - "v*"
       - "create-v*"
+  workflow_dispatch:
+    inputs:
+      package:
+        description: Package to publish
+        required: true
+        type: choice
+        options:
+          - jaad
+          - create-jaad
 
 concurrency:
-  group: publish-${{ github.ref }}
+  group: publish-${{ inputs.package || github.ref }}
   cancel-in-progress: false
 
 permissions:
@@ -35,16 +44,26 @@ jobs:
       # npm publishes what package.json says, not what the tag says.
       - name: Resolve the package and check the tag against its version
         id: target
+        env:
+          PACKAGE: ${{ inputs.package }}
         run: |
-          case "$GITHUB_REF_NAME" in
-            create-v*) dir=packages/create-jaad; tag="${GITHUB_REF_NAME#create-v}" ;;
-            v*)        dir=packages/jaad;        tag="${GITHUB_REF_NAME#v}" ;;
-            *) echo "unrecognised tag $GITHUB_REF_NAME" >&2; exit 1 ;;
-          esac
+          if [ "$GITHUB_EVENT_NAME" = workflow_dispatch ]; then
+            case "$PACKAGE" in
+              jaad)        dir=packages/jaad ;;
+              create-jaad) dir=packages/create-jaad ;;
+              *) echo "unrecognised package $PACKAGE" >&2; exit 1 ;;
+            esac
+          else
+            case "$GITHUB_REF_NAME" in
+              create-v*) dir=packages/create-jaad; tag="${GITHUB_REF_NAME#create-v}" ;;
+              v*)        dir=packages/jaad;        tag="${GITHUB_REF_NAME#v}" ;;
+              *) echo "unrecognised tag $GITHUB_REF_NAME" >&2; exit 1 ;;
+            esac
+          fi
 
           name="$(node -p "require('./$dir/package.json').name")"
           version="$(node -p "require('./$dir/package.json').version")"
-          if [ "$tag" != "$version" ]; then
+          if [ "$GITHUB_EVENT_NAME" != workflow_dispatch ] && [ "$tag" != "$version" ]; then
             echo "tag $GITHUB_REF_NAME does not match $name@$version" >&2
             exit 1
           fi
