@@ -1,47 +1,55 @@
-/** Every string JAAD puts on a page itself. Override them per locale with the
- *  `ui` option; anything left out falls back to the English here. */
-export const UI_DEFAULTS = {
-  "breadcrumb.label": "Breadcrumb",
-  "breadcrumb.root": "Docs",
-  home: "Home",
-  "locale.change": "Change language",
-  "nav.documentation": "Documentation navigation",
-  "nav.jumpToSection": "Jump to section...",
-  "nav.mobile": "Toggle mobile menu",
-  "nav.page": "Page navigation",
-  "nav.selectPage": "Select page",
-  "page.copied": "Copied!",
-  "page.copy": "Copy page",
-  "page.edit": "Edit this page",
-  "page.lastUpdated": "Last updated on",
-  scrollTop: "Scroll to top",
-  "search.close": "close",
-  "search.empty": "No results for",
-  "search.label": "Search documentation",
-  "search.loading": "Loading...",
-  "search.navigate": "navigate",
-  "search.open": "open",
-  "search.placeholder": "Search documentation...",
-  "search.results": "Search results",
-  "search.trigger": "Search docs...",
-  "theme.toggle": "Toggle color theme",
-  "toc.label": "Table of contents",
-  "toc.title": "On This Page",
-} as const;
+import { ENGLISH_UI } from "./ui/en.ts";
+import { ITALIAN_UI } from "./ui/it.ts";
+
+/** Every string JAAD puts on a page itself. */
+export const UI_DEFAULTS = ENGLISH_UI;
 
 export type UiKey = keyof typeof UI_DEFAULTS;
+export type UiCatalog = Record<UiKey, string>;
 
 export type UiOverrides = Record<string, Partial<Record<string, string>>>;
 
-/** Reads the override for `locale`, then the English default. */
+const UI_CATALOGS = {
+  en: ENGLISH_UI,
+  it: ITALIAN_UI,
+} satisfies Record<string, UiCatalog>;
+
+function localeCandidates(locale: string): string[] {
+  const exact = locale.toLowerCase();
+  const base = exact.split("-", 1)[0];
+  return exact === base ? [exact] : [exact, base];
+}
+
+/** Locale keys in config are BCP-47 and therefore case-insensitive. */
+function localeEntry<T>(entries: Record<string, T>, locale: string) {
+  return Object.entries(entries).find(
+    ([candidate]) => candidate.toLowerCase() === locale,
+  )?.[1];
+}
+
+/** User overrides win, from the exact locale to its base language. Bundled
+ *  catalogues follow the same order; English remains the final fallback. */
 export function uiString(
   overrides: UiOverrides,
   locale: string,
   key: UiKey,
 ): string {
-  // Indexed access is typed as always present; an absent locale is undefined.
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  return overrides[locale]?.[key] ?? UI_DEFAULTS[key];
+  const candidates = localeCandidates(locale);
+
+  for (const candidate of candidates) {
+    const value = localeEntry(overrides, candidate)?.[key];
+    if (value !== undefined) return value;
+  }
+
+  for (const candidate of candidates) {
+    const catalogue = localeEntry<UiCatalog>(UI_CATALOGS, candidate);
+    if (catalogue) return catalogue[key];
+  }
+
+  return UI_DEFAULTS[key];
 }
 
 export const UI_KEYS = Object.keys(UI_DEFAULTS) as UiKey[];
+
+/** Kept internal: consumers customise strings through `ui`. */
+export const UI_SUPPORTED_LOCALES = Object.keys(UI_CATALOGS);

@@ -163,7 +163,7 @@ export default defineJaadConfig({
   site: "https://example.dev",
   title: "Consumer Test",
   lang: "en",
-  ui: { it: { "page.copy": "Copia la pagina", home: "Inizio" } },
+  ui: { it: { "page.copy": "Copia la pagina" } },
 });
 `,
     );
@@ -345,11 +345,12 @@ export default defineJaadConfig({
 
   test("interface strings follow the locale, key by key", () => {
     const italian = localised.read("it/index.html");
+    // The explicit override still wins over the bundled wording "Copia pagina".
     assert.match(italian, />Copia la pagina</);
-    assert.match(italian, /title="Inizio"/);
-    // Not overridden, so it keeps the english default rather than going blank.
-    assert.match(italian, />Search docs\.\.\.</);
-    assert.match(italian, /aria-label="Search documentation"/);
+    assert.match(italian, /title="Pagina iniziale"/);
+    // Everything else comes from the bundled Italian catalogue.
+    assert.match(italian, />Cerca nella documentazione\.\.\.</);
+    assert.match(italian, /aria-label="Cerca nella documentazione"/);
 
     // English is untouched by an italian override.
     const english = localised.read("index.html");
