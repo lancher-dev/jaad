@@ -2,7 +2,6 @@
   "name": "jaad-monorepo",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@10.34.4",
   "scripts": {
     "prepare": "husky",
     "dev": "pnpm --filter www dev",
