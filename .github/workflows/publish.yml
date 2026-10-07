@@ -69,24 +69,35 @@ jobs:
           fi
 
           echo "dir=$dir" >> "$GITHUB_OUTPUT"
-          echo "releasing $name@$version"
+          if npm view "$name@$version" version >/dev/null 2>&1; then
+            echo "published=true" >> "$GITHUB_OUTPUT"
+            echo "$name@$version is already on npm, nothing to do"
+          else
+            echo "releasing $name@$version"
+          fi
 
       - name: Type check
+        if: steps.target.outputs.published != 'true'
         run: pnpm check
 
       - name: Unit tests
+        if: steps.target.outputs.published != 'true'
         run: pnpm test
 
       - name: Build the site
+        if: steps.target.outputs.published != 'true'
         run: pnpm build
 
       - name: Assertions on the built site
+        if: steps.target.outputs.published != 'true'
         run: pnpm test:build
 
       # The tarball is what gets published, so it is what has to be proven.
       - name: Consumer install
+        if: steps.target.outputs.published != 'true'
         run: pnpm test:consumer
 
       - name: Publish
+        if: steps.target.outputs.published != 'true'
         working-directory: ${{ steps.target.outputs.dir }}
         run: npm publish --provenance --access public
