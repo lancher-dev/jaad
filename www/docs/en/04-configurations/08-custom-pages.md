@@ -65,7 +65,8 @@ import Page from "@lancher-dev/jaad/layouts/Page.astro";
 It renders the documentation header and footer, the theme, and your
 configuration's title, navigation and social links around whatever you put
 inside. `title` and `description` set the metadata for the page; `bare` drops
-the default spacing when the content needs the full width.
+the default spacing when the content needs the full width; `class` is added to
+the body.
 
 Search comes with the header. A documentation page shows the full search field;
 a page outside the documentation shows the magnifier alone, because

@@ -24,6 +24,23 @@ defineJaadConfig({ title: "My Project", tailwind: true });
 
 See [Styles](/docs/configurations/styles#tailwind).
 
+### Component classes
+
+JAAD's markup no longer uses Tailwind utilities: every element has a
+`jaad-*` or `docs-*` class, styled in `@layer components`. CSS that targeted
+utilities in JAAD's markup needs the new names:
+
+| Before                           | Now                                   |
+| -------------------------------- | ------------------------------------- |
+| `body` utilities                 | `.jaad-body`                          |
+| default frame wrapper `contents` | `.docs-frame`                         |
+| `.theme-icon-to-dark` / `-light` | `.jaad-theme-icon-to-dark` / `-light` |
+| active ToC link class            | `[aria-current="location"]`           |
+
+`dist/jaad.css` no longer contains stray utilities (`.hidden`, `.block`,
+`.relative`, …). Pages that used them without Tailwind need `tailwind: true` or
+their own CSS.
+
 ## From 0.8
 
 JAAD ships a precompiled stylesheet and no longer depends on Tailwind. Until
