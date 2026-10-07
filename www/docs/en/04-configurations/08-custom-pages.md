@@ -77,9 +77,22 @@ table of contents, because a page outside the documentation has no place in
 its navigation. To restructure documentation pages themselves, use
 [Advanced layout](/docs/configurations/advanced-layout).
 
-## Migrating from Base
+## Matching the documentation's layout
 
-`@lancher-dev/jaad/layouts/Base.astro` was deprecated in JAAD 0.7 and is gone
-in 0.8. It never did anything of its own: it forwarded every prop to the page
-layout above. Change the import to
-`@lancher-dev/jaad/layouts/Page.astro` and leave the rest of the page alone.
+- `.jaad-chrome`: the column shared by header, footer and documentation
+  content, as wide as `--jaad-chrome-width`.
+- `.jaad-main`: vertical margin and horizontal padding of the main landmark.
+  `bare` swaps it for `.jaad-main-bare`, which has none.
+- Layout tokens (`--jaad-content-width`, `--jaad-page-padding`, …) are listed
+  in [Styles](/docs/configurations/styles).
+
+```astro
+<Page title="Changelog">
+  <div class="jaad-chrome">…</div>
+</Page>
+```
+
+## Tailwind
+
+With `tailwind: true`, utilities on `Page` pages use JAAD's tokens. See
+[Styles](/docs/configurations/styles#tailwind).
