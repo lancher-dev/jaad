@@ -1,0 +1,9 @@
+@layer components {
+  .docs-mobile-nav {
+    @apply mb-8 space-y-4 lg:hidden;
+  }
+
+  .docs-select-field {
+    @apply border-primary/20 bg-surface text-foreground focus:border-primary w-full appearance-none rounded-lg border py-3 pr-10 pl-4 transition-colors focus:outline-none;
+  }
+}

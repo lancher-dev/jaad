@@ -68,16 +68,13 @@ const contentAttrs = { id: "content" };
   />
 
   <Fragment slot="content">
-    <MarkdownContent
-      {...contentAttrs}
-      class="w-full leading-relaxed wrap-break-word"
-    >
+    <MarkdownContent {...contentAttrs} class="docs-content">
       <slot />
     </MarkdownContent>
 
     {
       updated && (
-        <p class="text-foreground-muted mt-8 text-xs">
+        <p class="docs-updated">
           {t("page.lastUpdated")}{" "}
           <time datetime={updated.toISOString()}>
             {new Intl.DateTimeFormat(language, { dateStyle: "long" }).format(

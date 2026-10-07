@@ -1,0 +1,13 @@
+@layer components {
+  .docs-breadcrumbs {
+    @apply text-foreground-muted mb-4 flex items-center gap-1.5 text-xs;
+  }
+
+  .docs-breadcrumbs-link {
+    @apply hover:text-foreground-bright no-underline;
+  }
+
+  .docs-breadcrumbs-current {
+    @apply text-foreground-bright font-medium;
+  }
+}

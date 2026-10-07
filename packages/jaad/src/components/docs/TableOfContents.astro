@@ -14,21 +14,19 @@ const t = ui(locale);
 
 {
   headings.length > 0 && (
-    <aside
-      id="toc-sidebar"
-      class="docs-sidebar-right jaad-sidebar overflow-y-auto"
-    >
+    <aside id="toc-sidebar" class="docs-sidebar-right jaad-sidebar">
       <nav aria-label={t("toc.label")}>
-        <h2 class="text-primary/60 mb-4 text-xs font-semibold tracking-wider uppercase">
-          {t("toc.title")}
-        </h2>
-        <ul class="space-y-2">
+        <h2 class="docs-toc-title">{t("toc.title")}</h2>
+        <ul class="docs-toc-list">
           {headings.map((heading) => (
             <li>
               <a
                 href={`#${heading.slug}`}
                 data-toc-link
-                class={`text-foreground/60 hover:text-primary block border-l-2 border-transparent py-1 text-xs no-underline transition-colors ${heading.depth === 3 ? "pl-6" : "pl-3"}`}
+                class:list={[
+                  "docs-toc-link",
+                  heading.depth === 3 && "docs-toc-link-nested",
+                ]}
               >
                 {heading.text}
               </a>
@@ -61,8 +59,8 @@ const t = ui(locale);
     const setActive = (id: string): void => {
       links.forEach((link) => {
         const isActive = link.getAttribute("href") === `#${id}`;
-        link.classList.toggle("border-primary", isActive);
-        link.classList.toggle("border-transparent", !isActive);
+        if (isActive) link.setAttribute("aria-current", "location");
+        else link.removeAttribute("aria-current");
       });
     };
 

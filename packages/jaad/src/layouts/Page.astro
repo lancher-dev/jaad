@@ -14,9 +14,11 @@ interface Props {
   title?: string;
   description?: string;
   bare?: boolean;
+  /** Added to the body. */
+  class?: string;
 }
 
-const { title, description, bare = false } = Astro.props;
+const { title, description, bare = false, class: className } = Astro.props;
 
 const pageTitle = title ? `${title} | ${config.title}` : config.title;
 const pageDescription = description ?? config.description ?? config.title;
@@ -30,9 +32,7 @@ const pageDescription = description ?? config.description ?? config.title;
   <head>
     <Head title={pageTitle} description={pageDescription} />
   </head>
-  <body
-    class="bg-background text-foreground flex min-h-screen flex-col text-[14px] leading-[1.6]"
-  >
+  <body class:list={["jaad-body", className]}>
     <Header />
     <main class={bare ? "jaad-main-bare" : "jaad-main"}>
       <slot />

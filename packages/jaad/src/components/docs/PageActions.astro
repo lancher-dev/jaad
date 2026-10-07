@@ -19,16 +19,16 @@ const mdHref = docsMarkdownHref(cleanSlug, docsUrls(locale));
 const editHref = config.editBase ? editUrl(config.editBase, `${id}.md`) : null;
 ---
 
-<div class="mb-4 flex items-center gap-2 text-xs">
+<div class="docs-page-actions">
   <button
     type="button"
     data-copy-page
     data-md-href={mdHref}
     data-copied={t("page.copied")}
-    class="border-border bg-surface hover:bg-surface-hover text-foreground-secondary hover:text-foreground-bright flex cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-1.5 transition-colors"
+    class="docs-page-action"
   >
     <svg
-      class="h-3.5 w-3.5 shrink-0"
+      class="docs-page-action-icon"
       fill="none"
       stroke="currentColor"
       viewBox="0 0 24 24"
@@ -50,10 +50,10 @@ const editHref = config.editBase ? editUrl(config.editBase, `${id}.md`) : null;
         href={editHref}
         target="_blank"
         rel="noopener noreferrer"
-        class="border-border bg-surface hover:bg-surface-hover text-foreground-secondary hover:text-foreground-bright flex items-center gap-1.5 rounded-lg border px-3 py-1.5 no-underline transition-colors"
+        class="docs-page-action"
       >
         <svg
-          class="h-3.5 w-3.5 shrink-0"
+          class="docs-page-action-icon"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"

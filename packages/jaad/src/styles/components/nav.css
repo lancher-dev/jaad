@@ -1,0 +1,11 @@
+@layer components {
+  .jaad-nav {
+    @apply hidden md:block;
+  }
+  .jaad-nav-list {
+    @apply flex space-x-4;
+  }
+  .jaad-nav-link {
+    @apply text-foreground-secondary hover:text-foreground-bright no-underline hover:underline;
+  }
+}

@@ -1,0 +1,13 @@
+@layer components {
+  .docs-page-actions {
+    @apply mb-4 flex items-center gap-2 text-xs;
+  }
+
+  .docs-page-action {
+    @apply border-border bg-surface hover:bg-surface-hover text-foreground-secondary hover:text-foreground-bright flex cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-1.5 no-underline transition-colors;
+  }
+
+  .docs-page-action-icon {
+    @apply h-3.5 w-3.5 shrink-0;
+  }
+}

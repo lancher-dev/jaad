@@ -9,7 +9,7 @@ const t = ui(Astro.props.locale);
 
 {
   links.length > 0 && (
-    <jaad-nav-mobile class="relative md:hidden">
+    <jaad-nav-mobile class="jaad-nav-mobile">
       <button
         class="jaad-icon-button"
         aria-label={t("nav.mobile")}
@@ -18,7 +18,7 @@ const t = ui(Astro.props.locale);
         aria-controls="jaad-nav-menu"
       >
         <svg
-          class="h-5 w-5"
+          class="jaad-icon"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -32,7 +32,6 @@ const t = ui(Astro.props.locale);
           />
           <path
             data-icon-close
-            class="hidden"
             stroke-linecap="round"
             stroke-linejoin="round"
             stroke-width="2"
@@ -42,8 +41,8 @@ const t = ui(Astro.props.locale);
       </button>
 
       <div id="jaad-nav-menu" data-menu hidden class="jaad-menu">
-        <nav class="p-2">
-          <ul class="flex flex-col gap-1">
+        <nav class="jaad-nav-mobile-links">
+          <ul class="jaad-nav-mobile-list">
             {links.map((link) => (
               <li>
                 <a
@@ -79,11 +78,6 @@ const t = ui(Astro.props.locale);
     #setOpen(open: boolean) {
       this.#menu.hidden = !open;
       this.#button.setAttribute("aria-expanded", String(open));
-      this.querySelector("[data-icon-open]")?.classList.toggle("hidden", open);
-      this.querySelector("[data-icon-close]")?.classList.toggle(
-        "hidden",
-        !open,
-      );
 
       if (open) {
         document.addEventListener("pointerdown", this.#onPointer);

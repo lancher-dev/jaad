@@ -1,5 +1,9 @@
 /* Layered, so a page's own utilities still win. */
 @layer components {
+  .docs-frame {
+    display: contents;
+  }
+
   .docs-container {
     position: relative;
     width: 100%;
@@ -9,21 +13,21 @@
   }
 
   /* The inline margin is deliberate and survives every breakpoint: it sits
-     outside the page padding, which only starts at 768px. */
+     outside the page padding, which only starts at 48rem. */
   .docs-page-main {
     flex: 1;
     margin-block: 2rem;
     margin-inline: 1rem;
   }
 
-  @media (min-width: 768px) {
+  @media (min-width: 48rem) {
     .docs-page-main {
       margin-block: 4rem;
       padding-inline: var(--jaad-page-padding);
     }
   }
 
-  @media (min-width: 1024px) {
+  @media (min-width: 64rem) {
     .docs-page-main {
       margin-bottom: 8rem;
       padding-inline: calc(var(--jaad-page-padding) * 2);
@@ -37,13 +41,13 @@
   }
 
   /* The room the sidebars need, so widening them widens the gutters too. */
-  @media (min-width: 1024px) {
+  @media (min-width: 64rem) {
     .docs-main-gutters {
       margin-inline: var(--jaad-sidebar-width);
     }
   }
 
-  @media (min-width: 1024px) {
+  @media (min-width: 64rem) {
     [data-jaad-default-frame] .docs-sidebar-left,
     [data-jaad-default-frame] .docs-sidebar-right {
       position: fixed;
@@ -63,32 +67,11 @@
     }
   }
 
-  @media (max-width: 1023px) {
+  @media (width < 64rem) {
     [data-jaad-default-frame] .docs-sidebar-left,
     [data-jaad-default-frame] .docs-sidebar-right {
       display: none;
     }
-  }
-
-  .docs-sidebar-left::-webkit-scrollbar,
-  .docs-sidebar-right::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  .docs-sidebar-left::-webkit-scrollbar-track,
-  .docs-sidebar-right::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .docs-sidebar-left::-webkit-scrollbar-thumb,
-  .docs-sidebar-right::-webkit-scrollbar-thumb {
-    background: rgb(from var(--color-primary) r g b / 0.2);
-    border-radius: 3px;
-  }
-
-  .docs-sidebar-left::-webkit-scrollbar-thumb:hover,
-  .docs-sidebar-right::-webkit-scrollbar-thumb:hover {
-    background: rgb(from var(--color-primary) r g b / 0.4);
   }
 
   /* A mask, so the colour comes from the token and follows the theme.
@@ -112,11 +95,6 @@
         url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' viewBox='0 0 20 20'%3E%3Cpath d='M6 8l4 4 4-4'/%3E%3C/svg%3E")
       )
       center / contain no-repeat;
-  }
-
-  .docs-mobile-nav select {
-    appearance: none;
-    padding-right: 2.5rem;
   }
 
   .docs-mobile-nav optgroup {

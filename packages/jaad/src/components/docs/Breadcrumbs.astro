@@ -19,13 +19,8 @@ const rootLabel = formatChapterTitle(rootSegment) ?? t("breadcrumb.root");
 const rootHref = docsPageHref("", docsUrls(locale));
 ---
 
-<nav
-  aria-label={t("breadcrumb.label")}
-  class="text-foreground-muted mb-4 flex items-center gap-1.5 text-xs"
->
-  <a href={rootHref} class="hover:text-foreground-bright no-underline"
-    >{rootLabel}</a
-  >
+<nav aria-label={t("breadcrumb.label")} class="docs-breadcrumbs">
+  <a href={rootHref} class="docs-breadcrumbs-link">{rootLabel}</a>
   {
     chapterTitle && (
       <>
@@ -35,7 +30,7 @@ const rootHref = docsPageHref("", docsUrls(locale));
     )
   }
   <span aria-hidden="true">/</span>
-  <span class="text-foreground-bright font-medium" aria-current="page">
+  <span class="docs-breadcrumbs-current" aria-current="page">
     {title}
   </span>
 </nav>

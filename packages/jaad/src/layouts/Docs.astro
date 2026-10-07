@@ -113,10 +113,7 @@ const frameProps: DocsFrameProps = {
     />
     <ClientRouter />
   </head>
-  <body
-    data-docs
-    class="bg-background text-foreground flex min-h-screen flex-col text-[14px] leading-[1.6]"
-  >
+  <body data-docs class="jaad-body">
     <DocsFrame {...frameProps}>
       <Header slot="header" inDocs {locale} alternates={switcherAlternates} />
       <DocsSidebarLeft slot="sidebar" sections={navigation.sections} {locale} />

@@ -1,0 +1,21 @@
+@layer components {
+  .docs-toc-title {
+    @apply text-primary/60 mb-4 text-xs font-semibold tracking-wider uppercase;
+  }
+
+  .docs-toc-list {
+    @apply space-y-2;
+  }
+
+  .docs-toc-link {
+    @apply text-foreground/60 hover:text-primary block border-l-2 border-transparent py-1 pl-3 text-xs no-underline transition-colors;
+  }
+
+  .docs-toc-link-nested {
+    @apply pl-6;
+  }
+
+  .docs-toc-link[aria-current="location"] {
+    @apply border-primary;
+  }
+}

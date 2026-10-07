@@ -13,41 +13,31 @@ const { sections, locale } = Astro.props;
 const t = ui(locale);
 ---
 
-<aside class="docs-sidebar-left jaad-sidebar overflow-y-auto">
+<aside class="docs-sidebar-left jaad-sidebar">
   <nav aria-label={t("nav.documentation")}>
     {
-      sections.map((section, i) =>
+      sections.map((section) =>
         section.type === "page" ? (
-          <div class:list={["mb-0.5", i > 0 && "mt-0.5"]}>
+          <div class="docs-sidebar-page">
             <a
               href={section.item.href}
-              class:list={[
-                "block rounded px-3 py-1.5 text-sm no-underline transition-colors",
-                section.item.isActive
-                  ? "bg-primary/10 text-primary font-semibold"
-                  : "text-foreground hover:bg-primary/10 hover:text-primary",
-              ]}
+              class="docs-sidebar-link"
               aria-current={section.item.isActive ? "page" : undefined}
             >
               {section.item.title}
             </a>
           </div>
         ) : (
-          <div class="mt-5 mb-5">
-            <h3 class="text-primary/50 mb-1 px-3 text-[0.825rem] font-semibold tracking-widest uppercase">
+          <div class="docs-sidebar-chapter">
+            <h3 class="docs-sidebar-chapter-title">
               {formatChapterTitle(section.chapter)}
             </h3>
-            <ul class="border-border/40 ml-3 space-y-0.5 border-l pl-0">
+            <ul class="docs-sidebar-chapter-list">
               {section.items.map((item) => (
                 <li>
                   <a
                     href={item.href}
-                    class:list={[
-                      "block rounded-r px-3 py-1.5 text-sm no-underline transition-colors",
-                      item.isActive
-                        ? "border-primary bg-primary/10 text-primary -ml-px border-l-2 pl-2.75 font-semibold"
-                        : "text-foreground hover:bg-primary/10 hover:text-primary",
-                    ]}
+                    class="docs-sidebar-sublink"
                     aria-current={item.isActive ? "page" : undefined}
                   >
                     {item.title}
