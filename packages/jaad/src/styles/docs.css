@@ -131,10 +131,4 @@
     background: var(--color-surface);
     padding: 0.5rem;
   }
-
-  /* Hidden until initToc() has pruned it, otherwise stale items flash. */
-  #toc-sidebar[data-toc-pending] {
-    opacity: 0;
-    pointer-events: none;
-  }
 }

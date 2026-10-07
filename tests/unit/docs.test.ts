@@ -495,3 +495,24 @@ test("the same key in different locales is the point, not a clash", () => {
     );
   });
 });
+
+test("headings inside a data-toc-ignore element stay out of the toc", () => {
+  const headings = extractHeadingsFromMarkdown(
+    [
+      "## Setup",
+      '<div data-toc-ignore class="demo">',
+      "",
+      "## Setup",
+      "<div>",
+      "### Nested",
+      "</div>",
+      "",
+      "</div>",
+      "## Setup",
+    ].join("\n"),
+  );
+  assert.deepEqual(
+    headings.map((h) => h.slug),
+    ["setup", "setup-2"],
+  );
+});

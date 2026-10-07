@@ -192,11 +192,22 @@ export function extractTitleFromMarkdown(body: string): string | null {
 }
 
 /** Skips fenced blocks, so headings written as code samples stay out of the TOC. */
+/** Opening minus closing `tag` elements on one line. */
+function tagBalance(line: string, tag: string): number {
+  const count = (re: RegExp) => line.match(re)?.length ?? 0;
+  return (
+    count(new RegExp(`<${tag}[\\s>]`, "gi")) -
+    count(new RegExp(`</${tag}>`, "gi"))
+  );
+}
+
 export function extractHeadingsFromMarkdown(markdown: string): DocsHeadings[] {
   const headings: DocsHeadings[] = [];
   // Per page, like the renderer: repeated headings get -1, -2 suffixes.
   const slugger = new GithubSlugger();
   let insideFence = false;
+  // The open `data-toc-ignore` element, if any.
+  let ignored: { tag: string; depth: number } | null = null;
 
   for (const line of markdown.split("\n")) {
     if (line.match(/^(`{3,}|~{3,})/)) {
@@ -205,11 +216,22 @@ export function extractHeadingsFromMarkdown(markdown: string): DocsHeadings[] {
     }
     if (insideFence) continue;
 
+    if (ignored) {
+      ignored.depth += tagBalance(line, ignored.tag);
+      if (ignored.depth <= 0) ignored = null;
+    } else {
+      const tag = line.match(/<([a-z][\w-]*)[^>]*\sdata-toc-ignore\b/i)?.[1];
+      const depth = tag ? tagBalance(line, tag) : 0;
+      if (tag && depth > 0) ignored = { tag, depth };
+    }
+
     const match = line.match(/^(#{2,3})\s+(.+)$/);
     if (!match) continue;
     const depth = match[1].length as 2 | 3;
     const text = match[2].trim();
-    headings.push({ depth, text, slug: slugger.slug(text) });
+    // Slugged even when skipped, so later duplicates keep the renderer's ids.
+    const slug = slugger.slug(text);
+    if (!ignored) headings.push({ depth, text, slug });
   }
 
   return headings;
