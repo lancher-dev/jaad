@@ -1,0 +1,15 @@
+@layer components {
+  .jaad-nav-mobile {
+    @apply relative md:hidden;
+  }
+  .jaad-nav-mobile [aria-expanded="true"] [data-icon-open],
+  .jaad-nav-mobile [aria-expanded="false"] [data-icon-close] {
+    @apply hidden;
+  }
+  .jaad-nav-mobile-links {
+    @apply p-2;
+  }
+  .jaad-nav-mobile-list {
+    @apply flex flex-col gap-1;
+  }
+}

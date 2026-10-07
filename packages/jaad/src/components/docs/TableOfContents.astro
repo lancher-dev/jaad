@@ -14,22 +14,19 @@ const t = ui(locale);
 
 {
   headings.length > 0 && (
-    <aside
-      id="toc-sidebar"
-      data-toc-pending
-      class="docs-sidebar-right jaad-sidebar overflow-y-auto"
-    >
+    <aside id="toc-sidebar" class="docs-sidebar-right jaad-sidebar">
       <nav aria-label={t("toc.label")}>
-        <h2 class="text-primary/60 mb-4 text-xs font-semibold tracking-wider uppercase">
-          {t("toc.title")}
-        </h2>
-        <ul class="space-y-2">
+        <h2 class="docs-toc-title">{t("toc.title")}</h2>
+        <ul class="docs-toc-list">
           {headings.map((heading) => (
             <li>
               <a
                 href={`#${heading.slug}`}
                 data-toc-link
-                class={`text-foreground/60 hover:text-primary block border-l-2 border-transparent py-1 text-xs no-underline transition-colors ${heading.depth === 3 ? "pl-6" : "pl-3"}`}
+                class:list={[
+                  "docs-toc-link",
+                  heading.depth === 3 && "docs-toc-link-nested",
+                ]}
               >
                 {heading.text}
               </a>
@@ -48,46 +45,22 @@ const t = ui(locale);
     if (!sidebar || sidebar.dataset.tocInit) return;
     sidebar.dataset.tocInit = "1";
 
-    const allLinks = Array.from(
+    const links = Array.from(
       sidebar.querySelectorAll<HTMLAnchorElement>("[data-toc-link]"),
     );
-
-    // [data-toc-ignore] is a runtime attribute, so this filter is too.
-    const visibleLinks = allLinks.filter((link) => {
-      const id = link.getAttribute("href")?.slice(1);
-      if (!id) return false;
-      const heading = document.getElementById(id);
-      return !heading?.closest("[data-toc-ignore]");
-    });
-
-    if (visibleLinks.length === 0) {
-      // Not `hidden`: .docs-sidebar-right sets display:block, which outranks it.
-      sidebar.style.display = "none";
-      sidebar.removeAttribute("data-toc-pending");
-      return;
-    }
-
-    allLinks
-      .filter((l) => !visibleLinks.includes(l))
-      .forEach((l) => (l.closest("li")!.hidden = true));
-
-    // Last, so no stale item is ever painted.
-    sidebar.removeAttribute("data-toc-pending");
-
-    const headingEls = visibleLinks
-      .map((link) => {
-        const id = link.getAttribute("href")?.slice(1);
-        return id ? document.getElementById(id) : null;
-      })
+    const headingEls = links
+      .map((link) =>
+        document.getElementById(link.getAttribute("href")!.slice(1)),
+      )
       .filter(Boolean) as HTMLElement[];
 
     if (!headingEls.length) return;
 
     const setActive = (id: string): void => {
-      visibleLinks.forEach((link) => {
+      links.forEach((link) => {
         const isActive = link.getAttribute("href") === `#${id}`;
-        link.classList.toggle("border-primary", isActive);
-        link.classList.toggle("border-transparent", !isActive);
+        if (isActive) link.setAttribute("aria-current", "location");
+        else link.removeAttribute("aria-current");
       });
     };
 

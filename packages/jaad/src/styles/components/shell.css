@@ -1,0 +1,73 @@
+/* Shared shell classes; first in the layer so component files override them. */
+@layer components {
+  /* Header, footer and docs content share one measure. */
+  .jaad-chrome {
+    width: 100%;
+    max-width: var(--jaad-chrome-width);
+    margin-inline: auto;
+  }
+
+  .jaad-main {
+    flex: 1;
+    margin-block: 4rem;
+    padding-inline: var(--jaad-page-padding);
+  }
+
+  @media (min-width: 64rem) {
+    .jaad-main {
+      padding-inline: calc(var(--jaad-page-padding) * 2);
+    }
+  }
+
+  /* `bare` keeps the landmark without the spacing. */
+  .jaad-main-bare {
+    flex: 1;
+  }
+
+  .jaad-body {
+    @apply bg-background text-foreground flex min-h-screen flex-col text-[14px] leading-[1.6];
+  }
+
+  .jaad-icon {
+    @apply h-5 w-5;
+  }
+
+  .jaad-sr-only {
+    @apply sr-only;
+  }
+
+  .jaad-sidebar {
+    width: var(--jaad-sidebar-width);
+    overflow-y: auto;
+  }
+
+  .jaad-sidebar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .jaad-sidebar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .jaad-sidebar::-webkit-scrollbar-thumb {
+    background: rgb(from var(--color-primary) r g b / 0.2);
+    border-radius: 3px;
+  }
+
+  .jaad-sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgb(from var(--color-primary) r g b / 0.4);
+  }
+
+  /* The header controls sit in one row and have to stay identical. */
+  .jaad-icon-button {
+    @apply text-foreground-secondary hover:text-foreground-bright flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg no-underline transition-colors;
+  }
+
+  .jaad-menu {
+    @apply bg-surface border-border absolute top-full right-0 z-40 mt-2 w-44 overflow-hidden rounded-xl border shadow-lg;
+  }
+
+  .jaad-menu-item {
+    @apply text-foreground-secondary hover:text-foreground-bright hover:bg-primary/5 block rounded-lg px-3 py-2 text-sm no-underline transition-colors;
+  }
+}

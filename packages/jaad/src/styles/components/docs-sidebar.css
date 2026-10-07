@@ -1,0 +1,42 @@
+@layer components {
+  .docs-sidebar-page {
+    @apply mb-0.5;
+  }
+
+  .docs-sidebar-page:not(:first-child) {
+    @apply mt-0.5;
+  }
+
+  .docs-sidebar-link,
+  .docs-sidebar-sublink {
+    @apply text-foreground hover:bg-primary/10 hover:text-primary block px-3 py-1.5 text-sm no-underline transition-colors;
+  }
+
+  .docs-sidebar-link {
+    @apply rounded;
+  }
+
+  .docs-sidebar-sublink {
+    @apply rounded-r;
+  }
+
+  .docs-sidebar-link[aria-current="page"] {
+    @apply bg-primary/10 text-primary font-semibold;
+  }
+
+  .docs-sidebar-sublink[aria-current="page"] {
+    @apply border-primary bg-primary/10 text-primary -ml-px border-l-2 pl-2.75 font-semibold;
+  }
+
+  .docs-sidebar-chapter {
+    @apply mt-5 mb-5;
+  }
+
+  .docs-sidebar-chapter-title {
+    @apply text-primary/50 mb-1 px-3 text-[0.825rem] font-semibold tracking-widest uppercase;
+  }
+
+  .docs-sidebar-chapter-list {
+    @apply border-border/40 ml-3 space-y-0.5 border-l pl-0;
+  }
+}

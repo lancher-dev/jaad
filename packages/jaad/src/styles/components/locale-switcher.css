@@ -1,0 +1,20 @@
+@layer components {
+  .jaad-locale-switcher {
+    @apply relative;
+  }
+  .jaad-locale-trigger {
+    @apply w-auto gap-1.5 px-2;
+  }
+  .jaad-locale-code {
+    @apply text-xs font-medium uppercase;
+  }
+  .jaad-locale-chevron {
+    @apply h-3 w-3 shrink-0;
+  }
+  .jaad-locale-menu {
+    @apply p-1;
+  }
+  .jaad-locale-item {
+    @apply flex items-center gap-2 aria-[current]:font-semibold;
+  }
+}

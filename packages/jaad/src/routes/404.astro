@@ -6,11 +6,9 @@ const homeHref = withDeploymentBase("/", import.meta.env.BASE_URL);
 ---
 
 <Layout title="404" description="The page you're looking for doesn't exist.">
-  <div
-    class="m-auto flex h-full w-full flex-col items-center justify-center px-16 text-center"
-  >
-    <h1 class="mb-16 text-6xl font-bold">404</h1>
-    <p class="mb-32 text-xl">
+  <div class="jaad-not-found">
+    <h1 class="jaad-not-found-title">404</h1>
+    <p class="jaad-not-found-text">
       <i>Oops!</i> The page you're looking for doesn't exist.
     </p>
     <a href={homeHref}>Go back to the homepage</a>

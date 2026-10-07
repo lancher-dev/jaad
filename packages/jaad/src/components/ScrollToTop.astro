@@ -5,12 +5,9 @@ const t = ui(Astro.props.locale);
 ---
 
 <jaad-scroll-top>
-  <button
-    class="bg-background text-foreground hover:bg-background/80 border-foreground/20 pointer-events-none fixed right-6 bottom-6 z-50 flex h-12 w-12 items-center justify-center rounded-full border opacity-0 shadow-lg transition-opacity duration-300 lg:hidden"
-    aria-label={t("scrollTop")}
-  >
+  <button class="jaad-scroll-top-button" aria-label={t("scrollTop")}>
     <svg
-      class="h-6 w-6"
+      class="jaad-scroll-top-icon"
       fill="none"
       stroke="currentColor"
       viewBox="0 0 24 24"
@@ -32,10 +29,7 @@ const t = ui(Astro.props.locale);
     #button: HTMLButtonElement | null = null;
     #onScroll = () => {
       const shown = window.scrollY > SHOW_AFTER;
-      this.#button?.classList.toggle("opacity-100", shown);
-      this.#button?.classList.toggle("pointer-events-auto", shown);
-      this.#button?.classList.toggle("opacity-0", !shown);
-      this.#button?.classList.toggle("pointer-events-none", !shown);
+      this.#button?.toggleAttribute("data-visible", shown);
     };
 
     connectedCallback() {

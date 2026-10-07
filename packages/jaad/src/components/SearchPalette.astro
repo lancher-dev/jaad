@@ -29,11 +29,11 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
   <button
     data-trigger-desktop
     hidden={!inDocs}
-    class="border-border bg-surface hover:bg-surface-hover text-foreground-muted hidden cursor-pointer items-center gap-2 rounded-lg border px-3 py-1.5 text-sm transition-colors md:flex"
+    class="jaad-search-trigger"
     aria-label={t("search.label")}
   >
     <svg
-      class="h-4 w-4 shrink-0"
+      class="jaad-search-trigger-icon"
       fill="none"
       stroke="currentColor"
       viewBox="0 0 24 24"
@@ -45,21 +45,17 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
         stroke-width="2"
         d={MAGNIFIER}></path>
     </svg>
-    <span class="hidden lg:inline">{t("search.trigger")}</span>
-    <kbd
-      data-shortcut
-      class="bg-background-secondary text-foreground-muted rounded px-1.5 py-0.5 text-xs font-medium"
-      >Ctrl K</kbd
-    >
+    <span class="jaad-search-trigger-label">{t("search.trigger")}</span>
+    <kbd data-shortcut class="jaad-search-shortcut">Ctrl K</kbd>
   </button>
 
   <button
     data-trigger-icon
-    class:list={["jaad-icon-button", inDocs && "md:hidden"]}
+    class:list={["jaad-icon-button", inDocs && "jaad-search-trigger-compact"]}
     aria-label={t("search.label")}
   >
     <svg
-      class="h-5 w-5"
+      class="jaad-icon"
       fill="none"
       stroke="currentColor"
       viewBox="0 0 24 24"
@@ -76,20 +72,17 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
   <div
     data-overlay
     hidden
-    class="fixed inset-0 z-50 flex items-start justify-center px-4 pt-[15vh]"
+    class="jaad-search-overlay"
     role="dialog"
     aria-modal="true"
     aria-label={t("search.label")}
   >
-    <div data-backdrop class="absolute inset-0 bg-black/60 backdrop-blur-sm">
-    </div>
+    <div data-backdrop class="jaad-search-backdrop"></div>
 
-    <div
-      class="bg-surface border-border relative z-10 w-full max-w-lg overflow-hidden rounded-xl border shadow-2xl"
-    >
-      <div class="border-border flex items-center gap-3 border-b px-4 py-3">
+    <div class="jaad-search-panel">
+      <div class="jaad-search-bar">
         <svg
-          class="text-foreground-muted h-5 w-5 shrink-0"
+          class="jaad-search-bar-icon"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -105,7 +98,7 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
           data-input
           type="text"
           placeholder={t("search.placeholder")}
-          class="text-foreground placeholder-foreground-muted min-w-0 flex-1 bg-transparent text-sm outline-none"
+          class="jaad-search-input"
           autocomplete="off"
           spellcheck="false"
           role="combobox"
@@ -114,35 +107,29 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
           aria-autocomplete="list"
           aria-label={t("search.label")}
         />
-        <kbd
-          data-close
-          class="bg-background-secondary text-foreground-muted shrink-0 cursor-pointer rounded px-1.5 py-0.5 text-xs"
-          >ESC</kbd
-        >
+        <kbd data-close class="jaad-search-close">ESC</kbd>
       </div>
 
       <ul
         data-results
         id="search-results"
-        class="max-h-80 overflow-y-auto p-2"
+        class="jaad-search-results"
         role="listbox"
         aria-label={t("search.results")}
       >
       </ul>
 
-      <div
-        class="border-border text-foreground-muted flex items-center gap-4 border-t px-4 py-2 text-xs"
-      >
+      <div class="jaad-search-footer">
         <span>
-          <kbd class="bg-background-secondary rounded px-1 py-0.5">↑↓</kbd>
+          <kbd class="jaad-search-key">↑↓</kbd>
           {t("search.navigate")}
         </span>
         <span>
-          <kbd class="bg-background-secondary rounded px-1 py-0.5">↵</kbd>
+          <kbd class="jaad-search-key">↵</kbd>
           {t("search.open")}
         </span>
         <span>
-          <kbd class="bg-background-secondary rounded px-1 py-0.5">esc</kbd>
+          <kbd class="jaad-search-key">esc</kbd>
           {t("search.close")}
         </span>
       </div>
@@ -294,10 +281,6 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
       [...this.#list.children].forEach((li, n) => {
         const active = n === i;
         li.setAttribute("aria-selected", String(active));
-        li.classList.toggle("bg-primary/10", active);
-        li.classList.toggle("text-foreground-bright", active);
-        li.classList.toggle("text-foreground", !active);
-        li.classList.toggle("hover:bg-primary/5", !active);
       });
       (this.#list.children[i] as HTMLElement | undefined)?.scrollIntoView({
         block: "nearest",
@@ -309,8 +292,7 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
       for (const part of splitOnMatches(text, query)) {
         if (part.match) {
           const mark = document.createElement("mark");
-          mark.className =
-            "bg-primary/20 text-foreground-bright rounded-sm px-0.5 font-semibold not-italic";
+          mark.className = "jaad-search-mark";
           mark.textContent = part.text;
           frag.append(mark);
         } else {
@@ -343,22 +325,20 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
         const li = document.createElement("li");
         li.id = `search-option-${i}`;
         li.setAttribute("role", "option");
-        li.className =
-          "cursor-pointer rounded-lg px-3 py-2.5 text-left transition-colors";
+        li.className = "jaad-search-result";
         li.addEventListener("click", () => this.#go(item.slug));
         li.addEventListener("mouseenter", () => this.#select(i));
 
         const head = document.createElement("div");
-        head.className = "flex items-center gap-2";
+        head.className = "jaad-search-result-head";
         const title = document.createElement("span");
-        title.className = "text-sm font-medium";
+        title.className = "jaad-search-result-title";
         title.append(this.#marked(item.title, query));
         head.append(title);
 
         if (item.chapter) {
           const badge = document.createElement("span");
-          badge.className =
-            "text-foreground-muted bg-background-secondary rounded px-1.5 py-0.5 text-[0.65rem]";
+          badge.className = "jaad-search-result-badge";
           badge.textContent = item.chapter;
           head.append(badge);
         }
@@ -367,7 +347,7 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
         const snippet = getSnippet(item.body, query);
         if (snippet) {
           const p = document.createElement("p");
-          p.className = "text-foreground-secondary mt-1 line-clamp-1 text-xs";
+          p.className = "jaad-search-result-snippet";
           p.append(this.#marked(snippet, query));
           li.append(p);
         }
@@ -380,7 +360,7 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
 
     #message(text: string): HTMLLIElement {
       const li = document.createElement("li");
-      li.className = "text-foreground-muted px-3 py-6 text-center text-sm";
+      li.className = "jaad-search-message";
       li.textContent = text;
       return li;
     }

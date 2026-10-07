@@ -1,9 +1,24 @@
-@import "tailwindcss";
+@import "tailwindcss" source(none);
+@import "./components/shell.css";
+@import "./components/header.css";
+@import "./components/footer.css";
+@import "./components/nav.css";
+@import "./components/nav-mobile.css";
+@import "./components/social-links.css";
+@import "./components/theme-switcher.css";
+@import "./components/locale-switcher.css";
+@import "./components/scroll-to-top.css";
+@import "./components/not-found.css";
+@import "./components/search.css";
+@import "./components/docs-page.css";
+@import "./components/docs-sidebar.css";
+@import "./components/toc.css";
+@import "./components/docs-mobile-nav.css";
+@import "./components/docs-page-nav.css";
+@import "./components/page-actions.css";
+@import "./components/breadcrumbs.css";
 
-/* Relative to this file, so it follows the package wherever it is installed. */
-@source "../";
-
-@theme {
+@theme static {
   /* Seeds */
 
   --color-background: #faf8f5;
@@ -128,55 +143,14 @@
   }
 }
 
-@utility font-brand {
-  font-family: var(--font-serif);
-  font-weight: 300;
-  font-style: italic;
-  letter-spacing: -0.01em;
-  line-height: 1;
-}
-
-/* Layout, in a layer so a page's own utilities still win. */
-@layer components {
-  /* Header, footer and docs content share one measure. */
-  .jaad-chrome {
-    width: 100%;
-    max-width: var(--jaad-chrome-width);
-    margin-inline: auto;
-  }
-
-  .jaad-main {
-    flex: 1;
-    margin-block: 4rem;
-    padding-inline: var(--jaad-page-padding);
-  }
-
-  @media (min-width: 1024px) {
-    .jaad-main {
-      padding-inline: calc(var(--jaad-page-padding) * 2);
-    }
-  }
-
-  /* `bare` keeps the landmark without the spacing. */
-  .jaad-main-bare {
-    flex: 1;
-  }
-
-  .jaad-sidebar {
-    width: var(--jaad-sidebar-width);
-  }
-
-  /* The header controls sit in one row and have to stay identical. */
-  .jaad-icon-button {
-    @apply text-foreground-secondary hover:text-foreground-bright flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg transition-colors;
-  }
-
-  .jaad-menu {
-    @apply bg-surface border-border absolute top-full right-0 z-40 mt-2 w-44 overflow-hidden rounded-xl border shadow-lg;
-  }
-
-  .jaad-menu-item {
-    @apply text-foreground-secondary hover:text-foreground-bright hover:bg-primary/5 block rounded-lg px-3 py-2 text-sm no-underline transition-colors;
+/* Utilities layer: wins over .jaad-brand's line-height. */
+@layer utilities {
+  .font-brand {
+    font-family: var(--font-serif);
+    font-weight: 300;
+    font-style: italic;
+    letter-spacing: -0.01em;
+    line-height: 1;
   }
 }
 
@@ -244,19 +218,6 @@ html.dark {
     var(--color-primary) 71%,
     var(--color-background)
   );
-}
-
-/* Both icons ship; CSS picks one, so the server-rendered control is correct. */
-.theme-icon-to-light {
-  display: none;
-}
-
-html.dark .theme-icon-to-dark {
-  display: none;
-}
-
-html.dark .theme-icon-to-light {
-  display: block;
 }
 
 /* Reduced motion */

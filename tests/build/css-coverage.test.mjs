@@ -10,26 +10,44 @@ const SRC = join(
   "../../packages/jaad/src",
 );
 
-test("every utility used by the package ships in the built CSS", () => {
+test("every class used by the package ships in the built CSS", () => {
   const classes = packageClasses(SRC);
   assert.ok(classes.size > 0, "no classes found; did the source move?");
 
   assert.deepEqual(
     missingFrom(allCss(), classes),
     [],
-    "Tailwind never scans node_modules; the package CSS needs an @source pointing at its own sources",
+    "a class used in markup has no rule in the package CSS",
+  );
+});
+
+const source = (name) => readFileSync(join(SRC, name), "utf8");
+
+// Tokens are public: emitted even when no package rule uses them.
+test("every @theme token ships in the package stylesheet", () => {
+  const dist = source("../dist/jaad.css");
+  assert.deepEqual(
+    themeTokens(source("styles/global.css")).filter(
+      (t) => !dist.includes(`${t}:`),
+    ),
+    [],
   );
 });
 
 // `tailwind: true` exposes exactly JAAD's colour and font tokens.
 test("tailwind.css names every colour and font token", () => {
-  const source = (name) => readFileSync(join(SRC, name), "utf8");
   const pick = (tokens) =>
     tokens.filter((t) => /^--(color|font)-/.test(t)).sort();
-  assert.deepEqual(
-    pick(themeTokens(source("styles/tailwind.css"))),
-    pick(themeTokens(source("styles/global.css"))),
-  );
+  const declared = pick(themeTokens(source("styles/global.css")));
+  const bridged = pick(themeTokens(source("styles/tailwind.css")));
+  assert.deepEqual(bridged, declared);
+});
+
+// Components stay semantic: styling lives in CSS, not in utilities.
+test("package markup uses only jaad-* and docs-* classes", () => {
+  const allowed = /^(jaad-|docs-|font-brand$|dark$)/;
+  const utilities = [...packageClasses(SRC)].filter((c) => !allowed.test(c));
+  assert.deepEqual(utilities.sort(), []);
 });
 
 // An unlayered rule beats every Tailwind utility, including the consumer's own.

@@ -16,13 +16,10 @@ const { sections, headings, locale } = Astro.props;
 const t = ui(locale);
 ---
 
-<div class="docs-mobile-nav mb-8 space-y-4 lg:hidden">
-  <div class="docs-select w-full">
-    <label for="page-select" class="sr-only">{t("nav.selectPage")}</label>
-    <select
-      id="page-select"
-      class="border-primary/20 bg-surface text-foreground focus:border-primary w-full rounded-lg border px-4 py-3 transition-colors focus:outline-none"
-    >
+<div class="docs-mobile-nav">
+  <div class="docs-select">
+    <label for="page-select" class="jaad-sr-only">{t("nav.selectPage")}</label>
+    <select id="page-select" class="docs-select-field">
       {
         sections.map((section) =>
           section.type === "page" ? (
@@ -47,14 +44,11 @@ const t = ui(locale);
 
   {
     headings.length > 0 && (
-      <div id="section-select-wrapper" class="docs-select w-full">
-        <label for="section-select" class="sr-only">
+      <div id="section-select-wrapper" class="docs-select">
+        <label for="section-select" class="jaad-sr-only">
           Jump to section
         </label>
-        <select
-          id="section-select"
-          class="border-primary/20 bg-surface text-foreground focus:border-primary w-full rounded-lg border px-4 py-3 transition-colors focus:outline-none"
-        >
+        <select id="section-select" class="docs-select-field">
           <option value="">{t("nav.jumpToSection")}</option>
           {headings.map((heading) => {
             const prefix =

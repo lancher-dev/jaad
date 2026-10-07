@@ -42,11 +42,22 @@ export const escapeClass = (cls) =>
 
 export function packageClasses(srcDir) {
   const classes = new Set();
+  const add = (value) => {
+    for (const token of value.split(/\s+/)) if (token) classes.add(token);
+  };
   for (const file of walk(srcDir).filter((f) => f.endsWith(".astro"))) {
-    for (const m of readFileSync(file, "utf8").matchAll(
-      /\bclass(?:Name)?="([^"{}]+)"/g,
+    const source = readFileSync(file, "utf8");
+    for (const m of source.matchAll(/\bclass(?:Name)?="([^"{}]+)"/g)) add(m[1]);
+    for (const m of source.matchAll(/\bclass=\{([^}]*)\}/g)) {
+      for (const lit of m[1].matchAll(/"([^"]+)"/g)) add(lit[1]);
+    }
+    for (const m of source.matchAll(/\bclass:list=\{\[([^\]]*)\]\}/g)) {
+      for (const lit of m[1].matchAll(/"([^"]+)"/g)) add(lit[1]);
+    }
+    for (const m of source.matchAll(
+      /\.(?:className\s*=|classList\.(?:add|remove|toggle)\()\s*"([^"]+)"/g,
     )) {
-      for (const token of m[1].split(/\s+/)) if (token) classes.add(token);
+      add(m[1]);
     }
   }
   return classes;

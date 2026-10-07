@@ -1,0 +1,31 @@
+@layer components {
+  .docs-page-nav {
+    @apply py-8;
+  }
+
+  .docs-page-nav-row {
+    @apply flex items-center justify-between gap-4;
+  }
+
+  .docs-page-nav-link {
+    @apply border-border-dark bg-background-tertiary text-foreground-bright hover:border-primary hover:bg-border-dark hover:text-primary flex max-w-[calc(45%-1rem)] min-w-0 items-center gap-2 rounded-lg border px-4 py-3 no-underline transition-all duration-300;
+  }
+
+  .docs-page-nav-icon {
+    @apply h-4 w-4 shrink-0 transition-transform;
+  }
+
+  @media (hover: hover) {
+    .docs-page-nav-link:hover .docs-page-nav-icon-prev {
+      @apply -translate-x-1;
+    }
+
+    .docs-page-nav-link:hover .docs-page-nav-icon-next {
+      @apply translate-x-1;
+    }
+  }
+
+  .docs-page-nav-label {
+    @apply overflow-hidden font-medium text-ellipsis whitespace-nowrap;
+  }
+}

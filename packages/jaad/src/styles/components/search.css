@@ -1,0 +1,98 @@
+@layer components {
+  .jaad-search-trigger {
+    @apply border-border bg-surface hover:bg-surface-hover text-foreground-muted hidden cursor-pointer items-center gap-2 rounded-lg border px-3 py-1.5 text-sm transition-colors md:flex;
+  }
+
+  .jaad-search-trigger-icon {
+    @apply h-4 w-4 shrink-0;
+  }
+
+  .jaad-search-trigger-label {
+    @apply hidden lg:inline;
+  }
+
+  .jaad-search-shortcut {
+    @apply bg-background-secondary text-foreground-muted rounded px-1.5 py-0.5 text-xs font-medium;
+  }
+
+  /* Icon trigger on a docs page, where the desktop field is shown from md. */
+  .jaad-search-trigger-compact {
+    @apply md:hidden;
+  }
+
+  .jaad-search-overlay {
+    @apply fixed inset-0 z-50 flex items-start justify-center px-4 pt-[15vh];
+  }
+
+  .jaad-search-backdrop {
+    @apply absolute inset-0 bg-black/60 backdrop-blur-sm;
+  }
+
+  .jaad-search-panel {
+    @apply bg-surface border-border relative z-10 w-full max-w-lg overflow-hidden rounded-xl border shadow-2xl;
+  }
+
+  .jaad-search-bar {
+    @apply border-border flex items-center gap-3 border-b px-4 py-3;
+  }
+
+  .jaad-search-bar-icon {
+    @apply text-foreground-muted h-5 w-5 shrink-0;
+  }
+
+  .jaad-search-input {
+    @apply text-foreground placeholder:text-foreground-muted min-w-0 flex-1 bg-transparent text-sm outline-none;
+  }
+
+  .jaad-search-close {
+    @apply bg-background-secondary text-foreground-muted shrink-0 cursor-pointer rounded px-1.5 py-0.5 text-xs;
+  }
+
+  .jaad-search-results {
+    @apply max-h-80 overflow-y-auto p-2;
+  }
+
+  .jaad-search-footer {
+    @apply border-border text-foreground-muted flex items-center gap-4 border-t px-4 py-2 text-xs;
+  }
+
+  .jaad-search-key {
+    @apply bg-background-secondary rounded px-1 py-0.5;
+  }
+
+  .jaad-search-result {
+    @apply text-foreground cursor-pointer rounded-lg px-3 py-2.5 text-left transition-colors;
+  }
+
+  .jaad-search-result:not([aria-selected="true"]) {
+    @apply hover:bg-primary/5;
+  }
+
+  .jaad-search-result[aria-selected="true"] {
+    @apply bg-primary/10 text-foreground-bright;
+  }
+
+  .jaad-search-result-head {
+    @apply flex items-center gap-2;
+  }
+
+  .jaad-search-result-title {
+    @apply text-sm font-medium;
+  }
+
+  .jaad-search-result-badge {
+    @apply text-foreground-muted bg-background-secondary rounded px-1.5 py-0.5 text-[0.65rem];
+  }
+
+  .jaad-search-result-snippet {
+    @apply text-foreground-secondary mt-1 line-clamp-1 text-xs;
+  }
+
+  .jaad-search-mark {
+    @apply bg-primary/20 text-foreground-bright rounded-sm px-0.5 font-semibold not-italic;
+  }
+
+  .jaad-search-message {
+    @apply text-foreground-muted px-3 py-6 text-center text-sm;
+  }
+}

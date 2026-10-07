@@ -13,16 +13,13 @@ const links = buildSocialLinks(config);
       rel="noopener noreferrer"
       title={link.label}
       aria-label={link.label}
-      class="jaad-icon-button no-underline"
+      class="jaad-icon-button"
     >
       {link.svg ? (
-        <span
-          class="flex h-5 w-5 items-center justify-center"
-          set:html={link.svg}
-        />
+        <span class="jaad-social-icon" set:html={link.svg} />
       ) : link.path ? (
         <svg
-          class="h-5 w-5"
+          class="jaad-icon"
           viewBox="0 0 24 24"
           fill="currentColor"
           aria-hidden="true"
@@ -30,7 +27,7 @@ const links = buildSocialLinks(config);
           <path d={link.path} />
         </svg>
       ) : (
-        <span class="text-xs">{link.label}</span>
+        <span class="jaad-social-label">{link.label}</span>
       )}
     </a>
   ))

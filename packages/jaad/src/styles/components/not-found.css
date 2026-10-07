@@ -1,0 +1,11 @@
+@layer components {
+  .jaad-not-found {
+    @apply m-auto flex h-full w-full flex-col items-center justify-center px-16 text-center;
+  }
+  .jaad-not-found-title {
+    @apply mb-16 text-6xl font-bold;
+  }
+  .jaad-not-found-text {
+    @apply mb-32 text-xl;
+  }
+}

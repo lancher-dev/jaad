@@ -11,7 +11,7 @@ docs/
     02-plugins.md      → /advanced/plugins
 ```
 
-The first `# Heading` in each file becomes the page title. `##` and `###` headings appear automatically in the table of contents.
+The first `# Heading` in each file becomes the page title. `##` and `###` headings appear automatically in the table of contents. Wrap headings in `<div data-toc-ignore>` to leave them out.
 
 ## The opening page
 

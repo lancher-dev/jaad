@@ -12,7 +12,7 @@ const active = alternates.find((entry) => entry.locale.code === current);
 const t = ui(current);
 ---
 
-<jaad-locale-switcher class="relative">
+<jaad-locale-switcher class="jaad-locale-switcher">
   <button
     type="button"
     data-trigger
@@ -21,16 +21,16 @@ const t = ui(current);
     aria-controls="jaad-locale-menu"
     aria-label={t("locale.change")}
     title={t("locale.change")}
-    class="jaad-icon-button w-auto gap-1.5 px-2"
+    class="jaad-icon-button jaad-locale-trigger"
   >
     {
       active?.locale.flag && (
         <span aria-hidden="true">{active.locale.flag}</span>
       )
     }
-    <span class="text-xs font-medium uppercase">{current}</span>
+    <span class="jaad-locale-code">{current}</span>
     <svg
-      class="h-3 w-3 shrink-0"
+      class="jaad-locale-chevron"
       fill="none"
       stroke="currentColor"
       viewBox="0 0 24 24"
@@ -44,7 +44,12 @@ const t = ui(current);
     </svg>
   </button>
 
-  <div id="jaad-locale-menu" data-menu hidden class="jaad-menu p-1">
+  <div
+    id="jaad-locale-menu"
+    data-menu
+    hidden
+    class="jaad-menu jaad-locale-menu"
+  >
     {
       alternates.map((entry) => (
         <a
@@ -52,7 +57,7 @@ const t = ui(current);
           hreflang={entry.locale.tag}
           lang={entry.locale.tag}
           aria-current={entry.locale.code === current ? "true" : undefined}
-          class="jaad-menu-item flex items-center gap-2 aria-[current]:font-semibold"
+          class="jaad-menu-item jaad-locale-item"
         >
           {entry.locale.flag && (
             <span aria-hidden="true">{entry.locale.flag}</span>
