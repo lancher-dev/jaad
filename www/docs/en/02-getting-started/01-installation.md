@@ -2,9 +2,25 @@
 
 ## Create a project
 
-```bash
+:::code-tabs
+
+```bash npm
 npm create @lancher-dev/jaad@latest
 ```
+
+```bash pnpm
+pnpm create @lancher-dev/jaad@latest
+```
+
+```bash yarn
+yarn create @lancher-dev/jaad@latest
+```
+
+```bash bun
+bun create @lancher-dev/jaad@latest
+```
+
+:::
 
 The CLI asks for a destination, template, title and whether to install
 dependencies. The `docs` template puts documentation at `/` and is the default;
@@ -12,15 +28,47 @@ dependencies. The `docs` template puts documentation at `/` and is the default;
 
 To provide every answer as flags:
 
-```bash
+:::code-tabs
+
+```bash npm
 npm create @lancher-dev/jaad@latest my-docs -- --title "My Docs" --install
 ```
 
+```bash pnpm
+pnpm create @lancher-dev/jaad@latest my-docs --title "My Docs" --install
+```
+
+```bash yarn
+yarn create @lancher-dev/jaad@latest my-docs --title "My Docs" --install
+```
+
+```bash bun
+bun create @lancher-dev/jaad@latest my-docs --title "My Docs" --install
+```
+
+:::
+
 Use `--here` inside an existing repository:
 
-```bash
+:::code-tabs
+
+```bash npm
 npm create @lancher-dev/jaad@latest -- --here
 ```
+
+```bash pnpm
+pnpm create @lancher-dev/jaad@latest --here
+```
+
+```bash yarn
+yarn create @lancher-dev/jaad@latest --here
+```
+
+```bash bun
+bun create @lancher-dev/jaad@latest --here
+```
+
+:::
 
 The command keeps the existing `package.json` and Markdown files. It stops
 without writing when a custom Astro or Content configuration requires a manual
@@ -47,6 +95,10 @@ pnpm dev
 yarn dev
 ```
 
+```bash bun
+bun run dev
+```
+
 :::
 
 The development server starts at `http://localhost:4321`.
@@ -70,6 +122,10 @@ pnpm add @lancher-dev/jaad
 
 ```bash yarn
 yarn add @lancher-dev/jaad
+```
+
+```bash bun
+bun add @lancher-dev/jaad
 ```
 
 :::

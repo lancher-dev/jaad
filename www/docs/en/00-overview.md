@@ -6,15 +6,47 @@ without requiring a sidebar or route configuration.
 
 Create a documentation-only project:
 
-```bash
+:::code-tabs
+
+```bash npm
 npm create @lancher-dev/jaad@latest my-docs
 ```
 
+```bash pnpm
+pnpm create @lancher-dev/jaad@latest my-docs
+```
+
+```bash yarn
+yarn create @lancher-dev/jaad@latest my-docs
+```
+
+```bash bun
+bun create @lancher-dev/jaad@latest my-docs
+```
+
+:::
+
 Or add JAAD to a repository that already has documentation:
 
-```bash
+:::code-tabs
+
+```bash npm
 npm create @lancher-dev/jaad@latest -- --here
 ```
+
+```bash pnpm
+pnpm create @lancher-dev/jaad@latest --here
+```
+
+```bash yarn
+yarn create @lancher-dev/jaad@latest --here
+```
+
+```bash bun
+bun create @lancher-dev/jaad@latest --here
+```
+
+:::
 
 Markdown files live in `docs/`. Numeric prefixes control their order and are
 removed from generated URLs:

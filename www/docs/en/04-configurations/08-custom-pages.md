@@ -6,9 +6,25 @@ styles and metadata; JAAD options affect only documentation below `routeBase`.
 The `site` template creates a local layout and landing page, then mounts the
 documentation at `/docs`:
 
-```bash
+:::code-tabs
+
+```bash npm
 npm create @lancher-dev/jaad@latest my-site -- --template site
 ```
+
+```bash pnpm
+pnpm create @lancher-dev/jaad@latest my-site --template site
+```
+
+```bash yarn
+yarn create @lancher-dev/jaad@latest my-site --template site
+```
+
+```bash bun
+bun create @lancher-dev/jaad@latest my-site --template site
+```
+
+:::
 
 ```
 src/

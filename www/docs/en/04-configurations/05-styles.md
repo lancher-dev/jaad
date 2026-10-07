@@ -20,9 +20,25 @@ CSS for pages of your own.
 
 ## Tailwind
 
-```bash
+:::code-tabs
+
+```bash npm
 npm i -D tailwindcss @tailwindcss/vite
 ```
+
+```bash pnpm
+pnpm add -D tailwindcss @tailwindcss/vite
+```
+
+```bash yarn
+yarn add -D tailwindcss @tailwindcss/vite
+```
+
+```bash bun
+bun add -d tailwindcss @tailwindcss/vite
+```
+
+:::
 
 ```ts
 // jaad.config.ts

@@ -2,10 +2,29 @@
 
 JAAD builds a static site in `dist/`:
 
-```bash
+:::code-tabs
+
+```bash npm
 npm run build
 npm run preview
 ```
+
+```bash pnpm
+pnpm build
+pnpm preview
+```
+
+```bash yarn
+yarn build
+yarn preview
+```
+
+```bash bun
+bun run build
+bun run preview
+```
+
+:::
 
 Set `site` to the public URL so JAAD can generate canonical links, the sitemap
 and social image URLs. Add `base` when the site is served from a subpath.
