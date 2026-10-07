@@ -1,6 +1,7 @@
-# Upgrading
+# Migrating
 
-Changes that need action, by the version you upgrade from.
+Changes that need action, by the version you upgrade from. To upgrade, see
+[Upgrading](/docs/upgrade/upgrading).
 
 ## From 0.9
 
