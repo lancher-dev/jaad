@@ -94,6 +94,9 @@ export const jaadConfigSchema = z.object({
     })
     .default("auto"),
 
+  /** Registers Tailwind (the site's own install) and exposes JAAD's tokens to it. */
+  tailwind: z.boolean().default(false),
+
   /** Per-locale overrides for JAAD's bundled interface strings. */
   ui: z.record(z.string(), z.record(z.string(), z.string())).default({}),
 
@@ -247,7 +250,12 @@ const styleInPackage = (name: string) =>
 export function resolveStylesheets(
   config: JaadConfig,
   cwd: string = process.cwd(),
-): { user: string | null; theme: string | null; bridge: string } {
+): {
+  user: string | null;
+  theme: string | null;
+  bridge: string;
+  tailwind: string | null;
+} {
   const userCss = join(cwd, "src", "jaad.css");
   const slug =
     typeof config.theme === "string" ? PRESETS[config.theme].theme : null;
@@ -260,6 +268,7 @@ export function resolveStylesheets(
       : null,
     // A preset supplies the palette, so the colours travel the other way.
     bridge: styleInPackage(slug ? "jaamd-reverse.css" : "jaamd-forward.css"),
+    tailwind: config.tailwind ? styleInPackage("tailwind.css") : null,
   };
 }
 
