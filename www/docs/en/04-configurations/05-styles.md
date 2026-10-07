@@ -1,7 +1,7 @@
 # Styles
 
 Create `src/jaad.css` to override JAAD's CSS custom properties. It loads after
-the bundled stylesheet and applies only to documentation pages.
+the bundled stylesheet, on documentation pages and on pages using `Page`.
 
 ```css
 :root {
@@ -15,23 +15,29 @@ html.dark {
 }
 ```
 
-JAAD ships its stylesheet already compiled, so installing it does not add
-Tailwind to your project and does not touch your Vite configuration. Use
-whatever CSS you like for pages of your own; if that is Tailwind, add it
-yourself:
+JAAD ships its stylesheet compiled and adds nothing to your project. Use any
+CSS for pages of your own.
+
+## Tailwind
+
+```bash
+npm i -D tailwindcss @tailwindcss/vite
+```
 
 ```ts
 // jaad.config.ts
-import tailwindcss from "@tailwindcss/vite";
-
-defineJaadConfig({
-  title: "My Project",
-  astro: { vite: { plugins: [tailwindcss()] } },
-});
+defineJaadConfig({ title: "My Project", tailwind: true });
 ```
 
-The tokens below stay overridable either way: they are plain custom properties
-in the compiled sheet, and `src/jaad.css` loads after it.
+JAAD registers the plugin, unless `astro.vite.plugins` already has it.
+
+- Applies to documentation pages, pages using `Page` and a custom `DocsFrame`.
+- Colours and fonts follow JAAD's tokens: `bg-surface`, `border-border-light`,
+  `font-mono`.
+- `dark:` follows JAAD's theme switch.
+- Layout tokens via arbitrary values: `max-w-(--jaad-chrome-width)`.
+- Pages on a local layout get plain Tailwind (no JAAD tokens) by adding
+  `@import "tailwindcss";` to their CSS.
 
 ## Core tokens
 

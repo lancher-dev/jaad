@@ -9,6 +9,7 @@ import {
   createSitemapFilter,
   findOpeningPages,
   getInjectedRoutes,
+  loadTailwindPlugin,
   shouldInjectNotFound,
 } from "../../packages/jaad/src/integration.ts";
 
@@ -160,4 +161,22 @@ test("a localised site adds one route per fixed endpoint, not per locale", () =>
       "/docs/[...slug].md",
     ],
   );
+});
+
+test("tailwind: a plugin the site registered itself is left alone", () => {
+  const registered = [[{ name: "@tailwindcss/vite:scan" }]];
+  assert.deepEqual(loadTailwindPlugin("/nowhere", registered), []);
+});
+
+test("tailwind: missing packages name the install command", () => {
+  const root = mkdtempSync(join(tmpdir(), "jaad-no-tailwind-"));
+  try {
+    writeFileSync(join(root, "package.json"), "{}");
+    assert.throws(
+      () => loadTailwindPlugin(root, []),
+      /npm i -D tailwindcss @tailwindcss\/vite/,
+    );
+  } finally {
+    rmSync(root, { recursive: true });
+  }
 });

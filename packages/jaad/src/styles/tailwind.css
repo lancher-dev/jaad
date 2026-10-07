@@ -1,0 +1,30 @@
+/* Opt-in (`tailwind: true`): site utilities read JAAD's tokens. No values, no preflight. */
+@import "tailwindcss/theme.css" layer(theme) theme(reference);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme reference {
+  --color-background: transparent;
+  --color-surface: transparent;
+  --color-foreground: transparent;
+  --color-foreground-bright: transparent;
+  --color-primary: transparent;
+  --color-error: transparent;
+  --color-warning: transparent;
+  --color-info: transparent;
+  --color-success: transparent;
+  --color-background-secondary: transparent;
+  --color-background-tertiary: transparent;
+  --color-surface-hover: transparent;
+  --color-border-light: transparent;
+  --color-border: transparent;
+  --color-border-dark: transparent;
+  --color-foreground-muted: transparent;
+  --color-foreground-secondary: transparent;
+  --color-primary-dark: transparent;
+  --color-primary-light: transparent;
+  --font-sans: transparent;
+  --font-serif: transparent;
+  --font-mono: transparent;
+}

@@ -146,10 +146,15 @@ defineJaadConfig({
 | ------------ | ------------------------------------------- | ----------- |
 | `theme`      | `string \| { light: string; dark: string }` | `"default"` |
 | `appearance` | `"auto" \| "light" \| "dark"`               | `"auto"`    |
+| `tailwind`   | `boolean`                                   | `false`     |
 
 A named theme styles the interface, Markdown and code blocks. A `{ light,
 dark }` object changes only the Shiki code themes. See
 [Themes](/docs/configurations/themes) for available names and custom themes.
+
+`tailwind: true` enables Tailwind utilities with JAAD's tokens on documentation
+pages, `Page` pages and a custom `DocsFrame`; see
+[Styles](/docs/configurations/styles#tailwind).
 
 `appearance: "auto"` follows the reader's preference and shows the switcher.
 `"light"` and `"dark"` pin the appearance and remove it.

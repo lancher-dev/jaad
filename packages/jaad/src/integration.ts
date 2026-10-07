@@ -1,9 +1,10 @@
-import type { AstroIntegration } from "astro";
+import type { AstroIntegration, AstroUserConfig } from "astro";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { createRequire } from "node:module";
 import { join, relative, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
-import type { JaadResolvedConfig } from "./config.ts";
+import type { JaadResolvedConfig, resolveStylesheets } from "./config.ts";
 import { fonts } from "./fonts.ts";
 import { jaadVirtualPlugin } from "./virtual.ts";
 import {
@@ -19,10 +20,41 @@ import {
 } from "./urls.ts";
 import { prefixedLocales } from "./locales.ts";
 
-interface Stylesheets {
-  user: string | null;
-  theme: string | null;
-  bridge: string;
+type Stylesheets = ReturnType<typeof resolveStylesheets>;
+type VitePlugins = NonNullable<NonNullable<AstroUserConfig["vite"]>["plugins"]>;
+
+const NOT_INSTALLED = new Set([
+  "MODULE_NOT_FOUND",
+  "ERR_PACKAGE_PATH_NOT_EXPORTED",
+]);
+
+/** The site's own `@tailwindcss/vite`, unless it already registered one. */
+export function loadTailwindPlugin(
+  root: string,
+  registered: VitePlugins | undefined,
+): VitePlugins {
+  const plugins = ([registered] as unknown[]).flat(Infinity) as ({
+    name?: string;
+  } | null)[];
+  if (plugins.some((p) => p?.name?.startsWith("@tailwindcss/vite"))) return [];
+
+  const load = createRequire(join(root, "package.json"));
+  let tailwindcss: () => VitePlugins;
+  try {
+    load.resolve("tailwindcss/package.json");
+    ({ default: tailwindcss } = load("@tailwindcss/vite") as {
+      default: () => VitePlugins;
+    });
+  } catch (error) {
+    if (!NOT_INSTALLED.has((error as { code?: string }).code ?? ""))
+      throw error;
+    throw new Error(
+      "jaad: `tailwind: true` needs Tailwind in your project:\n" +
+        "  npm i -D tailwindcss @tailwindcss/vite",
+      { cause: error },
+    );
+  }
+  return tailwindcss();
 }
 
 /** One per locale: each has its own first page, and its own redirect. */
@@ -193,8 +225,17 @@ export function createCoreIntegration(
                 stylesheets.user,
                 stylesheets.theme,
                 stylesheets.bridge,
+                stylesheets.tailwind,
                 () => state.docsFrame,
               ),
+              ...(config.tailwind
+                ? [
+                    loadTailwindPlugin(
+                      fileURLToPath(astroConfig.root),
+                      astroConfig.vite.plugins,
+                    ),
+                  ]
+                : []),
             ],
             // Package .astro sources must reach the Astro compiler.
             ssr: { noExternal: ["@lancher-dev/jaad"] },

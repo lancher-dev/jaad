@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { allCss, packageClasses, missingFrom } from "../dist.mjs";
+import { allCss, packageClasses, missingFrom, themeTokens } from "../dist.mjs";
 
 const SRC = join(
   dirname(fileURLToPath(import.meta.url)),
@@ -18,6 +18,17 @@ test("every utility used by the package ships in the built CSS", () => {
     missingFrom(allCss(), classes),
     [],
     "Tailwind never scans node_modules; the package CSS needs an @source pointing at its own sources",
+  );
+});
+
+// `tailwind: true` exposes exactly JAAD's colour and font tokens.
+test("tailwind.css names every colour and font token", () => {
+  const source = (name) => readFileSync(join(SRC, name), "utf8");
+  const pick = (tokens) =>
+    tokens.filter((t) => /^--(color|font)-/.test(t)).sort();
+  assert.deepEqual(
+    pick(themeTokens(source("styles/tailwind.css"))),
+    pick(themeTokens(source("styles/global.css"))),
   );
 });
 
