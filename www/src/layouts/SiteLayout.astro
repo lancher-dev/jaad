@@ -48,18 +48,22 @@ const themeScript = `(function () {
   </head>
   <body data-site-layout>
     <header class="site-chrome site-header">
-      <a class="font-brand text-primary text-xl no-underline" href={homeHref}
-        >JAAD</a
-      >
+      <a class="font-brand text-primary text-xl no-underline" href={homeHref}>
+        JAAD
+      </a>
       <div class="flex items-center gap-2">
         <nav aria-label="Main navigation">
-          <a class="text-sm no-underline" href={docsHref}>Documentation</a>
+          <a class="text-sm no-underline" href={docsHref}>
+            Documentation
+          </a>
         </nav>
         <SiteThemeToggle />
       </div>
     </header>
 
-    <main class="site-main"><slot /></main>
+    <main class="site-main">
+      <slot />
+    </main>
 
     <footer class="site-chrome site-footer">
       JAAD is released under the MIT License.

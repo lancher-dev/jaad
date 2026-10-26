@@ -13,54 +13,52 @@ const { previousPage, nextPage, locale } = Astro.props;
 const t = ui(locale);
 ---
 
-{
-  (previousPage || nextPage) && (
-    <nav class="docs-page-nav" aria-label={t("nav.page")}>
-      <div class="docs-page-nav-row">
-        {previousPage && previousPage.title ? (
-          <a href={previousPage.href} rel="prev" class="docs-page-nav-link">
-            <svg
-              class="docs-page-nav-icon docs-page-nav-icon-prev"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-            <span class="docs-page-nav-label">{previousPage.title}</span>
-          </a>
-        ) : (
-          <div />
-        )}
+{(previousPage || nextPage) && (
+  <nav class="docs-page-nav" aria-label={t("nav.page")}>
+    <div class="docs-page-nav-row">
+      {previousPage && previousPage.title ? (
+        <a href={previousPage.href} rel="prev" class="docs-page-nav-link">
+          <svg
+            class="docs-page-nav-icon docs-page-nav-icon-prev"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+          <span class="docs-page-nav-label">{previousPage.title}</span>
+        </a>
+      ) : (
+        <div />
+      )}
 
-        {nextPage && nextPage.title ? (
-          <a href={nextPage.href} rel="next" class="docs-page-nav-link">
-            <span class="docs-page-nav-label">{nextPage.title}</span>
-            <svg
-              class="docs-page-nav-icon docs-page-nav-icon-next"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </a>
-        ) : (
-          <div />
-        )}
-      </div>
-    </nav>
-  )
-}
+      {nextPage && nextPage.title ? (
+        <a href={nextPage.href} rel="next" class="docs-page-nav-link">
+          <span class="docs-page-nav-label">{nextPage.title}</span>
+          <svg
+            class="docs-page-nav-icon docs-page-nav-icon-next"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </a>
+      ) : (
+        <div />
+      )}
+    </div>
+  </nav>
+)}

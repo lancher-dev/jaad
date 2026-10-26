@@ -20,15 +20,15 @@ const rootHref = docsPageHref("", docsUrls(locale));
 ---
 
 <nav aria-label={t("breadcrumb.label")} class="docs-breadcrumbs">
-  <a href={rootHref} class="docs-breadcrumbs-link">{rootLabel}</a>
-  {
-    chapterTitle && (
-      <>
-        <span aria-hidden="true">/</span>
-        <span>{chapterTitle}</span>
-      </>
-    )
-  }
+  <a href={rootHref} class="docs-breadcrumbs-link">
+    {rootLabel}
+  </a>
+  {chapterTitle && (
+    <>
+      <span aria-hidden="true">/</span>
+      <span>{chapterTitle}</span>
+    </>
+  )}
   <span aria-hidden="true">/</span>
   <span class="docs-breadcrumbs-current" aria-current="page">
     {title}

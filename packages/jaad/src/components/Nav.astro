@@ -3,24 +3,22 @@ import config from "virtual:jaad/config";
 import { withDeploymentBase } from "../urls.ts";
 ---
 
-{
-  config.nav.length > 0 && (
-    <nav class="jaad-nav">
-      <ul class="jaad-nav-list">
-        {config.nav.map((link) => (
-          <li>
-            <a
-              href={withDeploymentBase(link.href, import.meta.env.BASE_URL)}
-              class="jaad-nav-link"
-              {...(link.href.startsWith("http")
-                ? { target: "_blank", rel: "noopener noreferrer" }
-                : {})}
-            >
-              {link.label}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </nav>
-  )
-}
+{config.nav.length > 0 && (
+  <nav class="jaad-nav">
+    <ul class="jaad-nav-list">
+      {config.nav.map((link) => (
+        <li>
+          <a
+            href={withDeploymentBase(link.href, import.meta.env.BASE_URL)}
+            class="jaad-nav-link"
+            {...(link.href.startsWith("http")
+              ? { target: "_blank", rel: "noopener noreferrer" }
+              : {})}
+          >
+            {link.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+)}

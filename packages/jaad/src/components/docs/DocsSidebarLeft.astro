@@ -15,40 +15,38 @@ const t = ui(locale);
 
 <aside class="docs-sidebar-left jaad-sidebar">
   <nav aria-label={t("nav.documentation")}>
-    {
-      sections.map((section) =>
-        section.type === "page" ? (
-          <div class="docs-sidebar-page">
-            <a
-              href={section.item.href}
-              class="docs-sidebar-link"
-              aria-current={section.item.isActive ? "page" : undefined}
-            >
-              {section.item.title}
-            </a>
-          </div>
-        ) : (
-          <div class="docs-sidebar-chapter">
-            <h3 class="docs-sidebar-chapter-title">
-              {formatChapterTitle(section.chapter)}
-            </h3>
-            <ul class="docs-sidebar-chapter-list">
-              {section.items.map((item) => (
-                <li>
-                  <a
-                    href={item.href}
-                    class="docs-sidebar-sublink"
-                    aria-current={item.isActive ? "page" : undefined}
-                  >
-                    {item.title}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ),
-      )
-    }
+    {sections.map((section) =>
+      section.type === "page" ? (
+        <div class="docs-sidebar-page">
+          <a
+            href={section.item.href}
+            class="docs-sidebar-link"
+            aria-current={section.item.isActive ? "page" : undefined}
+          >
+            {section.item.title}
+          </a>
+        </div>
+      ) : (
+        <div class="docs-sidebar-chapter">
+          <h3 class="docs-sidebar-chapter-title">
+            {formatChapterTitle(section.chapter)}
+          </h3>
+          <ul class="docs-sidebar-chapter-list">
+            {section.items.map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  class="docs-sidebar-sublink"
+                  aria-current={item.isActive ? "page" : undefined}
+                >
+                  {item.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ),
+    )}
   </nav>
 </aside>
 

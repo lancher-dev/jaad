@@ -42,20 +42,20 @@ const { page, headings } = Astro.props;
   <slot name="mobile-navigation" />
 
   <div class="docs-grid">
-    <aside class="docs-aside"><slot name="sidebar" /></aside>
+    <aside class="docs-aside">
+      <slot name="sidebar" />
+    </aside>
     <main>
       <slot name="breadcrumbs" />
       <slot name="page-actions" />
       <slot name="content" />
       <slot name="page-navigation" />
     </main>
-    {
-      headings.length > 0 && (
-        <aside class="docs-aside">
-          <slot name="table-of-contents" />
-        </aside>
-      )
-    }
+    {headings.length > 0 && (
+      <aside class="docs-aside">
+        <slot name="table-of-contents" />
+      </aside>
+    )}
   </div>
 
   <slot name="footer" />

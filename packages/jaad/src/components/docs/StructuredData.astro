@@ -61,12 +61,10 @@ const data = base && {
 };
 ---
 
-{
-  data && (
-    <script
-      type="application/ld+json"
-      set:html={JSON.stringify(data)}
-      is:inline
-    />
-  )
-}
+{data && (
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify(data)}
+    is:inline
+  />
+)}

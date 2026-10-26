@@ -72,18 +72,16 @@ const contentAttrs = { id: "content" };
       <slot />
     </MarkdownContent>
 
-    {
-      updated && (
-        <p class="docs-updated">
-          {t("page.lastUpdated")}{" "}
-          <time datetime={updated.toISOString()}>
-            {new Intl.DateTimeFormat(language, { dateStyle: "long" }).format(
-              updated,
-            )}
-          </time>
-        </p>
-      )
-    }
+    {updated && (
+      <p class="docs-updated">
+        {t("page.lastUpdated")}{" "}
+        <time datetime={updated.toISOString()}>
+          {new Intl.DateTimeFormat(language, { dateStyle: "long" }).format(
+            updated,
+          )}
+        </time>
+      </p>
+    )}
   </Fragment>
 
   <DocsPageNav

@@ -12,31 +12,29 @@ const { headings, locale } = Astro.props;
 const t = ui(locale);
 ---
 
-{
-  headings.length > 0 && (
-    <aside id="toc-sidebar" class="docs-sidebar-right jaad-sidebar">
-      <nav aria-label={t("toc.label")}>
-        <h2 class="docs-toc-title">{t("toc.title")}</h2>
-        <ul class="docs-toc-list">
-          {headings.map((heading) => (
-            <li>
-              <a
-                href={`#${heading.slug}`}
-                data-toc-link
-                class:list={[
-                  "docs-toc-link",
-                  heading.depth === 3 && "docs-toc-link-nested",
-                ]}
-              >
-                {heading.text}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
-    </aside>
-  )
-}
+{headings.length > 0 && (
+  <aside id="toc-sidebar" class="docs-sidebar-right jaad-sidebar">
+    <nav aria-label={t("toc.label")}>
+      <h2 class="docs-toc-title">{t("toc.title")}</h2>
+      <ul class="docs-toc-list">
+        {headings.map((heading) => (
+          <li>
+            <a
+              href={`#${heading.slug}`}
+              data-toc-link
+              class:list={[
+                "docs-toc-link",
+                heading.depth === 3 && "docs-toc-link-nested",
+              ]}
+            >
+              {heading.text}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </aside>
+)}
 
 <script>
   function initToc(): void {

@@ -23,11 +23,9 @@ const t = ui(current);
     title={t("locale.change")}
     class="jaad-icon-button jaad-locale-trigger"
   >
-    {
-      active?.locale.flag && (
-        <span aria-hidden="true">{active.locale.flag}</span>
-      )
-    }
+    {active?.locale.flag && (
+      <span aria-hidden="true">{active.locale.flag}</span>
+    )}
     <span class="jaad-locale-code">{current}</span>
     <svg
       class="jaad-locale-chevron"
@@ -40,7 +38,8 @@ const t = ui(current);
         stroke-linecap="round"
         stroke-linejoin="round"
         stroke-width="2"
-        d="M19 9l-7 7-7-7"></path>
+        d="M19 9l-7 7-7-7"
+      ></path>
     </svg>
   </button>
 
@@ -50,22 +49,20 @@ const t = ui(current);
     hidden
     class="jaad-menu jaad-locale-menu"
   >
-    {
-      alternates.map((entry) => (
-        <a
-          href={entry.href}
-          hreflang={entry.locale.tag}
-          lang={entry.locale.tag}
-          aria-current={entry.locale.code === current ? "true" : undefined}
-          class="jaad-menu-item jaad-locale-item"
-        >
-          {entry.locale.flag && (
-            <span aria-hidden="true">{entry.locale.flag}</span>
-          )}
-          <span>{entry.locale.name}</span>
-        </a>
-      ))
-    }
+    {alternates.map((entry) => (
+      <a
+        href={entry.href}
+        hreflang={entry.locale.tag}
+        lang={entry.locale.tag}
+        aria-current={entry.locale.code === current ? "true" : undefined}
+        class="jaad-menu-item jaad-locale-item"
+      >
+        {entry.locale.flag && (
+          <span aria-hidden="true">{entry.locale.flag}</span>
+        )}
+        <span>{entry.locale.name}</span>
+      </a>
+    ))}
   </div>
 </jaad-locale-switcher>
 

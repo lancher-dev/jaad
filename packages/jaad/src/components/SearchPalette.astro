@@ -43,10 +43,13 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
         stroke-linecap="round"
         stroke-linejoin="round"
         stroke-width="2"
-        d={MAGNIFIER}></path>
+        d={MAGNIFIER}
+      ></path>
     </svg>
     <span class="jaad-search-trigger-label">{t("search.trigger")}</span>
-    <kbd data-shortcut class="jaad-search-shortcut">Ctrl K</kbd>
+    <kbd data-shortcut class="jaad-search-shortcut">
+      Ctrl K
+    </kbd>
   </button>
 
   <button
@@ -65,7 +68,8 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
         stroke-linecap="round"
         stroke-linejoin="round"
         stroke-width="2"
-        d={MAGNIFIER}></path>
+        d={MAGNIFIER}
+      ></path>
     </svg>
   </button>
 
@@ -92,7 +96,8 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
             stroke-linecap="round"
             stroke-linejoin="round"
             stroke-width="2"
-            d={MAGNIFIER}></path>
+            d={MAGNIFIER}
+          ></path>
         </svg>
         <input
           data-input
@@ -107,7 +112,9 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
           aria-autocomplete="list"
           aria-label={t("search.label")}
         />
-        <kbd data-close class="jaad-search-close">ESC</kbd>
+        <kbd data-close class="jaad-search-close">
+          ESC
+        </kbd>
       </div>
 
       <ul
@@ -116,8 +123,7 @@ const MAGNIFIER = "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z";
         class="jaad-search-results"
         role="listbox"
         aria-label={t("search.results")}
-      >
-      </ul>
+      ></ul>
 
       <div class="jaad-search-footer">
         <span>

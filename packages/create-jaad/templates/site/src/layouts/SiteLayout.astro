@@ -25,12 +25,16 @@ const title = [pageTitle, "__JAAD_TITLE__"].filter(Boolean).join(" | ");
   </head>
   <body>
     <header class="site-chrome site-header">
-      <a class="site-name" href={withBase("/")}>{"__JAAD_TITLE__"}</a>
+      <a class="site-name" href={withBase("/")}>
+        {"__JAAD_TITLE__"}
+      </a>
       <nav aria-label="Main navigation">
         <a href={withBase("/docs")}>Documentation</a>
       </nav>
     </header>
-    <main><slot /></main>
+    <main>
+      <slot />
+    </main>
     <footer class="site-chrome site-footer">Built with JAAD.</footer>
   </body>
 </html>

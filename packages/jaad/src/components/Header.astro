@@ -32,13 +32,11 @@ const logoSrc = config.logo
     <div class="jaad-header-row">
       <span class="jaad-brand font-brand">
         <a href={homeHref} title={t("home")} class="jaad-brand-link">
-          {
-            logoSrc ? (
-              <img src={logoSrc} alt={config.title} class="jaad-logo" />
-            ) : (
-              config.title
-            )
-          }
+          {logoSrc ? (
+            <img src={logoSrc} alt={config.title} class="jaad-logo" />
+          ) : (
+            config.title
+          )}
         </a>
       </span>
 
@@ -47,11 +45,9 @@ const logoSrc = config.logo
         <Nav />
         <SocialLinks />
         {config.appearance === "auto" && <ThemeSwitcher {locale} />}
-        {
-          alternates.length > 1 && (
-            <LocaleSwitcher {alternates} current={locale} />
-          )
-        }
+        {alternates.length > 1 && (
+          <LocaleSwitcher {alternates} current={locale} />
+        )}
         <NavMobile {locale} />
       </div>
     </div>

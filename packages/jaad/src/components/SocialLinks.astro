@@ -5,30 +5,28 @@ import { buildSocialLinks } from "../social.ts";
 const links = buildSocialLinks(config);
 ---
 
-{
-  links.map((link) => (
-    <a
-      href={link.href}
-      target="_blank"
-      rel="noopener noreferrer"
-      title={link.label}
-      aria-label={link.label}
-      class="jaad-icon-button"
-    >
-      {link.svg ? (
-        <span class="jaad-social-icon" set:html={link.svg} />
-      ) : link.path ? (
-        <svg
-          class="jaad-icon"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          aria-hidden="true"
-        >
-          <path d={link.path} />
-        </svg>
-      ) : (
-        <span class="jaad-social-label">{link.label}</span>
-      )}
-    </a>
-  ))
-}
+{links.map((link) => (
+  <a
+    href={link.href}
+    target="_blank"
+    rel="noopener noreferrer"
+    title={link.label}
+    aria-label={link.label}
+    class="jaad-icon-button"
+  >
+    {link.svg ? (
+      <span class="jaad-social-icon" set:html={link.svg} />
+    ) : link.path ? (
+      <svg
+        class="jaad-icon"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        aria-hidden="true"
+      >
+        <path d={link.path} />
+      </svg>
+    ) : (
+      <span class="jaad-social-label">{link.label}</span>
+    )}
+  </a>
+))}

@@ -18,52 +18,49 @@ const t = ui(locale);
 
 <div class="docs-mobile-nav">
   <div class="docs-select">
-    <label for="page-select" class="jaad-sr-only">{t("nav.selectPage")}</label>
+    <label for="page-select" class="jaad-sr-only">
+      {t("nav.selectPage")}
+    </label>
     <select id="page-select" class="docs-select-field">
-      {
-        sections.map((section) =>
-          section.type === "page" ? (
-            <option value={section.item.href} selected={section.item.isActive}>
-              {section.item.title}
-            </option>
-          ) : (
-            <optgroup
-              label={formatChapterTitle(section.chapter) || section.chapter}
-            >
-              {section.items.map((page) => (
-                <option value={page.href} selected={page.isActive}>
-                  {page.title}
-                </option>
-              ))}
-            </optgroup>
-          ),
-        )
-      }
+      {sections.map((section) =>
+        section.type === "page" ? (
+          <option value={section.item.href} selected={section.item.isActive}>
+            {section.item.title}
+          </option>
+        ) : (
+          <optgroup
+            label={formatChapterTitle(section.chapter) || section.chapter}
+          >
+            {section.items.map((page) => (
+              <option value={page.href} selected={page.isActive}>
+                {page.title}
+              </option>
+            ))}
+          </optgroup>
+        ),
+      )}
     </select>
   </div>
 
-  {
-    headings.length > 0 && (
-      <div id="section-select-wrapper" class="docs-select">
-        <label for="section-select" class="jaad-sr-only">
-          Jump to section
-        </label>
-        <select id="section-select" class="docs-select-field">
-          <option value="">{t("nav.jumpToSection")}</option>
-          {headings.map((heading) => {
-            const prefix =
-              heading.depth === 3 ? "\u00A0\u00A0\u00A0\u00A0" : "";
-            return (
-              <option value={`#${heading.slug}`}>
-                {prefix}
-                {heading.text}
-              </option>
-            );
-          })}
-        </select>
-      </div>
-    )
-  }
+  {headings.length > 0 && (
+    <div id="section-select-wrapper" class="docs-select">
+      <label for="section-select" class="jaad-sr-only">
+        Jump to section
+      </label>
+      <select id="section-select" class="docs-select-field">
+        <option value="">{t("nav.jumpToSection")}</option>
+        {headings.map((heading) => {
+          const prefix = heading.depth === 3 ? "\u00A0\u00A0\u00A0\u00A0" : "";
+          return (
+            <option value={`#${heading.slug}`}>
+              {prefix}
+              {heading.text}
+            </option>
+          );
+        })}
+      </select>
+    </div>
+  )}
 </div>
 
 <ScrollToTop {locale} />

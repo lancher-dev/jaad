@@ -7,61 +7,59 @@ const links = config.nav;
 const t = ui(Astro.props.locale);
 ---
 
-{
-  links.length > 0 && (
-    <jaad-nav-mobile class="jaad-nav-mobile">
-      <button
-        class="jaad-icon-button"
-        aria-label={t("nav.mobile")}
-        aria-expanded="false"
-        aria-haspopup="true"
-        aria-controls="jaad-nav-menu"
+{links.length > 0 && (
+  <jaad-nav-mobile class="jaad-nav-mobile">
+    <button
+      class="jaad-icon-button"
+      aria-label={t("nav.mobile")}
+      aria-expanded="false"
+      aria-haspopup="true"
+      aria-controls="jaad-nav-menu"
+    >
+      <svg
+        class="jaad-icon"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
       >
-        <svg
-          class="jaad-icon"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            data-icon-open
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M4 6h16M4 12h16M4 18h16"
-          />
-          <path
-            data-icon-close
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M6 18L18 6M6 6l12 12"
-          />
-        </svg>
-      </button>
+        <path
+          data-icon-open
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M4 6h16M4 12h16M4 18h16"
+        />
+        <path
+          data-icon-close
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M6 18L18 6M6 6l12 12"
+        />
+      </svg>
+    </button>
 
-      <div id="jaad-nav-menu" data-menu hidden class="jaad-menu">
-        <nav class="jaad-nav-mobile-links">
-          <ul class="jaad-nav-mobile-list">
-            {links.map((link) => (
-              <li>
-                <a
-                  href={withDeploymentBase(link.href, import.meta.env.BASE_URL)}
-                  class="jaad-menu-item"
-                  {...(link.href.startsWith("http")
-                    ? { target: "_blank", rel: "noopener noreferrer" }
-                    : {})}
-                >
-                  {link.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </div>
-    </jaad-nav-mobile>
-  )
-}
+    <div id="jaad-nav-menu" data-menu hidden class="jaad-menu">
+      <nav class="jaad-nav-mobile-links">
+        <ul class="jaad-nav-mobile-list">
+          {links.map((link) => (
+            <li>
+              <a
+                href={withDeploymentBase(link.href, import.meta.env.BASE_URL)}
+                class="jaad-menu-item"
+                {...(link.href.startsWith("http")
+                  ? { target: "_blank", rel: "noopener noreferrer" }
+                  : {})}
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </div>
+  </jaad-nav-mobile>
+)}
 
 <script>
   class JaadNavMobile extends HTMLElement {

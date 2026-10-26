@@ -82,25 +82,21 @@ const themeScript = `(function () {
 {author && <meta name="author" content={author} />}
 <title>{title}</title>
 {canonical && <link rel="canonical" href={canonical} />}
-{
-  Astro.site &&
-    alternates.map((alternate) => (
-      <link
-        rel="alternate"
-        hreflang={alternate.tag}
-        href={new URL(alternate.href, Astro.site).href}
-      />
-    ))
-}
-{
-  Astro.site && xDefault && (
+{Astro.site &&
+  alternates.map((alternate) => (
     <link
       rel="alternate"
-      hreflang="x-default"
-      href={new URL(xDefault, Astro.site).href}
+      hreflang={alternate.tag}
+      href={new URL(alternate.href, Astro.site).href}
     />
-  )
-}
+  ))}
+{Astro.site && xDefault && (
+  <link
+    rel="alternate"
+    hreflang="x-default"
+    href={new URL(xDefault, Astro.site).href}
+  />
+)}
 
 {favicon && <link rel="icon" href={favicon} />}
 
@@ -111,23 +107,19 @@ const themeScript = `(function () {
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content={config.title} />
 <meta property="og:locale" content={openGraphLocale(language)} />
-{
-  alternates
-    .filter((alternate) => alternate.tag !== language)
-    .map((alternate) => (
-      <meta
-        property="og:locale:alternate"
-        content={openGraphLocale(alternate.tag)}
-      />
-    ))
-}
+{alternates
+  .filter((alternate) => alternate.tag !== language)
+  .map((alternate) => (
+    <meta
+      property="og:locale:alternate"
+      content={openGraphLocale(alternate.tag)}
+    />
+  ))}
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
-{
-  modified && (
-    <meta property="article:modified_time" content={modified.toISOString()} />
-  )
-}
+{modified && (
+  <meta property="article:modified_time" content={modified.toISOString()} />
+)}
 {ogImage && <meta property="og:image" content={ogImage} />}
 
 <meta
@@ -142,11 +134,9 @@ const themeScript = `(function () {
 
 <meta name="generator" content={Astro.generator} />
 
-{
-  config.head.map((tag) => {
-    const Tag = tag.tag as keyof HTMLElementTagNameMap;
-    return <Tag {...tag.attrs} set:html={tag.content ?? ""} />;
-  })
-}
+{config.head.map((tag) => {
+  const Tag = tag.tag as keyof HTMLElementTagNameMap;
+  return <Tag {...tag.attrs} set:html={tag.content ?? ""} />;
+})}
 
 {config.appearance === "auto" && <script is:inline set:html={themeScript} />}
